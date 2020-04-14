@@ -1,0 +1,10 @@
+{
+    "f79fcfc9-c855-4910-b445-1f167e814bfd": {
+        "eventStore": {
+            "servers": [
+                "mongo"
+            ],
+            "database": "dolittle_event_store_pricing"
+        }
+    }
+}
