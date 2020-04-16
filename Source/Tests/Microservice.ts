@@ -13,4 +13,10 @@ export class Microservice {
         this.runtime = runtime;
         this.eventStore = eventStore;
     }
+
+    async start() {
+        await this.eventStore.start();
+        await this.runtime.start();
+        await this.eventStore.start();
+    }
 }
