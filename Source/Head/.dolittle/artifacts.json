@@ -1,0 +1,14 @@
+{
+    "999923ff-659b-4598-a04f-cfb7b9a1c1f5": {
+        "commands": {},
+        "events": {
+            "0e984977-1686-4036-98ef-14dc9f55f705": {
+                "generation": 1,
+                "type": "Head.MyEvent, Head"
+              }            
+        },
+        "eventSources": {},
+        "readModels": {},
+        "queries": {}
+    }
+}
