@@ -95,8 +95,12 @@ export class Container implements IContainer {
             ExposedPorts: this.getExposedPorts(),
             HostConfig: {
                 PortBindings: this.getPortBindings(),
-                Binds: this.getBinds()
-            },
+                Binds: this.getBinds(),
+                RestartPolicy: {
+                    Name: 'Forever',
+                    MaximumRetryCount: 10000
+                }
+            }
         };
     }
 
