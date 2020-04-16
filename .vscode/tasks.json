@@ -82,10 +82,7 @@
             "options": {
                 "cwd": "${fileDirname}"
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -94,6 +91,18 @@
                 "showReuseMessage": true,
                 "clear": false
             }
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "Source/Tests/tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "tsc: build - Source/Tests/tsconfig.json"
         }
     ]
 }

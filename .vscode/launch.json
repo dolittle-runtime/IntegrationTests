@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/Source/Tests/index.ts",
+            "outFiles": ["${workspaceFolder}/Source/Tests/out/**/*.js"],
+            "preLaunchTask": "tsc: build - Source/Tests/tsconfig.json"
+        },
+        {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
