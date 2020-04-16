@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Dolittle.Hosting.Microsoft;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 namespace Head
@@ -18,7 +19,13 @@ namespace Head
         {
             return Host.CreateDefaultBuilder(args)
                 .UseEnvironment("Development")
-                .UseDolittle();
+                .UseDolittle()
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder
+                        .UseKestrel()
+                        .UseStartup<Startup>();
+                });
         }
     }
 }
