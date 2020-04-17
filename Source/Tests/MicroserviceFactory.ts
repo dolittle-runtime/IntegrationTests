@@ -26,9 +26,11 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         const networkName = this.getNetworkNameFor(microserviceIdentifier, name);
         await this._containerEnvironment.createNetwork(networkName);
 
-        const mongoHost = `mongo-${microserviceIdentifier.toString()}`;
-        const runtimeHost = `runtime-${microserviceIdentifier.toString()}`;
-        const headHost = `head-${microserviceIdentifier.toString()}`;
+        const shortIdentifier = microserviceIdentifier.toString().substr(0,8);
+
+        const mongoHost = `mongo-${shortIdentifier}`;
+        const runtimeHost = `runtime-${shortIdentifier}`;
+        const headHost = `head-${shortIdentifier}`;
 
         const eventStoreStorage = await this.configureContainer(
             workingDirectory,

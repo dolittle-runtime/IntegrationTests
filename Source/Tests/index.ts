@@ -38,6 +38,7 @@ import * as process from 'process';
 import { LogMessageWaitStrategy } from './LogMessageWaitStrategy';
 import { MicroserviceFactory } from './MicroserviceFactory';
 import { Guid } from '@dolittle/rudiments';
+import { MicroserviceActions } from './MicroserviceActions';
 
 
 const asyncTimeout = util.promisify(setTimeout);
@@ -57,6 +58,11 @@ const asyncTimeout = util.promisify(setTimeout);
     microservice.eventStoreStorage.outputStream.pipe(process.stdout);*/
 
     microservice.start();
+
+    await asyncTimeout(2000);
+
+    const actions = new MicroserviceActions(microservice);
+    const result = await actions.checkStatus();
 
     await asyncTimeout(400000);
 
