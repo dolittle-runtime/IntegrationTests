@@ -24,6 +24,7 @@ namespace Head
                 {
                     webBuilder
                         .UseKestrel()
+                        .UseUrls("http://*:5000")
                         .UseStartup<Startup>();
                 });
         }
