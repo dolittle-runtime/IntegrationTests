@@ -16,6 +16,7 @@ import { IWaitStrategy } from './IWaitStrategy';
  * Represents an implementation of {IContainer} for Docker.
  */
 export class Container implements IContainer {
+    readonly options: ContainerOptions;
     readonly outputStream: NodeJS.ReadWriteStream;
     readonly boundPorts: Map<number, number>;
 
@@ -23,18 +24,19 @@ export class Container implements IContainer {
 
     /**
      * Creates an instance of container.
-     * @param _options {ContainerOptions} The Container options.
+     * @param options {ContainerOptions} The Container options.
      * @param _dockerClient {Docker} The Docker client object.
      */
-    constructor(private _options: ContainerOptions, private _dockerClient: Docker) {
+    constructor(options: ContainerOptions, private _dockerClient: Docker) {
+        this.options = options;
         this.outputStream = new PassThrough();
         this.boundPorts = new Map<number, number>();
     }
 
     /** @inheritdoc */
     async configure() {
-        if (this._options.exposedPorts) {
-            for (const port of this._options.exposedPorts) {
+        if (this.options.exposedPorts) {
+            for (const port of this.options.exposedPorts) {
                 this.boundPorts.set(port, await getPort());
             }
         }
@@ -91,7 +93,7 @@ export class Container implements IContainer {
 
     private getCreateOptions(): Docker.ContainerCreateOptions {
         return {
-            name: this._options.name,
+            name: this.options.name,
             Image: this.getImageName(),
             AttachStdout: true,
             AttachStderr: true,
@@ -103,28 +105,28 @@ export class Container implements IContainer {
                 RestartPolicy: {
                     Name: 'always'
                 },
-                NetworkMode: this._options.networkName ?? 'bridge'
+                NetworkMode: this.options.networkName ?? 'bridge'
             }
         };
     }
 
     private getVolumes() {
         const volumes: any = {};
-        this._options.mounts?.forEach(mount => {
+        this.options.mounts?.forEach(mount => {
             volumes[mount.container] = {};
         });
         return volumes;
     }
 
     private getBinds() {
-        return this._options.mounts?.map((mount: Mount) => {
+        return this.options.mounts?.map((mount: Mount) => {
             return `${mount.host}:${mount.container}:rw`;
         }) ?? [];
     }
 
     private getExposedPorts() {
         const exposedPorts: any = {};
-        this._options.exposedPorts?.forEach(port => {
+        this.options.exposedPorts?.forEach(port => {
             exposedPorts[`${port}/tcp`] = {};
         });
 
@@ -143,9 +145,9 @@ export class Container implements IContainer {
     }
 
     private getImageName() {
-        if (this._options.tag) {
-            return `${this._options.image}:${this._options.tag}`;
+        if (this.options.tag) {
+            return `${this.options.image}:${this.options.tag}`;
         }
-        return this._options.image;
+        return this.options.image;
     }
 }
