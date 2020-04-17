@@ -23,8 +23,8 @@ namespace Head
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseKestrel()
                         .UseUrls("http://*:5000")
+                        .UseKestrel()
                         .UseStartup<Startup>();
                 });
         }
