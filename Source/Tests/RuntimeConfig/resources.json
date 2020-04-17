@@ -1,0 +1,12 @@
+{
+    {{#each tenants}}
+    "{{tenantId}}": {
+        "eventStore": {
+            "servers": [
+                "{{server}}"
+            ],
+            "database": "event_store"
+        }
+    }
+    {{/each}}
+}

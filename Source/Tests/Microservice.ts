@@ -39,4 +39,7 @@ export class Microservice {
         await this.runtime.kill();
         await this.eventStoreStorage.kill();
     }
+
+    async clearEventStore() {
+    }
 }

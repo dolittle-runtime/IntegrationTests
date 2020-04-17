@@ -3,8 +3,8 @@
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { Scenario } from './Scenario';
 import { IGiven } from './IGiven';
-import { Aviator } from 'Aviator';
-import { ScenarioContext } from 'ScenarioContext';
+import { Aviator } from './Aviator';
+import { ScenarioContext } from './ScenarioContext';
 
 export class a_single_microservice implements IGiven {
     context(microserviceFactory: IMicroserviceFactory): ScenarioContext {
@@ -22,13 +22,14 @@ export class single_event_committed extends Scenario {
     }
 }
 
+/*
 const aviator = Aviator.getFor('dotnet');
 const flight = aviator.performFlightWith(
     single_event_committed
 );
+*/
 
 
-/*
 import * as util from 'util';
 import { ContainerFactory } from './ContainerFactory';
 
@@ -36,17 +37,19 @@ import * as path from 'path';
 import * as process from 'process';
 import { LogMessageWaitStrategy } from './LogMessageWaitStrategy';
 import { MicroserviceFactory } from './MicroserviceFactory';
+import { Guid } from '@dolittle/rudiments';
 
 
 const asyncTimeout = util.promisify(setTimeout);
-*/
+
 
 (async () => {
 
-    /*
     const containerFactory = new ContainerFactory();
     const microserviceFactory = new MicroserviceFactory(containerFactory);
-    const microservice = microserviceFactory.create('dotnet');
+    const microservice = await microserviceFactory.create('main', path.join(process.cwd(),'tt'), [
+        Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')
+    ], 'dotnet');
 
     microservice.head.outputStream.pipe(process.stdout);
     microservice.runtime.outputStream.pipe(process.stdout);
@@ -54,10 +57,10 @@ const asyncTimeout = util.promisify(setTimeout);
 
     microservice.start();
 
-    await asyncTimeout(4000);
+    await asyncTimeout(40000);
 
-    microservice.kill();
-    */
+    /*microservice.kill();*/
+
 
     /*
     const container = containerFactory.create({

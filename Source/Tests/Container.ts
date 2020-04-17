@@ -32,13 +32,16 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
-    async start(...waitStrategies: IWaitStrategy[]) {
+    async configure() {
         if (this._options.exposedPorts) {
             for (const port of this._options.exposedPorts) {
                 this.boundPorts.set(port, await getPort());
             }
         }
+    }
 
+    /** @inheritdoc */
+    async start(...waitStrategies: IWaitStrategy[]) {
         const createOptions = this.getCreateOptions();
         this._container = await this._dockerClient.createContainer(createOptions);
 

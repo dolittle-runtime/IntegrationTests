@@ -10,7 +10,8 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/Source/Tests/index.ts",
             "outFiles": ["${workspaceFolder}/Source/Tests/out/**/*.js"],
-            "preLaunchTask": "tsc: build - Source/Tests/tsconfig.json"
+            "preLaunchTask": "tsc: build - Source/Tests/tsconfig.json",
+            "cwd": "${workspaceFolder}/Source/Tests",
         },
         {
             "name": ".NET Core Launch (console)",

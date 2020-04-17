@@ -31,6 +31,8 @@
         "@types/dockerode": "^2.5.27",
         "byline": "^5.0.0",
         "get-port": "^5.1.1",
-        "testcontainers": "^2.7.0"
+        "handlebars": "^4.7.6",
+        "testcontainers": "^2.7.0",
+        "@dolittle/rudiments": "2.0.10"
     }
 }

@@ -4,13 +4,17 @@
 import { Scenario } from './Scenario';
 import { Microservice } from 'Microservice';
 
-export class FlightPlan {
-    private microservices: Microservice[];
-    private scenarios: Scenario[];
-    readonly outputPath: string;
+import { Guid } from '@dolittle/rudiments';
 
-    constructor(outputPath: string, microservices: Microservice[], scenarios: Scenario[]) {
+export class FlightPlan {
+    readonly outputPath: string;
+    readonly tenants: Guid[];
+    readonly microservices: Microservice[];
+    readonly scenarios: Scenario[];
+
+    constructor(outputPath: string, tenants: Guid[], microservices: Microservice[], scenarios: Scenario[]) {
         this.outputPath = outputPath;
+        this.tenants = tenants;
         this.microservices = microservices;
         this.scenarios = scenarios;
     }

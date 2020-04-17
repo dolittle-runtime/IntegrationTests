@@ -9,11 +9,11 @@ import { ContainerFactory } from './ContainerFactory';
 import { MicroserviceFactory } from './MicroserviceFactory';
 import { FlightRecorder } from './FlightRecorder';
 import { FlightControl } from './FlightControl';
-import { Scenario } from 'Scenario';
-import { Flight } from 'Flight';
+import { Scenario } from './Scenario';
+import { Flight } from './Flight';
 import { IFlightPlanner } from './IFlightPlanner';
 import { FlightPlanner } from './FlightPlanner';
-import { Constructor } from 'Constructor';
+import { Constructor } from './Constructor';
 
 export class Aviator {
     readonly containerFactory: IContainerFactory;

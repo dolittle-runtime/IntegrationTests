@@ -11,27 +11,32 @@ export interface IContainer {
     readonly boundPorts: Map<number, number>;
 
     /**
+     * Configure all properties and make it ready.
+     */
+    configure(): Promise<void>;
+
+    /**
      * Start the instance.
      * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<any>}
      */
-    start(...waitStrategies: IWaitStrategy[]): Promise<any>;
+    start(...waitStrategies: IWaitStrategy[]): Promise<void>;
 
     /**
      * Stop the instance.
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      */
     stop(): Promise<any>;
 
     /**
      * Kill the instance.
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      */
     kill(): Promise<any>;
 
     /**
      * Restart the instance.
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      */
-    restart(): Promise<any>;
+    restart(): Promise<void>;
 }
