@@ -4,6 +4,8 @@
 import { IContainer } from './IContainer';
 import { ContainerOptions } from './ContainerOptions';
 
-export interface IContainerFactory {
-    create(options: ContainerOptions): IContainer;
+export interface IContainerEnvironment {
+    createContainer(options: ContainerOptions): IContainer;
+    createNetwork(name: string): Promise<void>;
+    removeNetwork(name: string): Promise<void>;
 }

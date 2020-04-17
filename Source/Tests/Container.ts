@@ -91,6 +91,7 @@ export class Container implements IContainer {
 
     private getCreateOptions(): Docker.ContainerCreateOptions {
         return {
+            name: this._options.name,
             Image: this.getImageName(),
             AttachStdout: true,
             AttachStderr: true,
@@ -101,7 +102,8 @@ export class Container implements IContainer {
                 Binds: this.getBinds(),
                 RestartPolicy: {
                     Name: 'always'
-                }
+                },
+                NetworkMode: this._options.networkName ?? 'bridge'
             }
         };
     }

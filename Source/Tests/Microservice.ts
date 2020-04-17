@@ -2,14 +2,17 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { IContainer } from './IContainer';
+import { Guid } from '@dolittle/rudiments';
 
 export class Microservice {
     readonly name: string;
     readonly head: IContainer;
     readonly runtime: IContainer;
     readonly eventStoreStorage: IContainer;
+    readonly uniqueIdentifier: Guid;
 
-    constructor(name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
+    constructor(uniqueIdentifier: Guid, name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
+        this.uniqueIdentifier = uniqueIdentifier;
         this.name = name;
         this.head = head;
         this.runtime = runtime;

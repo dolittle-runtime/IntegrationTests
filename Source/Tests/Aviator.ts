@@ -3,9 +3,9 @@
 
 import { IFlightControl } from './IFlightControl';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
-import { IContainerFactory } from './IContainerFactory';
+import { IContainerEnvironment } from './IContainerEnvironment';
 import { IFlightRecorder } from './IFlightRecorder';
-import { ContainerFactory } from './ContainerFactory';
+import { ContainerEnvironment } from './ContainerEnvironment';
 import { MicroserviceFactory } from './MicroserviceFactory';
 import { FlightRecorder } from './FlightRecorder';
 import { FlightControl } from './FlightControl';
@@ -16,14 +16,14 @@ import { FlightPlanner } from './FlightPlanner';
 import { Constructor } from './Constructor';
 
 export class Aviator {
-    readonly containerFactory: IContainerFactory;
+    readonly containerFactory: IContainerEnvironment;
     readonly microserviceFactory: IMicroserviceFactory;
     readonly flightRecorder: IFlightRecorder;
     readonly flightControl: IFlightControl;
     readonly flightPlanner: IFlightPlanner;
 
     private constructor(target: string) {
-        this.containerFactory = new ContainerFactory();
+        this.containerFactory = new ContainerEnvironment();
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory);
         this.flightRecorder = new FlightRecorder();
         this.flightControl = new FlightControl(this.microserviceFactory, this.flightRecorder);

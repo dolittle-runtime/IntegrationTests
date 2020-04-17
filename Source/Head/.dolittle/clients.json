@@ -1,10 +1,10 @@
 {
     "public": {
         "host": "localhost",
-        "port": 50052
+        "port": 57538
     },
     "private": {
         "host": "localhost",
-        "port": 50053
+        "port": 57539
     }
 }

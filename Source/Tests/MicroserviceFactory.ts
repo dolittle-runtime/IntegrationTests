@@ -3,77 +3,138 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Handlebars from 'handlebars';
 
 import { Microservice } from './Microservice';
-import { IContainerFactory } from './IContainerFactory';
+import { IContainerEnvironment } from './IContainerEnvironment';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { Guid } from '@dolittle/rudiments';
-import * as Handlebars from 'handlebars';
+import { IContainer } from './IContainer';
+import { ContainerOptions } from 'ContainerOptions';
+import { Mount } from './Mount';
 
 const HeadConfig = 'HeadConfig';
 const RuntimeConfig = 'RuntimeConfig';
 
 export class MicroserviceFactory implements IMicroserviceFactory {
 
-    constructor(private _containerFactory: IContainerFactory) {
+    constructor(private _containerEnvironment: IContainerEnvironment) {
     }
 
     async create(name: string, workingDirectory: string, tenants: Guid[], target: string): Promise<Microservice> {
-        const eventStoreStorage = this._containerFactory.create({
-            image: 'dolittle/mongodb',
-            exposedPorts: [27017]
-        });
-        await eventStoreStorage.configure();
+        const microserviceIdentifier = Guid.create();
+        const networkName = this.getNetworkNameFor(microserviceIdentifier, name);
+        await this._containerEnvironment.createNetwork(networkName);
 
-        const head = this._containerFactory.create({
-            image: `dolittle/integrationtests-head-${target}`,
-            exposedPorts: [5000],
-            mounts: [
-                {
-                    host: this.getHostPathFor(HeadConfig, 'resources.json', workingDirectory),
-                    container: '/app/.dolittle/resources.json'
-                },
-                {
-                    host: this.getHostPathFor(HeadConfig, 'tenants.json', workingDirectory),
-                    container: '/app/.dolittle/tenants.json'
-                },
-                {
-                    host: this.getHostPathFor(HeadConfig, 'clients.json', workingDirectory),
-                    container: '/app/.dolittle/clients.json'
-                }
-            ]
-        });
-        await head.configure();
+        const mongoHost = `mongo-${microserviceIdentifier.toString()}`;
+        const runtimeHost = `runtime-${microserviceIdentifier.toString()}`;
+        const headHost = `head-${microserviceIdentifier.toString()}`;
 
-        const runtime = this._containerFactory.create({
-            image: 'dolittle/runtime',
-            tag: '5.0.0-alpha.15',
-            exposedPorts: [81, 9700, 50052, 50053],
-            mounts: [
-                {
-                    host: this.getHostPathFor(RuntimeConfig, 'resources.json', workingDirectory),
-                    container: '/app/.dolittle/resources.json'
-                }
-            ]
-        });
-        await runtime.configure();
+        const eventStoreStorage = await this.configureContainer(
+            workingDirectory,
+            'mongo',
+            mongoHost,
+            'dolittle/mongodb',
+            'latest',
+            [27017],
+            networkName,
+            RuntimeConfig,
+            [],
+            [{
+                host: path.join(workingDirectory, 'data'),
+                container: '/data'
+            }]
+        );
+
+        const head = await this.configureContainer(
+            workingDirectory,
+            'head',
+            headHost,
+            `dolittle/integrationtests-head-${target}`,
+            'latest',
+            [5000],
+            networkName,
+            HeadConfig,
+            ['resources.json', 'tenants.json', 'clients.json']
+        );
+
+        const runtime = await this.configureContainer(
+            workingDirectory,
+            'runtime',
+            runtimeHost,
+            'dolittle/runtime',
+            'latest',
+            [81, 9700, 50052, 50053],
+            networkName,
+            RuntimeConfig,
+            ['resources.json']
+        );
 
         const context = {
             tenants: tenants.map(tenant => {
                 return {
                     tenantId: tenant,
-                    server: `localhost:${eventStoreStorage.boundPorts.get(27017)}`
+                    server: mongoHost
                 };
             }),
-            publicPort: runtime.boundPorts.get(50052),
-            privatePort: runtime.boundPorts.get(50053)
+            runtimeHost: runtimeHost,
+            headHost: headHost,
+            publicPort: 50052,
+            privatePort: 50053
         };
 
         this.generateConfigurationForRuntime(workingDirectory, context);
         this.generateConfigurationForHead(workingDirectory, context);
 
-        const microservice = new Microservice(name, head, runtime, eventStoreStorage);
+        const microservice = new Microservice(microserviceIdentifier, name, head, runtime, eventStoreStorage);
         return microservice;
+    }
+
+    cleanupAfter(microservice: Microservice) {
+        this._containerEnvironment.removeNetwork(this.getNetworkNameFor(microservice.uniqueIdentifier, microservice.name));
+    }
+
+    async configureContainer(
+        workingDirectory: string,
+        name: string,
+        uniqueName: string,
+        image: string,
+        tag: string,
+        exposedPorts: number[],
+        networkName: string,
+        configurationTarget: string,
+        configurationFiles: string[],
+        mounts?: Mount[]): Promise<IContainer> {
+
+        const containerOptions = {
+            name: uniqueName,
+            image: image,
+            tag: tag,
+            exposedPorts: exposedPorts,
+            networkName: networkName,
+            mounts: configurationFiles.map(file => {
+                return {
+                    host: this.getHostPathFor(configurationTarget, file, workingDirectory),
+                    container: `/app/.dolittle/${file}`
+                };
+            })
+        } as ContainerOptions;
+
+        mounts?.forEach(_ => containerOptions.mounts?.push(_));
+
+        const container = this._containerEnvironment.createContainer(containerOptions);
+        await container.configure();
+
+        const containerOptionsFile = path.join(workingDirectory, `${name}.json`);
+        const configOutput = JSON.parse(JSON.stringify(containerOptions));
+
+        configOutput.boundPorts = {};
+        for (const [k, v] of container.boundPorts) {
+            configOutput.boundPorts[k] = v;
+        }
+        fs.writeFileSync(containerOptionsFile, JSON.stringify(configOutput));
+
+        return container;
     }
 
     private generateConfigurationForRuntime(workingDirectory: string, context: any) {
@@ -106,5 +167,9 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             sourceDirectory = process.cwd();
         }
         return path.join(sourceDirectory, target, file);
+    }
+
+    private getNetworkNameFor(microserviceIdentifier: Guid, microserviceName: string): string {
+        return `${microserviceName}-${microserviceIdentifier.toString()}-network`;
     }
 }

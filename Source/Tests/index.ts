@@ -31,7 +31,7 @@ const flight = aviator.performFlightWith(
 
 
 import * as util from 'util';
-import { ContainerFactory } from './ContainerFactory';
+import { ContainerEnvironment } from './ContainerEnvironment';
 
 import * as path from 'path';
 import * as process from 'process';
@@ -45,39 +45,41 @@ const asyncTimeout = util.promisify(setTimeout);
 
 (async () => {
 
-    const containerFactory = new ContainerFactory();
-    const microserviceFactory = new MicroserviceFactory(containerFactory);
-    const microservice = await microserviceFactory.create('main', path.join(process.cwd(),'tt'), [
+    const containerEnvironment = new ContainerEnvironment();
+    const microserviceFactory = new MicroserviceFactory(containerEnvironment);
+    const microservice = await microserviceFactory.create('main', path.join(process.cwd(), 'tt'), [
         Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')
     ], 'dotnet');
 
+    /*
     microservice.head.outputStream.pipe(process.stdout);
     microservice.runtime.outputStream.pipe(process.stdout);
-    microservice.eventStoreStorage.outputStream.pipe(process.stdout);
+    microservice.eventStoreStorage.outputStream.pipe(process.stdout);*/
 
     microservice.start();
 
-    await asyncTimeout(40000);
+    await asyncTimeout(400000);
 
     /*microservice.kill();*/
-
-
     /*
     const container = containerFactory.create({
         image: 'dolittle/mongodb',
         exposedPorts: [27017],
         mounts: [{
-            host: path.join(process.cwd(),'data'),
+            host: path.join(process.cwd(), 'data'),
             container: '/data/db'
         }]
     });
-    await container.start(new LogMessageWaitStrategy('Marking collection admin.system.keys'));
+    await container.configure();
+    await container.start();
+
+    container.outputStream.pipe(process.stdout);
+    //await container.start(new LogMessageWaitStrategy('Marking collection admin.system.keys'));
 
     console.log(container.boundPorts);
 
-    container.outputStream.pipe(process.stdout);
-
-    container.kill();*/
+    await asyncTimeout(2000);*/
+    //container.kill();
 })();
 
 
