@@ -13,7 +13,7 @@ BUILD_VERSION=$(echo $VERSION | sed 's/v*[0-9]*.[0.9]*.[0-9]-[a-zA-Z]*.\([0-9]*\
 echo Building version $IMAGE_VERSION
 
 docker build -t dolittle/integrationtests-head-dotnet .
-docker tag dolittle/runtime dolittle/integrationtests-head-dotnet:$IMAGE_VERSION
+docker tag dolittle/integrationtests-head-dotnet dolittle/integrationtests-head-dotnet:$IMAGE_VERSION
 
 if [ $PRE_RELEASE_TAG = $VERSION ]; then
     echo Pushing latest
