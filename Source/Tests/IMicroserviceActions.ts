@@ -4,6 +4,6 @@
 import { Guid } from '@dolittle/rudiments';
 
 export interface IMicroserviceActions {
-    checkStatus(): string;
+    checkStatus(): Promise<string>;
     sendEvent(artifactId: Guid, content: any): Promise<boolean>;
 }
