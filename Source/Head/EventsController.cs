@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Dolittle.Artifacts;
 using Dolittle.DependencyInversion;
 using Dolittle.Events;
 using Dolittle.Execution;
@@ -31,12 +30,12 @@ namespace Head
 
         [HttpPost]
         [Route("Single")]
-        public IActionResult SingleEvent()
+        public IActionResult Single([FromBody] MyEvent @event)
         {
             _executionContextManager.CurrentFor((TenantId)Guid.Parse("f79fcfc9-c855-4910-b445-1f167e814bfd"));
             var eventStore = _eventStore();
             var events = new UncommittedEvents();
-            events.Append(new MyEvent());
+            events.Append(@event);
             eventStore.Commit(events);
             return Ok();
         }
