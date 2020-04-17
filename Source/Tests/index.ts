@@ -52,17 +52,17 @@ const asyncTimeout = util.promisify(setTimeout);
         Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')
     ], 'dotnet');
 
-    /*
     microservice.head.outputStream.pipe(process.stdout);
     microservice.runtime.outputStream.pipe(process.stdout);
-    microservice.eventStoreStorage.outputStream.pipe(process.stdout);*/
+    microservice.eventStoreStorage.outputStream.pipe(process.stdout);
 
     microservice.start();
 
-    await asyncTimeout(2000);
+    await asyncTimeout(5000);
 
     const actions = new MicroserviceActions(microservice);
-    const result = await actions.checkStatus();
+    //const result = await actions.checkStatus();
+    const result = await actions.sendEvent(Guid.create(), { 'uniqueIdentifier': Guid.create().toString() });
 
     await asyncTimeout(400000);
 

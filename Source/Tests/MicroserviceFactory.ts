@@ -65,7 +65,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'runtime',
             runtimeHost,
             'dolittle/runtime',
-            'latest',
+            '5.0.0-alpha.15',
             [81, 9700, 50052, 50053],
             networkName,
             RuntimeConfig,

@@ -18,8 +18,14 @@ export class MicroserviceActions implements IMicroserviceActions {
         return result;
     }
 
-    sendEvent(artifactId: import("@dolittle/rudiments").Guid, content: any): Promise<boolean> {
-        throw new Error('Method not implemented.');
+    async sendEvent(artifactId: import("@dolittle/rudiments").Guid, content: any): Promise<boolean> {
+        const url = `${this.getHeadBaseUrl()}/api/Events/Single`;
+        const response = await fetch(url, {
+            method: 'post',
+            body: JSON.stringify(content),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
     }
 
     private getHeadBaseUrl() {
