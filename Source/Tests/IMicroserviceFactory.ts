@@ -1,6 +1,8 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-export interface IScenario {
-    readonly when: string;
+import { Microservice } from './Microservice';
+
+export interface IMicroserviceFactory {
+    create(target?: string): Microservice;
 }

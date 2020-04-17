@@ -97,8 +97,7 @@ export class Container implements IContainer {
                 PortBindings: this.getPortBindings(),
                 Binds: this.getBinds(),
                 RestartPolicy: {
-                    Name: 'Forever',
-                    MaximumRetryCount: 10000
+                    Name: 'always'
                 }
             }
         };
