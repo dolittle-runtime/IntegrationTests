@@ -3,9 +3,9 @@
 
 import { Constructor } from './Constructor';
 import { IGiven } from './IGiven';
-import { Context } from 'Context';
+import { ScenarioContext } from 'ScenarioContext';
 
 export class Scenario {
-    context: Context | undefined;
+    context: ScenarioContext | undefined;
     given: Constructor<IGiven> | undefined;
 }

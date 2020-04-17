@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { IMicroserviceFactory } from './IMicroserviceFactory';
-import { Context } from './Context';
+import { ScenarioContext } from './ScenarioContext';
 
 export interface IGiven {
-    context(microserviceFactory: IMicroserviceFactory): Context;
+    context(microserviceFactory: IMicroserviceFactory): ScenarioContext;
 }

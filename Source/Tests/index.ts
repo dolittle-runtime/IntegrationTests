@@ -15,10 +15,10 @@ export class a_single_microservice implements IGiven {
 export class single_event_committed extends Scenario {
     given = a_single_microservice;
 
-    when_I_commit_a_single_event() {
+    async when_I_commit_a_single_event() {
     }
 
-    then_it_should_be_inserted_in_the_event_log() {
+    async then_it_should_be_inserted_in_the_event_log() {
     }
 }
 
