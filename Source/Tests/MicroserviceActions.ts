@@ -3,7 +3,6 @@
 
 import fetch from 'node-fetch';
 
-
 import { Microservice } from './Microservice';
 import { IMicroserviceActions } from './IMicroserviceActions';
 

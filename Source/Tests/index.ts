@@ -1,14 +1,12 @@
-
-
-import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { Scenario } from './Scenario';
 import { IGiven } from './IGiven';
 import { Aviator } from './Aviator';
 import { ScenarioContext } from './ScenarioContext';
+import { Guid } from '@dolittle/rudiments';
 
 export class a_single_microservice implements IGiven {
-    context(microserviceFactory: IMicroserviceFactory): ScenarioContext {
-        throw new Error('Method not implemented.');
+    async describe(context: ScenarioContext) {
+        await context.withMicroservice('main', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
     }
 }
 
@@ -22,14 +20,16 @@ export class single_event_committed extends Scenario {
     }
 }
 
+
+(async() => {
+    const aviator = Aviator.getFor('dotnet');
+    const flight = aviator.performFlightWith(
+        single_event_committed
+    );
+})();
+
+
 /*
-const aviator = Aviator.getFor('dotnet');
-const flight = aviator.performFlightWith(
-    single_event_committed
-);
-*/
-
-
 import * as util from 'util';
 import { ContainerEnvironment } from './ContainerEnvironment';
 
@@ -66,8 +66,8 @@ const asyncTimeout = util.promisify(setTimeout);
 
     await asyncTimeout(400000);
 
-    /*microservice.kill();*/
-    /*
+    //microservice.kill();
+
     const container = containerFactory.create({
         image: 'dolittle/mongodb',
         exposedPorts: [27017],
@@ -84,8 +84,7 @@ const asyncTimeout = util.promisify(setTimeout);
 
     console.log(container.boundPorts);
 
-    await asyncTimeout(2000);*/
+    await asyncTimeout(2000);
     //container.kill();
 })();
-
-
+*/

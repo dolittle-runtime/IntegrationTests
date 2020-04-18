@@ -5,5 +5,5 @@ import { FlightPlan } from './FlightPlan';
 import { Flight } from './Flight';
 
 export interface IFlightControl {
-    takeOffWith(flightPlan: FlightPlan): Flight;
+    takeOffWith(flightPlan: FlightPlan): Promise<Flight>;
 }

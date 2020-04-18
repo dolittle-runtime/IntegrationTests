@@ -3,6 +3,7 @@
 
 import { IContainer } from './IContainer';
 import { Guid } from '@dolittle/rudiments';
+import { IMicroserviceActions } from './IMicroserviceActions';
 
 export class Microservice {
     readonly name: string;

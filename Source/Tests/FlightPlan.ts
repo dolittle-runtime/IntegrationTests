@@ -2,20 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Scenario } from './Scenario';
-import { Microservice } from 'Microservice';
-
-import { Guid } from '@dolittle/rudiments';
+import { ScenarioContext } from 'ScenarioContext';
 
 export class FlightPlan {
     readonly outputPath: string;
-    readonly tenants: Guid[];
-    readonly microservices: Microservice[];
+    readonly scenarioContexts: ScenarioContext[];
     readonly scenarios: Scenario[];
 
-    constructor(outputPath: string, tenants: Guid[], microservices: Microservice[], scenarios: Scenario[]) {
+    constructor(outputPath: string, scenarioContexts: ScenarioContext[], scenarios: Scenario[]) {
         this.outputPath = outputPath;
-        this.tenants = tenants;
-        this.microservices = microservices;
+        this.scenarioContexts = scenarioContexts;
         this.scenarios = scenarios;
     }
 }

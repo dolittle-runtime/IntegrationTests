@@ -6,5 +6,5 @@ import { FlightPlan } from './FlightPlan';
 import { Constructor } from './Constructor';
 
 export interface IFlightPlanner {
-    planFor(...scenarios: Constructor<Scenario>[]): FlightPlan
+    planFor(target: string, ...scenarios: Constructor<Scenario>[]): FlightPlan
 }

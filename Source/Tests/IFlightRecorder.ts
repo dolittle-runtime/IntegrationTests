@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Flight } from './Flight';
+import { Scenario } from './Scenario';
 
 export interface IFlightRecorder {
     recordFor(flight: Flight): void;
+    setCurrentScenario(scenario: Scenario): void;
 }

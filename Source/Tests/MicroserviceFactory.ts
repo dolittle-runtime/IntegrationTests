@@ -12,13 +12,14 @@ import { Guid } from '@dolittle/rudiments';
 import { IContainer } from './IContainer';
 import { ContainerOptions } from 'ContainerOptions';
 import { Mount } from './Mount';
+import { ISerializer } from './ISerializer';
 
 const HeadConfig = 'HeadConfig';
 const RuntimeConfig = 'RuntimeConfig';
 
 export class MicroserviceFactory implements IMicroserviceFactory {
 
-    constructor(private _containerEnvironment: IContainerEnvironment) {
+    constructor(private _containerEnvironment: IContainerEnvironment, private _serializer: ISerializer) {
     }
 
     async create(name: string, workingDirectory: string, tenants: Guid[], target: string): Promise<Microservice> {
@@ -110,6 +111,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
 
         const containerOptions = {
             name: uniqueName,
+            friendlyName: name,
             image: image,
             tag: tag,
             exposedPorts: exposedPorts,
@@ -134,7 +136,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         for (const [k, v] of container.boundPorts) {
             configOutput.boundPorts[k] = v;
         }
-        fs.writeFileSync(containerOptionsFile, JSON.stringify(configOutput));
+        fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
 
         return container;
     }
