@@ -129,15 +129,6 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         const container = this._containerEnvironment.createContainer(containerOptions);
         await container.configure();
 
-        const containerOptionsFile = path.join(workingDirectory, `${name}.json`);
-        const configOutput = JSON.parse(JSON.stringify(containerOptions));
-
-        configOutput.boundPorts = {};
-        for (const [k, v] of container.boundPorts) {
-            configOutput.boundPorts[k] = v;
-        }
-        fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
-
         return container;
     }
 

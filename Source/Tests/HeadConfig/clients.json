@@ -1,10 +1,10 @@
 {
     "public": {
-        "host": "localhost",
-        "port": {{publicPort}}
+        "host": "{{runtimeHost}}",
+        "port": 50052
     },
     "private": {
-        "host": "localhost",
-        "port": {{privatePort}}
+        "host": "{{runtimeHost}}",
+        "port": 50053
     }
 }

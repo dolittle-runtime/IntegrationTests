@@ -23,6 +23,7 @@ export class FlightRecorder implements IFlightRecorder {
 
     recordFor(flight: Flight): void {
         this.writeFlightPlanFor(flight);
+        this.writeMicroservicesConfigurations(flight);
         this.hookUpLogOutputFor(flight);
     }
 
@@ -30,13 +31,33 @@ export class FlightRecorder implements IFlightRecorder {
         this._currentScenario = scenario;
     }
 
+    private writeMicroservicesConfigurations(flight: Flight) {
+        flight.flightPlan.scenarioContexts.forEach(context => {
+            context.microservices.forEach(microservice => {
+                const microservicePath = this.ensureMicroservicePath(flight, microservice);
+
+                const writeOptionsFile = (container: IContainer) => {
+                    const containerOptionsFile = path.join(microservicePath, `${container.options.friendlyName}.json`);
+                    const configOutput = JSON.parse(JSON.stringify(container.options));
+
+                    configOutput.boundPorts = {};
+                    for (const [k, v] of container.boundPorts) {
+                        configOutput.boundPorts[k] = v;
+                    }
+                    fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
+                };
+
+                writeOptionsFile(microservice.head);
+                writeOptionsFile(microservice.runtime);
+                writeOptionsFile(microservice.eventStoreStorage);
+            });
+        });
+    }
+
     private hookUpLogOutputFor(flight: Flight) {
         flight.flightPlan.scenarioContexts.forEach(context => {
             context.microservices.forEach(microservice => {
-                const microservicePath = path.join(flight.flightPlan.outputPath, microservice.name);
-                if (!fs.existsSync(microservicePath)) {
-                    fs.mkdirSync(microservicePath);
-                }
+                const microservicePath = this.ensureMicroservicePath(flight, microservice);
 
                 microservice.head.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.head, microservicePath));
                 microservice.runtime.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime, microservicePath));
@@ -73,5 +94,13 @@ export class FlightRecorder implements IFlightRecorder {
         const outputFile = path.join(flight.flightPlan.outputPath, 'flightplan.json');
 
         fs.writeFileSync(outputFile, serialized);
+    }
+
+    private ensureMicroservicePath(flight: Flight, microservice: Microservice): string {
+        const microservicePath = path.join(flight.flightPlan.outputPath, microservice.name);
+        if (!fs.existsSync(microservicePath)) {
+            fs.mkdirSync(microservicePath);
+        }
+        return microservicePath;
     }
 }
