@@ -15,10 +15,10 @@ export class Microservice {
     readonly runtime: IContainer;
     readonly eventStoreStorage: IContainer;
     readonly uniqueIdentifier: Guid;
-
-    readonly event_log: EventLogRuleSetContainerBuilder;
-
     readonly actions: IMicroserviceActions;
+
+    event_log: EventLogRuleSetContainerBuilder | undefined;
+    eventLogEvaluation: RuleSetContainerEvaluation | undefined;
 
     constructor(uniqueIdentifier: Guid, name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
         this.uniqueIdentifier = uniqueIdentifier;
@@ -27,7 +27,6 @@ export class Microservice {
         this.runtime = runtime;
         this.eventStoreStorage = eventStoreStorage;
         this.actions = new MicroserviceActions(this);
-        this.event_log = new EventLogRuleSetContainerBuilder(this);
     }
 
     async start() {
@@ -57,9 +56,15 @@ export class Microservice {
     async clearEventStore() {
     }
 
-    async evaluateRules() {
-        const eventLogRuleSetContainer = this.event_log.build();
-        const eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
-        await eventLogEvaluation.evaluate(this);
+    async beginEvaluation() {
+        this.event_log = new EventLogRuleSetContainerBuilder(this);
+    }
+
+    async endEvaluation() {
+        if (this.event_log) {
+            const eventLogRuleSetContainer = this.event_log.build();
+            this.eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
+            await this.eventLogEvaluation.evaluate(this);
+        }
     }
 }

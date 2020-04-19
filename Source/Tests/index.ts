@@ -32,7 +32,7 @@ export class single_event_committed extends Scenario {
     start_the_runtime = async () => { };
 
     then_it_should_be_inserted_in_the_event_log = () => {
-        this.context?.microservices.get('main')?.event_log.should_contain();
+        this.context?.microservices.get('main')?.event_log?.should_contain();
     }
 }
 

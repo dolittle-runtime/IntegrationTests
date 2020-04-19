@@ -27,8 +27,8 @@
         "build": "tsc -p ./tsconfig.json"
     },
     "dependencies": {
-        "@dolittle/rudiments": "2.0.11",
-        "@dolittle/rules": "^2.0.11",
+        "@dolittle/rudiments": "2.0.12",
+        "@dolittle/rules": "^2.0.12",
         "@types/byline": "^4.2.31",
         "@types/dockerode": "^2.5.27",
         "@types/node-fetch": "^2.5.6",

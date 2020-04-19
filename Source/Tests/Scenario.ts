@@ -7,29 +7,45 @@ import { ScenarioContext } from './ScenarioContext';
 import { When } from './When';
 
 export class Scenario {
-    context: ScenarioContext | undefined;
+    private _context: ScenarioContext | undefined;
     given: Constructor<IGiven> | undefined;
-    whenMethod: Function | undefined;
-    whenDescription: When | undefined;
+    private _whenMethod: Function | undefined;
+    private _whenDescription: When | undefined;
 
     constructor() {
         this.configure();
     }
 
-    get name() {
+    get name(): string {
         return this.constructor.name;
+    }
+
+    get context(): ScenarioContext | undefined {
+        return this._context;
+    }
+
+    get whenMethod(): Function | undefined {
+        return this._whenMethod;
+    }
+
+    get whenDescription(): When | undefined {
+        return this._whenDescription;
+    }
+
+    setContext(context: ScenarioContext) {
+        this._context = context;
     }
 
     async when() {
         this.throwIfMissingWhenMethod();
-        const result = await (this.whenMethod as Function).apply(this);
+        const result = await (this._whenMethod as Function).apply(this);
         if (result) {
             this.throwIfResultNotArray(result);
 
             const resultAsArray = result as any[];
             for (const item of resultAsArray) {
                 this.throwIfWhenMethodResultContainsNonMethod(item);
-                this.whenDescription?.addAnds(item.name);
+                this._whenDescription?.addAnds(item.name);
             }
 
             for (const item of resultAsArray) {
@@ -76,14 +92,14 @@ export class Scenario {
                 }
             }
         });
-        this.whenMethod = whenMethod;
-        this.whenDescription = new When(whenMethod.name);
+        this._whenMethod = whenMethod;
+        this._whenDescription = new When(whenMethod.name);
         this.throwIfMissingWhenMethod();
     }
 
     private throwIfWhenMethodResultContainsNonMethod(item: any) {
         if (!(item instanceof Function)) {
-            throw new Error(`Item in array returned from '${this.whenMethod?.name}' in scenario '${this.name}' is not a method. When methods should only return an array of 'then' methods.`);
+            throw new Error(`Item in array returned from '${this._whenMethod?.name}' in scenario '${this.name}' is not a method. When methods should only return an array of 'then' methods.`);
         }
     }
 
@@ -94,7 +110,7 @@ export class Scenario {
     }
 
     private throwIfMissingWhenMethod() {
-        if (!this.whenMethod) {
+        if (!this._whenMethod) {
             throw new Error(`Missing 'when' methods on '${this.name}'. Expected method starting with 'when_'.`);
         }
     }
