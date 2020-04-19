@@ -1,6 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import * as util from 'util';
+const asyncTimeout = util.promisify(setTimeout);
+
 import { IFlightRecorder } from './IFlightRecorder';
 import { FlightPlan } from './FlightPlan';
 import { Flight } from './Flight';
@@ -25,7 +28,7 @@ export class FlightControl implements IFlightControl {
         this._flightRecorder.recordFor(flight);
 
         for (const [context, scenarios] of flightPlan.scenariosByContexts) {
-            this.performOnMicroservice(context, (microservice) => microservice.start());
+            await this.performOnMicroservice(context, async (microservice) => await microservice.start());
 
             for (const scenario of scenarios) {
                 await this.performOnMicroservice(context, async (microservice) => await microservice.beginEvaluation());

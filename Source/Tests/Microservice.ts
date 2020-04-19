@@ -8,6 +8,7 @@ import { IContainer } from './IContainer';
 import { EventLogRuleSetContainerBuilder } from './rules/EventLogRuleSetContainerBuilder';
 import { IMicroserviceActions } from './IMicroserviceActions';
 import { MicroserviceActions } from './MicroserviceActions';
+import { LogMessageWaitStrategy } from './LogMessageWaitStrategy';
 
 export class Microservice {
     readonly name: string;
@@ -30,10 +31,17 @@ export class Microservice {
     }
 
     async start() {
-        console.log(`Start containers for '${this.name}'`);
-        await this.eventStoreStorage.start();
-        await this.runtime.start();
-        await this.head.start();
+        //this.head.outputStream.pipe(process.stdout);
+        //this.runtime.outputStream.pipe(process.stdout);
+        //this.eventStoreStorage.outputStream.pipe(process.stdout);
+
+        console.log('Starting event store storage');
+        await this.eventStoreStorage.start(new LogMessageWaitStrategy('waiting for connections on port 27017'));
+        console.log('Starting Runtime');
+        await this.runtime.start(new LogMessageWaitStrategy('Application started.'));
+        console.log('Starting Head');
+        await this.head.start(new LogMessageWaitStrategy('Connected to runtime'));
+        console.log('All containers started');
     }
 
     async stop() {

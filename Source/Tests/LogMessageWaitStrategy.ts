@@ -35,7 +35,7 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
                 if (done) {
                     return;
                 }
-                reject();
+                resolve();
                 done = true;
             });
         });
