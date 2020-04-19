@@ -1,3 +1,6 @@
+import * as util from 'util';
+const asyncTimeout = util.promisify(setTimeout);
+
 import { Scenario } from './Scenario';
 import { IGiven } from './IGiven';
 import { Aviator } from './Aviator';
@@ -13,19 +16,42 @@ export class a_single_microservice implements IGiven {
 export class single_event_committed extends Scenario {
     given = a_single_microservice;
 
-    async when_I_commit_a_single_event() {
+
+    async when_committing_a_single_event() {
+        return [
+            this.wait_for_2_seconds,
+            this.stop_the_runtime,
+            this.send_another_Event,
+            this.start_the_runtime
+        ];
     }
 
-    async then_it_should_be_inserted_in_the_event_log() {
+    wait_for_2_seconds = async () => await asyncTimeout(2000);
+    stop_the_runtime = async () => await this.context?.microservices.get('main')?.runtime.stop();
+    send_another_Event = async () => { };
+    start_the_runtime = async () => { };
+
+    then_it_should_be_inserted_in_the_event_log = () => {
+        this.context?.microservices.get('main')?.event_log.should_contain();
     }
 }
 
 
-(async() => {
+(async () => {
+
+    const scenario = new single_event_committed();
+    await scenario.when();
+    await scenario.then();
+
+    let i = 0;
+    i += 1;
+
+    /*
     const aviator = Aviator.getFor('dotnet');
     const flight = aviator.performFlightWith(
         single_event_committed
     );
+    */
 })();
 
 

@@ -32,7 +32,7 @@ export class FlightRecorder implements IFlightRecorder {
     }
 
     private writeMicroservicesConfigurations(flight: Flight) {
-        flight.flightPlan.scenarioContexts.forEach(context => {
+        for (const [context, scenarios] of flight.flightPlan.scenariosByContexts) {
             context.microservices.forEach(microservice => {
                 const microservicePath = this.ensureMicroservicePath(flight, microservice);
 
@@ -51,11 +51,11 @@ export class FlightRecorder implements IFlightRecorder {
                 writeOptionsFile(microservice.runtime);
                 writeOptionsFile(microservice.eventStoreStorage);
             });
-        });
+        }
     }
 
     private hookUpLogOutputFor(flight: Flight) {
-        flight.flightPlan.scenarioContexts.forEach(context => {
+        for (const [context, scenarios] of flight.flightPlan.scenariosByContexts) {
             context.microservices.forEach(microservice => {
                 const microservicePath = this.ensureMicroservicePath(flight, microservice);
 
@@ -63,7 +63,7 @@ export class FlightRecorder implements IFlightRecorder {
                 microservice.runtime.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime, microservicePath));
                 microservice.eventStoreStorage.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.eventStoreStorage, microservicePath));
             });
-        });
+        }
     }
 
     private getOutputStreamWriterFor(microservice: Microservice, container: IContainer, microservicePath: string) {
@@ -81,8 +81,11 @@ export class FlightRecorder implements IFlightRecorder {
     }
 
     private writeFlightPlanFor(flight: Flight) {
+        let flattenedScenarios: Scenario[] = [];
+        flight.flightPlan.scenariosByContexts.forEach((scenarios) => flattenedScenarios = [...scenarios]);
+
         const flightPlanSerialized: any = {
-            scenarios: flight.flightPlan.scenarios.map((scenario: Scenario) => {
+            scenarios: flattenedScenarios.map((scenario: Scenario) => {
                 return {
                     given: scenario.given?.name ?? 'No Context',
                     scenario: scenario.name

@@ -13,15 +13,29 @@ export class FlightControl implements IFlightControl {
     async takeOffWith(flightPlan: FlightPlan): Promise<Flight> {
         const flight = new Flight(flightPlan);
 
-        for (const context of flightPlan.scenarioContexts) {
+        for (const [context, scenarios] of flightPlan.scenariosByContexts) {
             await context.prepare();
         }
 
         this._flightRecorder.recordFor(flight);
 
-        for (const context of flightPlan.scenarioContexts) {
+        for (const [context, scenarios] of flightPlan.scenariosByContexts) {
             for (const microservice of context.microservices.values()) {
                 await microservice.start();
+            }
+
+            for (const scenario of scenarios) {
+                this._flightRecorder.setCurrentScenario(scenario);
+                await scenario.when();
+                await scenario.then();
+            }
+
+            for (const microservice of context.microservices.values()) {
+                await microservice.evaluateRules();
+            }
+
+            for (const microservice of context.microservices.values()) {
+                await microservice.kill();
             }
         }
 

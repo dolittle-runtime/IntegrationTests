@@ -3,7 +3,9 @@
 
 import { IContainer } from './IContainer';
 import { Guid } from '@dolittle/rudiments';
+import { EventLogRuleSetContainerBuilder } from './rules/EventLogRuleSetContainerBuilder';
 import { IMicroserviceActions } from './IMicroserviceActions';
+import { RuleSetContainerEvaluation } from '@dolittle/rules';
 
 export class Microservice {
     readonly name: string;
@@ -12,12 +14,16 @@ export class Microservice {
     readonly eventStoreStorage: IContainer;
     readonly uniqueIdentifier: Guid;
 
+    readonly event_log: EventLogRuleSetContainerBuilder;
+
     constructor(uniqueIdentifier: Guid, name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
         this.uniqueIdentifier = uniqueIdentifier;
         this.name = name;
         this.head = head;
         this.runtime = runtime;
         this.eventStoreStorage = eventStoreStorage;
+
+        this.event_log = new EventLogRuleSetContainerBuilder();
     }
 
     async start() {
@@ -45,5 +51,11 @@ export class Microservice {
     }
 
     async clearEventStore() {
+    }
+
+    async evaluateRules() {
+        const eventLogRuleSetContainer = this.event_log.build();
+        const eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
+        await eventLogEvaluation.evaluate(this);
     }
 }

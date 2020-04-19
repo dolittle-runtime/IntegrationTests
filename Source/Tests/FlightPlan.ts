@@ -6,12 +6,10 @@ import { ScenarioContext } from 'ScenarioContext';
 
 export class FlightPlan {
     readonly outputPath: string;
-    readonly scenarioContexts: ScenarioContext[];
-    readonly scenarios: Scenario[];
+    readonly scenariosByContexts: Map<ScenarioContext, Scenario[]>;
 
-    constructor(outputPath: string, scenarioContexts: ScenarioContext[], scenarios: Scenario[]) {
+    constructor(outputPath: string, scenariosByContexts: Map<ScenarioContext, Scenario[]>) {
         this.outputPath = outputPath;
-        this.scenarioContexts = scenarioContexts;
-        this.scenarios = scenarios;
+        this.scenariosByContexts = scenariosByContexts;
     }
 }

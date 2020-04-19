@@ -26,6 +26,7 @@ export class FlightPlanner implements IFlightPlanner {
 
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
         const scenarioContexts: Map<Constructor<IGiven>, ScenarioContext> = new Map();
+        const scenariosByContexts: Map<ScenarioContext, Scenario[]> = new Map();
 
         for (const scenarioConstructor of scenarios) {
             const scenario = new scenarioConstructor() as Scenario;
@@ -46,11 +47,13 @@ export class FlightPlanner implements IFlightPlanner {
             }
 
             scenariosByGiven.get(givenConstructor)?.push(scenario);
+            if (!scenariosByContexts.has(scenarioContext)) {
+                scenariosByContexts.set(scenarioContext, []);
+            }
+
+            scenariosByContexts.get(scenarioContext)?.push(scenario);
         }
 
-        let flattenedScenarios: Scenario[] = [];
-        scenariosByGiven.forEach(_ => flattenedScenarios = [..._]);
-
-        return new FlightPlan(workingDirectory, [...scenarioContexts.values()], flattenedScenarios);
+        return new FlightPlan(workingDirectory, scenariosByContexts);
     }
 }
