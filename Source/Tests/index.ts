@@ -19,14 +19,14 @@ export class single_event_committed extends Scenario {
 
     async when_committing_a_single_event() {
         return [
-            //this.wait_for_2_seconds,
+            this.wait_for_two_seconds,
             this.stop_the_runtime,
             this.send_another_Event,
             this.start_the_runtime
         ];
     }
 
-    wait_for_2_seconds = async () => await asyncTimeout(2000);
+    wait_for_two_seconds = async () => await asyncTimeout(2000);
     stop_the_runtime = async () => await this.context?.microservices.get('main')?.runtime.stop();
     send_another_Event = async () => { };
     start_the_runtime = async () => { };

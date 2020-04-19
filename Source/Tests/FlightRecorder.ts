@@ -19,6 +19,7 @@ import { ScenarioResult } from './ScenarioResult';
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenario: Scenario | undefined;
     private _colorRemoverRegEx: RegExp;
+    private _scenarioResultsPerMicroservice: Map<Microservice, ScenarioResult[]> = new Map();
 
 
     constructor(private _serializer: ISerializer) {
@@ -32,11 +33,23 @@ export class FlightRecorder implements IFlightRecorder {
         this.hookUpLogOutputFor(flight);
     }
 
+    conclude(flight: Flight) {
+        const result: any = {};
+
+        for (const [microservice, results] of this._scenarioResultsPerMicroservice) {
+            result[microservice.name] = results;
+        }
+
+        const json = this._serializer.toJSON(result);
+        const resultFilePath = path.join(flight.flightPlan.outputPath, 'results.json');
+        fs.writeFileSync(resultFilePath, json);
+    }
+
     setCurrentScenario(scenario: Scenario): void {
         this._currentScenario = scenario;
     }
 
-    reportResultFor(flight: Flight, scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation) {
+    async reportResultFor(flight: Flight, scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation) {
         const failedRules: FailedRule[] = [];
         for (const brokenRule of evaluation.brokenRules) {
             const subject = brokenRule.subject as ScenarioSubject;
@@ -48,6 +61,16 @@ export class FlightRecorder implements IFlightRecorder {
         const resultFilePath = path.join(microservicePath, 'result.json');
         const json = this._serializer.toJSON(scenarioResult);
         fs.writeFileSync(resultFilePath, json);
+
+        if (!this._scenarioResultsPerMicroservice.has(microservice)) {
+            this._scenarioResultsPerMicroservice.set(microservice, []);
+        }
+        this._scenarioResultsPerMicroservice.get(microservice)?.push(scenarioResult);
+
+        const currentScenarioPath = this.ensureCurrentScenarioPath(flight, microservice);
+        const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
+        const metrics = await microservice.actions.getRuntimeMetrics();
+        fs.writeFileSync(metricsFilePath, metrics);
     }
 
     private writeMicroservicesConfigurations(flight: Flight) {

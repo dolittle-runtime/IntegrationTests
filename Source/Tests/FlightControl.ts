@@ -38,12 +38,16 @@ export class FlightControl implements IFlightControl {
                 await this.performOnMicroservice(context, async (microservice) => {
                     await microservice.endEvaluation();
                     if (microservice.eventLogEvaluation) {
-                        this._flightRecorder.reportResultFor(flight, scenario, microservice, microservice.eventLogEvaluation);
+                        await this._flightRecorder.reportResultFor(flight, scenario, microservice, microservice.eventLogEvaluation);
                     }
                 });
             }
 
+            this._flightRecorder.conclude(flight);
+
             await this.performOnMicroservice(context, async (microservice) => await microservice.kill());
+
+            console.log('Killed?');
         }
 
         return flight;

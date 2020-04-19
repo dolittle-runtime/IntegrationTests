@@ -30,6 +30,7 @@ export class Microservice {
     }
 
     async start() {
+        console.log(`Start containers for '${this.name}'`);
         await this.eventStoreStorage.start();
         await this.runtime.start();
         await this.head.start();
@@ -48,6 +49,7 @@ export class Microservice {
     }
 
     async kill() {
+        console.log(`Kill containers for '${this.name}'`);
         await this.head.kill();
         await this.runtime.kill();
         await this.eventStoreStorage.kill();

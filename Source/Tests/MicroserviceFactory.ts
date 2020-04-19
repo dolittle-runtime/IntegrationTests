@@ -44,7 +44,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             RuntimeConfig,
             [],
             [{
-                host: path.join(workingDirectory, 'data'),
+                host: path.join(workingDirectory, name, 'data'),
                 container: '/data'
             }]
         );
