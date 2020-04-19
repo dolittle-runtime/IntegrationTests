@@ -1,11 +1,13 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IContainer } from './IContainer';
 import { Guid } from '@dolittle/rudiments';
+import { RuleSetContainerEvaluation } from '@dolittle/rules';
+
+import { IContainer } from './IContainer';
 import { EventLogRuleSetContainerBuilder } from './rules/EventLogRuleSetContainerBuilder';
 import { IMicroserviceActions } from './IMicroserviceActions';
-import { RuleSetContainerEvaluation } from '@dolittle/rules';
+import { MicroserviceActions } from './MicroserviceActions';
 
 export class Microservice {
     readonly name: string;
@@ -16,14 +18,16 @@ export class Microservice {
 
     readonly event_log: EventLogRuleSetContainerBuilder;
 
+    readonly actions: IMicroserviceActions;
+
     constructor(uniqueIdentifier: Guid, name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
         this.uniqueIdentifier = uniqueIdentifier;
         this.name = name;
         this.head = head;
         this.runtime = runtime;
         this.eventStoreStorage = eventStoreStorage;
-
-        this.event_log = new EventLogRuleSetContainerBuilder();
+        this.actions = new MicroserviceActions(this);
+        this.event_log = new EventLogRuleSetContainerBuilder(this);
     }
 
     async start() {

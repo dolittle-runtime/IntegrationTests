@@ -6,6 +6,7 @@ import { IGiven } from './IGiven';
 import { Aviator } from './Aviator';
 import { ScenarioContext } from './ScenarioContext';
 import { Guid } from '@dolittle/rudiments';
+import { EventLogRuleSetContainerBuilder } from './rules/EventLogRuleSetContainerBuilder';
 
 export class a_single_microservice implements IGiven {
     async describe(context: ScenarioContext) {
@@ -16,10 +17,9 @@ export class a_single_microservice implements IGiven {
 export class single_event_committed extends Scenario {
     given = a_single_microservice;
 
-
     async when_committing_a_single_event() {
         return [
-            this.wait_for_2_seconds,
+            //this.wait_for_2_seconds,
             this.stop_the_runtime,
             this.send_another_Event,
             this.start_the_runtime
@@ -38,20 +38,13 @@ export class single_event_committed extends Scenario {
 
 
 (async () => {
-
-    const scenario = new single_event_committed();
+    /*const scenario = new single_event_committed();
     await scenario.when();
-    await scenario.then();
-
-    let i = 0;
-    i += 1;
-
-    /*
+    await scenario.then();*/
     const aviator = Aviator.getFor('dotnet');
     const flight = aviator.performFlightWith(
         single_event_committed
     );
-    */
 })();
 
 

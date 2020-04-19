@@ -36,6 +36,7 @@
         "get-port": "^5.1.1",
         "handlebars": "^4.7.6",
         "node-fetch": "^2.6.0",
+        "stack-trace": "^0.0.10",
         "testcontainers": "^2.7.0"
     }
 }
