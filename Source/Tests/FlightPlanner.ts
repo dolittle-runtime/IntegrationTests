@@ -21,7 +21,7 @@ export class FlightPlanner implements IFlightPlanner {
     planFor(target: string, ...scenarios: Constructor<Scenario>[]): FlightPlan {
         const workingDirectory = path.join(process.cwd(), 'tt');
         if (!fs.existsSync(workingDirectory)) {
-            fs.mkdirSync(workingDirectory);
+            fs.mkdirSync(workingDirectory, { recursive: true });
         }
 
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
