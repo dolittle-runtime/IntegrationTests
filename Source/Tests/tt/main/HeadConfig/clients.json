@@ -1,0 +1,10 @@
+{
+    "public": {
+        "host": "runtime-bbbac067",
+        "port": 50052
+    },
+    "private": {
+        "host": "runtime-bbbac067",
+        "port": 50053
+    }
+}

@@ -63,8 +63,8 @@ export class FlightRecorder implements IFlightRecorder {
             failedRules.push(new FailedRule(brokenRule.rule.constructor.name, message, subject.then));
         }
         const scenarioResult = new ScenarioResult(scenario.name, scenario.given?.name ?? '[unknown]', failedRules);
-        const microservicePath = this.ensureMicroservicePath(flight, microservice, scenario.contextName);
-        const resultFilePath = path.join(microservicePath, 'result.json');
+        const currentScenarioPathPath = this.ensureCurrentScenarioPath(flight, microservice, scenario.contextName);
+        const resultFilePath = path.join(currentScenarioPathPath, 'result.json');
         const json = this._serializer.toJSON(scenarioResult);
         fs.writeFileSync(resultFilePath, json);
 

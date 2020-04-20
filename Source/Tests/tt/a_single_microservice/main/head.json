@@ -1,0 +1,27 @@
+{
+    "name": "head-bbbac067",
+    "friendlyName": "head",
+    "image": "dolittle/integrationtests-head-dotnet",
+    "tag": "latest",
+    "exposedPorts": [
+        5000
+    ],
+    "networkName": "main-bbbac067-d673-e643-bd4f-aee2914f97cd-network",
+    "mounts": [
+        {
+            "host": "/Users/einari/Projects/Dolittle/Runtime/IntegrationTests/Source/Tests/tt/main/HeadConfig/resources.json",
+            "container": "/app/.dolittle/resources.json"
+        },
+        {
+            "host": "/Users/einari/Projects/Dolittle/Runtime/IntegrationTests/Source/Tests/tt/main/HeadConfig/tenants.json",
+            "container": "/app/.dolittle/tenants.json"
+        },
+        {
+            "host": "/Users/einari/Projects/Dolittle/Runtime/IntegrationTests/Source/Tests/tt/main/HeadConfig/clients.json",
+            "container": "/app/.dolittle/clients.json"
+        }
+    ],
+    "boundPorts": {
+        "5000": 64561
+    }
+}

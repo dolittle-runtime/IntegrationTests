@@ -1,0 +1,8 @@
+{
+    "scenarios": [
+        {
+            "given": "a_single_microservice",
+            "scenario": "single_events_committed"
+        }
+    ]
+}

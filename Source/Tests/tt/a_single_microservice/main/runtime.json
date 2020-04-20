@@ -1,0 +1,25 @@
+{
+    "name": "runtime-bbbac067",
+    "friendlyName": "runtime",
+    "image": "dolittle/runtime",
+    "tag": "5.0.0-alpha.15",
+    "exposedPorts": [
+        81,
+        9700,
+        50052,
+        50053
+    ],
+    "networkName": "main-bbbac067-d673-e643-bd4f-aee2914f97cd-network",
+    "mounts": [
+        {
+            "host": "/Users/einari/Projects/Dolittle/Runtime/IntegrationTests/Source/Tests/tt/main/RuntimeConfig/resources.json",
+            "container": "/app/.dolittle/resources.json"
+        }
+    ],
+    "boundPorts": {
+        "81": 64562,
+        "9700": 64563,
+        "50052": 64564,
+        "50053": 64565
+    }
+}
