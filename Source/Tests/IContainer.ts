@@ -31,6 +31,18 @@ export interface IContainer {
     stop(): Promise<any>;
 
     /**
+     * Pauses the instance.
+     * @returns {Promise<void>}
+     */
+    pause(): Promise<any>;
+
+    /**
+     * Resumes a paused instance.
+     * @returns {Promise<void>}
+     */
+    resume(): Promise<any>;
+
+    /**
      * Kill the instance.
      * @returns {Promise<void>}
      */

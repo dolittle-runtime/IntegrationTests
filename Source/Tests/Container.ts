@@ -75,6 +75,31 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
+    async pause() {
+        if (!this._container) {
+            return;
+        }
+        console.log(`Pausing '${this.options.friendlyName}'`);
+        const state = await this._container.inspect();
+        if (state.State.Running) {
+            this._container.stop();
+        }
+    }
+
+    /** @inheritdoc */
+    async resume() {
+        if (!this._container) {
+            return;
+        }
+        console.log(`Resume '${this.options.friendlyName}'`);
+        const state = await this._container.inspect();
+        if (state.State.Running) {
+            this._container.stop();
+        }
+    }
+
+
+    /** @inheritdoc */
     async kill() {
         if (!this._container) {
             return;
