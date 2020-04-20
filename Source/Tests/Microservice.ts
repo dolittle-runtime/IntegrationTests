@@ -61,7 +61,6 @@ export class Microservice {
     async kill() {
         console.log(`Kill containers for '${this.name}'`);
 
-
         await this.head.kill();
         await this.runtime.kill();
         await this.eventStoreStorage.kill();
