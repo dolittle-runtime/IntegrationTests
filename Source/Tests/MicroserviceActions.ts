@@ -5,33 +5,48 @@ import fetch from 'node-fetch';
 
 import { Microservice } from './Microservice';
 import { IMicroserviceActions } from './IMicroserviceActions';
+import { Guid } from '@dolittle/rudiments';
+
+/*
+Should not be allowed to mix interfaces for ICanHandleEvents and ICanHandleExternalEvents in the same
+implementation
+*/
 
 export class MicroserviceActions implements IMicroserviceActions {
     constructor(private _microservice: Microservice) {
     }
 
     async checkStatus(): Promise<string> {
-        const url = `${this.getHeadBaseUrl()}/api/Events`;
-        const response = await fetch(url);
-        const result = await response.text();
-        return result;
+        try {
+            const url = `${this.getHeadBaseUrl()}/api/Events`;
+            const response = await fetch(url);
+            const result = await response.text();
+            return result;
+        } catch (ex) {
+            return '';
+        }
     }
 
-    async sendEvent(artifactId: import("@dolittle/rudiments").Guid, content: any): Promise<boolean> {
-        const url = `${this.getHeadBaseUrl()}/api/Events/Single`;
-        const response = await fetch(url, {
-            method: 'post',
-            body: JSON.stringify(content),
-            headers: { 'Content-Type': 'application/json' }
-        });
-        return response.ok;
+    async commitEvent(artifactId: Guid, content: any): Promise<void> {
+        try {
+            const url = `${this.getHeadBaseUrl()}/api/Events/Single`;
+            await fetch(url, {
+                method: 'post',
+                body: JSON.stringify(content),
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (ex) { }
     }
 
     async getRuntimeMetrics(): Promise<string> {
-        const url = `http://localhost:${this._microservice.runtime.boundPorts.get(9700)}/metrics`;
-        const response = await fetch(url);
-        const result = await response.text();
-        return result;
+        try {
+            const url = `http://localhost:${this._microservice.runtime.boundPorts.get(9700)}/metrics`;
+            const response = await fetch(url);
+            const result = await response.text();
+            return result;
+        } catch (ex) {
+            return '';
+        }
     }
 
     private getHeadBaseUrl() {

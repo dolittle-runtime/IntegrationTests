@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { RuleBuilder, RuleWithSubjectProvider, IRule } from '@dolittle/rules';
-import { Constructor } from 'Constructor';
 import { EventLogSubjectProvider } from './EventLogSubjectProvider';
 import { Microservice } from '../Microservice';
 
@@ -12,7 +11,7 @@ export class EventLogRuleBuilder extends RuleBuilder {
     private _then: string;
     private _scenario: string;
 
-    constructor(private _microservice: Microservice, private _rule: Constructor<IRule>) {
+    constructor(private _microservice: Microservice, private _rule: IRule) {
         super();
 
         this._then = '[unknown]';
@@ -29,7 +28,6 @@ export class EventLogRuleBuilder extends RuleBuilder {
     }
 
     build(): RuleWithSubjectProvider {
-        const rule = new this._rule();
-        return new RuleWithSubjectProvider(rule, new EventLogSubjectProvider(this._microservice, this._scenario, this._then));
+        return new RuleWithSubjectProvider(this._rule, new EventLogSubjectProvider(this._microservice, this._scenario, this._then));
     }
 }

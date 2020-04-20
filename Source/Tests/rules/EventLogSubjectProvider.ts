@@ -3,7 +3,7 @@
 
 import { ISubjectProvider, IRuleContext } from '@dolittle/rules';
 import { Microservice } from '../Microservice';
-import { EventLogSubject } from './EventLogSubject';
+import { EventLogQuerySubject } from './EventLogSubject';
 
 export class EventLogSubjectProvider implements ISubjectProvider {
     constructor(
@@ -13,6 +13,6 @@ export class EventLogSubjectProvider implements ISubjectProvider {
     }
 
     provide(ruleContext: IRuleContext) {
-        return new EventLogSubject(this._microservice, this._scenario, this._then);
+        return new EventLogQuerySubject(this._microservice, this._scenario, this._then);
     }
 }

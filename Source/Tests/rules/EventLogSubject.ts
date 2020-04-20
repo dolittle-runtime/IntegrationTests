@@ -4,7 +4,7 @@
 import { Microservice } from '../Microservice';
 import { ScenarioSubject } from './ScenarioSubject';
 
-export class EventLogSubject extends ScenarioSubject {
+export class EventLogQuerySubject extends ScenarioSubject {
     readonly microservice: Microservice;
 
     constructor(microservice: Microservice, scenario: string, then: string) {

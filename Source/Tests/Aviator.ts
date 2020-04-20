@@ -32,7 +32,7 @@ export class Aviator {
         this.containerFactory = new ContainerEnvironment();
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.serializer);
         this.flightRecorder = new FlightRecorder(this.serializer);
-        this.flightControl = new FlightControl(this.flightRecorder);
+        this.flightControl = new FlightControl(this.flightRecorder, this.microserviceFactory);
         this.flightPlanner = new FlightPlanner(this.microserviceFactory);
     }
 

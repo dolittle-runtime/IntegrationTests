@@ -38,6 +38,8 @@ export class Scenario {
 
     async when() {
         this.throwIfMissingWhenMethod();
+
+        console.log(` ${this._whenDescription?.name}`);
         const result = await (this._whenMethod as Function).apply(this);
         if (result) {
             this.throwIfResultNotArray(result);
@@ -49,7 +51,9 @@ export class Scenario {
             }
 
             for (const item of resultAsArray) {
-                await (item as Function).apply(this);
+                const itemAsFunction = item as Function;
+                console.log(`   and ${item.name}`);
+                await itemAsFunction.apply(this);
             }
         }
     }

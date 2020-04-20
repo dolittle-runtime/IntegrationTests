@@ -25,8 +25,28 @@ export class ContainerEnvironment implements IContainerEnvironment {
         });
     }
 
-    async removeNetwork(name: string) {
+    async removeNetwork(name: string): Promise<void> {
         const network = await this._docker.getNetwork(name);
-        await network.remove();
+
+        const attempt = async (): Promise<Boolean> => {
+            const info = await network.inspect();
+            return Object.keys(info.Containers).length === 0;
+        };
+
+        let attempts = 5;
+        return new Promise((resolve) => {
+            const checkResultAndResolve = (result: Boolean) => {
+                attempts -= 1;
+                if (attempts <= 0) {
+                    network.remove().then(resolve);
+                }
+                if (result) {
+                    network.remove().then(resolve);
+                } else {
+                    setTimeout(() => attempt().then(checkResultAndResolve), 200);
+                }
+            };
+            attempt().then(checkResultAndResolve);
+        });
     }
 }

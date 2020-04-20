@@ -10,6 +10,8 @@ import { IMicroserviceActions } from './IMicroserviceActions';
 import { MicroserviceActions } from './MicroserviceActions';
 import { LogMessageWaitStrategy } from './LogMessageWaitStrategy';
 
+import { MongoClient, Db, FilterQuery } from 'mongodb';
+
 export class Microservice {
     readonly name: string;
     readonly head: IContainer;
@@ -58,6 +60,8 @@ export class Microservice {
 
     async kill() {
         console.log(`Kill containers for '${this.name}'`);
+
+
         await this.head.kill();
         await this.runtime.kill();
         await this.eventStoreStorage.kill();
@@ -75,6 +79,24 @@ export class Microservice {
             const eventLogRuleSetContainer = this.event_log.build();
             this.eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
             await this.eventLogEvaluation.evaluate(this);
+        }
+    }
+
+    async getMongoClientForEventStoreStorage() {
+        const url = `mongodb://localhost:${this.eventStoreStorage.boundPorts.get(27017)}`;
+        const client = await MongoClient.connect(url, { useUnifiedTopology: true });
+        return client;
+    }
+
+    async findDocumentsInEventStore(collectionName: string, filter: FilterQuery<any>): Promise<any[]> {
+        try {
+            const client = await this.getMongoClientForEventStoreStorage();
+            const collection = client.db('event_store').collection(collectionName);
+            const result = await collection.find(filter).toArray();
+            await client.close();
+            return result;
+        } catch (ex) {
+            return [];
         }
     }
 }

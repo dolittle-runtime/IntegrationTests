@@ -16,9 +16,9 @@ export class EventLogRuleSetContainerBuilder extends RuleSetContainerBuilder {
         this.addRuleSetBuilder(this._ruleSetBuilder);
     }
 
-    should_contain = () => this.addRuleBuilderFor(EventWithContentShouldBeInEventLog);
+    should_contain = (...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInEventLog(events));
 
-    private addRuleBuilderFor(rule: Constructor<IRule>) {
-        this._ruleSetBuilder.addRuleBuilder(new EventLogRuleBuilder(this._microservice, EventWithContentShouldBeInEventLog));
+    private addRuleBuilderFor(rule: IRule) {
+        this._ruleSetBuilder.addRuleBuilder(new EventLogRuleBuilder(this._microservice, rule));
     }
 }
