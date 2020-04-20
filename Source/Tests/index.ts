@@ -13,7 +13,7 @@ export class a_single_microservice implements IGiven {
     }
 }
 
-export class single_event_committed extends Scenario {
+export class single_events_committed extends Scenario {
     given = a_single_microservice;
 
     readonly first_event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
@@ -22,16 +22,16 @@ export class single_event_committed extends Scenario {
     async when_committing_a_single_event() {
         await this.context?.microservices.get('main')?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), this.first_event_committed);
         return [
-            //this.stop_the_runtime,
-            //this.send_another_Event
-            //this.start_the_runtime,
-            //this.wait_for_two_seconds
+            this.pause_the_head,
+            this.wait_for_two_seconds,
+            this.resume_the_head,
+            this.commit_another_event
         ];
     }
 
-    stop_the_runtime = async () => await this.context?.microservices.get('main')?.runtime.stop();
-    send_another_Event = async () => await this.context?.microservices.get('main')?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), this.second_event_committed);
-    start_the_runtime = async () => await this.context?.microservices.get('main')?.runtime.start();
+    pause_the_head = async () => await this.context?.microservices.get('main')?.head.pause();
+    commit_another_event = async () => await this.context?.microservices.get('main')?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), this.second_event_committed);
+    resume_the_head = async () => await this.context?.microservices.get('main')?.head.resume();
     wait_for_two_seconds = async () => await asyncTimeout(2000);
 
     then_first_event_should_be_in_event_log = () => this.context?.microservices.get('main')?.event_log?.should_contain(this.first_event_committed);
@@ -42,6 +42,6 @@ export class single_event_committed extends Scenario {
 (async () => {
     const aviator = Aviator.getFor('dotnet');
     const flight = aviator.performFlightWith(
-        single_event_committed
+        single_events_committed
     );
 })();
