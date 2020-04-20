@@ -140,7 +140,7 @@ export class FlightRecorder implements IFlightRecorder {
         const microservicePath = this.ensureMicroservicePath(flight, microservice);
         const currentScenarioPath = path.join(microservicePath, this._currentScenario?.name ?? 'NoScenario');
         if (!fs.existsSync(currentScenarioPath)) {
-            fs.mkdirSync(currentScenarioPath);
+            fs.mkdirSync(currentScenarioPath, { recursive: true });
         }
         return currentScenarioPath;
     }
@@ -148,7 +148,7 @@ export class FlightRecorder implements IFlightRecorder {
     private ensureMicroservicePath(flight: Flight, microservice: Microservice): string {
         const microservicePath = path.join(flight.flightPlan.outputPath, microservice.name);
         if (!fs.existsSync(microservicePath)) {
-            fs.mkdirSync(microservicePath);
+            fs.mkdirSync(microservicePath, { recursive: true });
         }
         return microservicePath;
     }
