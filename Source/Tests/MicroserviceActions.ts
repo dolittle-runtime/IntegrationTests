@@ -19,7 +19,7 @@ export class MicroserviceActions implements IMicroserviceActions {
     async checkStatus(): Promise<string> {
         try {
             const url = `${this.getHeadBaseUrl()}/api/Events`;
-            const response = await fetch(url);
+            const response = await fetch(url, { timeout: 1000 });
             const result = await response.text();
             return result;
         } catch (ex) {
