@@ -27,13 +27,14 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         const networkName = this.getNetworkNameFor(microserviceIdentifier, name);
         await this._containerEnvironment.createNetwork(networkName);
 
-        const shortIdentifier = microserviceIdentifier.toString().substr(0,8);
+        const shortIdentifier = microserviceIdentifier.toString().substr(0, 8);
 
         const mongoHost = `mongo-${shortIdentifier}`;
         const runtimeHost = `runtime-${shortIdentifier}`;
         const headHost = `head-${shortIdentifier}`;
 
         const eventStoreStorage = await this.configureContainer(
+            name,
             workingDirectory,
             'mongo',
             mongoHost,
@@ -50,6 +51,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         );
 
         const head = await this.configureContainer(
+            name,
             workingDirectory,
             'head',
             headHost,
@@ -62,6 +64,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         );
 
         const runtime = await this.configureContainer(
+            name,
             workingDirectory,
             'runtime',
             runtimeHost,
@@ -86,8 +89,8 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             privatePort: 50053
         };
 
-        this.generateConfigurationForRuntime(workingDirectory, context);
-        this.generateConfigurationForHead(workingDirectory, context);
+        this.generateConfigurationForRuntime(name, workingDirectory, context);
+        this.generateConfigurationForHead(name, workingDirectory, context);
 
         const microservice = new Microservice(microserviceIdentifier, name, head, runtime, eventStoreStorage);
         return microservice;
@@ -98,6 +101,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
     }
 
     async configureContainer(
+        microservice: string,
         workingDirectory: string,
         name: string,
         uniqueName: string,
@@ -118,7 +122,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             networkName: networkName,
             mounts: configurationFiles.map(file => {
                 return {
-                    host: this.getHostPathFor(configurationTarget, file, workingDirectory),
+                    host: this.getAndEnsureHostPathFor(microservice, configurationTarget, file, workingDirectory),
                     container: `/app/.dolittle/${file}`
                 };
             })
@@ -132,37 +136,39 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         return container;
     }
 
-    private generateConfigurationForRuntime(workingDirectory: string, context: any) {
-        this.generateFile(RuntimeConfig, 'resources.json', workingDirectory, context);
+    private generateConfigurationForRuntime(microservice: string, workingDirectory: string, context: any) {
+        this.generateFile(microservice, RuntimeConfig, 'resources.json', workingDirectory, context);
     }
 
-    private generateConfigurationForHead(workingDirectory: string, context: any) {
-        this.generateFile(HeadConfig, 'resources.json', workingDirectory, context);
-        this.generateFile(HeadConfig, 'tenants.json', workingDirectory, context);
-        this.generateFile(HeadConfig, 'clients.json', workingDirectory, context);
+    private generateConfigurationForHead(microservice: string, workingDirectory: string, context: any) {
+        this.generateFile(microservice, HeadConfig, 'resources.json', workingDirectory, context);
+        this.generateFile(microservice, HeadConfig, 'tenants.json', workingDirectory, context);
+        this.generateFile(microservice, HeadConfig, 'clients.json', workingDirectory, context);
     }
 
-    private generateFile(target: string, file: string, workingDirectory: string, context: any) {
-        const source = this.getHostPathFor(target, file);
-        const destinationDirectory = path.join(workingDirectory, target);
-        const destination = path.join(destinationDirectory, file);
+    private generateFile(microservice: string, target: string, file: string, workingDirectory: string, context: any) {
+        const source = this.getSourcePathFor(target, file);
         const content = fs.readFileSync(source, 'utf8').toString();
         const template = Handlebars.compile(content);
         const result = template(context);
-
-        if (!fs.existsSync(destinationDirectory)) {
-            fs.mkdirSync(destinationDirectory);
-        }
-
+        const destination = this.getAndEnsureHostPathFor(microservice, target, file, workingDirectory);
         fs.writeFileSync(destination, result);
     }
 
-    private getHostPathFor(target: string, file: string, sourceDirectory?: string) {
-        if (!sourceDirectory) {
-            sourceDirectory = process.cwd();
-        }
-        return path.join(sourceDirectory, target, file);
+    private getSourcePathFor(target: string, file: string) {
+        const sourcePath = path.join(process.cwd(), target);
+        return path.join(sourcePath, file);
     }
+
+    private getAndEnsureHostPathFor(microservice: string, target: string, file: string, workingDirectory: string) {
+        const hostPath = path.join(workingDirectory, microservice, target);
+        if (!fs.existsSync(hostPath)) {
+            fs.mkdirSync(hostPath, { recursive: true });
+        }
+
+        return path.join(hostPath, file);
+    }
+
 
     private getNetworkNameFor(microserviceIdentifier: Guid, microserviceName: string): string {
         return `${microserviceName}-${microserviceIdentifier.toString()}-network`;
