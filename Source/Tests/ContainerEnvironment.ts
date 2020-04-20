@@ -31,7 +31,7 @@ export class ContainerEnvironment implements IContainerEnvironment {
         const network = await this._docker.getNetwork(name);
 
         try {
-            await retry({ times: 5, interval: 200 }, async (callback, results) => {
+            await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 const info = await network.inspect();
                 if (Object.keys(info.Containers).length !== 0) {
                     callback(new Error('Containers left'));
