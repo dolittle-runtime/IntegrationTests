@@ -24,6 +24,10 @@ export class Scenario {
         return this._context;
     }
 
+    get contextName(): string {
+        return this._context?.name ?? 'UnknownScenarioContext';
+    }
+
     get whenMethod(): Function | undefined {
         return this._whenMethod;
     }
