@@ -13,6 +13,8 @@ import { NoContext } from './NoContext';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { ScenarioContext } from './ScenarioContext';
 
+const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
+
 export class FlightPlanner implements IFlightPlanner {
 
     constructor(private _microserviceFactory: IMicroserviceFactory) {
@@ -20,7 +22,7 @@ export class FlightPlanner implements IFlightPlanner {
 
     planFor(target: string, ...scenarios: Constructor<Scenario>[]): FlightPlan {
         const currentDate = new Date();
-        const currentDateString = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()} ${currentDate.getHours()}_${currentDate.getMinutes()}_${currentDate.getSeconds()}`;
+        const currentDateString = `${currentDate.getFullYear()}-${zeroPad(currentDate.getMonth(), 2)}-${zeroPad(currentDate.getDate(), 2)} ${zeroPad(currentDate.getHours(), 2)}_${zeroPad(currentDate.getMinutes(), 2)}_${zeroPad(currentDate.getSeconds(), 2)}`;
         const workingDirectory = path.join(process.cwd(), 'results', currentDateString);
         if (!fs.existsSync(workingDirectory)) {
             fs.mkdirSync(workingDirectory, { recursive: true });
