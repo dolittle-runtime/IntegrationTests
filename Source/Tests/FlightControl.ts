@@ -34,6 +34,7 @@ export class FlightControl implements IFlightControl {
 
         console.log('Run through scenarios, context by context');
         for (const [context, scenarios] of flightPlan.scenariosByContexts) {
+            this._flightRecorder.setCurrentScenarioContext(context);
             await this.performOnMicroservice(context, async (microservice) => await microservice.start());
 
             for (const scenario of scenarios) {

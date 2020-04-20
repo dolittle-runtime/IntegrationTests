@@ -15,8 +15,10 @@ import { IContainer } from './IContainer';
 import { FailedRule } from './FailedRule';
 import { ScenarioSubject } from './rules/ScenarioSubject';
 import { ScenarioResult } from './ScenarioResult';
+import { ScenarioContext } from './ScenarioContext';
 
 export class FlightRecorder implements IFlightRecorder {
+    private _currentScenarioContext: ScenarioContext | undefined;
     private _currentScenario: Scenario | undefined;
     private _colorRemoverRegEx: RegExp;
     private _scenarioResultsPerMicroservice: Map<Microservice, ScenarioResult[]> = new Map();
@@ -45,6 +47,10 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
+    setCurrentScenarioContext(scenarioContext: ScenarioContext): void {
+        this._currentScenarioContext = scenarioContext;
+    }
+
     setCurrentScenario(scenario: Scenario): void {
         this._currentScenario = scenario;
     }
@@ -57,7 +63,7 @@ export class FlightRecorder implements IFlightRecorder {
             failedRules.push(new FailedRule(brokenRule.rule.constructor.name, message, subject.then));
         }
         const scenarioResult = new ScenarioResult(scenario.name, scenario.given?.name ?? '[unknown]', failedRules);
-        const microservicePath = this.ensureMicroservicePath(flight, microservice);
+        const microservicePath = this.ensureMicroservicePath(flight, microservice, scenario.contextName);
         const resultFilePath = path.join(microservicePath, 'result.json');
         const json = this._serializer.toJSON(scenarioResult);
         fs.writeFileSync(resultFilePath, json);
@@ -67,7 +73,7 @@ export class FlightRecorder implements IFlightRecorder {
         }
         this._scenarioResultsPerMicroservice.get(microservice)?.push(scenarioResult);
 
-        const currentScenarioPath = this.ensureCurrentScenarioPath(flight, microservice);
+        const currentScenarioPath = this.ensureCurrentScenarioPath(flight, microservice, scenario.contextName);
         const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
         const metrics = await microservice.actions.getRuntimeMetrics();
         fs.writeFileSync(metricsFilePath, metrics);
@@ -76,7 +82,7 @@ export class FlightRecorder implements IFlightRecorder {
     private writeMicroservicesConfigurations(flight: Flight) {
         for (const [context, scenarios] of flight.flightPlan.scenariosByContexts) {
             context.microservices.forEach(microservice => {
-                const microservicePath = this.ensureMicroservicePath(flight, microservice);
+                const microservicePath = this.ensureMicroservicePath(flight, microservice, context.name);
 
                 const writeOptionsFile = (container: IContainer) => {
                     const containerOptionsFile = path.join(microservicePath, `${container.options.friendlyName}.json`);
@@ -110,7 +116,7 @@ export class FlightRecorder implements IFlightRecorder {
         return (data: Buffer) => {
             const filtered = data.filter(_ => (_ === 0xa || _ === 0xd) || _ >= 0x20 && (_ < 0x80 || _ >= 0xa0));
 
-            const currentScenarioPath = this.ensureCurrentScenarioPath(flight, microservice);
+            const currentScenarioPath = this.ensureCurrentScenarioPath(flight, microservice, this._currentScenarioContext?.name ?? 'UnknownScenarioContext');
             const currentContainerPath = path.join(currentScenarioPath, `${container.options.friendlyName}.log`);
 
             fs.appendFileSync(currentContainerPath, filtered);
@@ -136,17 +142,17 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(outputFile, serialized);
     }
 
-    private ensureCurrentScenarioPath(flight: Flight, microservice: Microservice) {
-        const microservicePath = this.ensureMicroservicePath(flight, microservice);
-        const currentScenarioPath = path.join(microservicePath, this._currentScenario?.name ?? 'NoScenario');
+    private ensureCurrentScenarioPath(flight: Flight, microservice: Microservice, scenarioContext: string) {
+        const microservicePath = this.ensureMicroservicePath(flight, microservice, scenarioContext);
+        const currentScenarioPath = path.join(microservicePath, this._currentScenario?.name ?? '_init');
         if (!fs.existsSync(currentScenarioPath)) {
             fs.mkdirSync(currentScenarioPath, { recursive: true });
         }
         return currentScenarioPath;
     }
 
-    private ensureMicroservicePath(flight: Flight, microservice: Microservice): string {
-        const microservicePath = path.join(flight.flightPlan.outputPath, microservice.name);
+    private ensureMicroservicePath(flight: Flight, microservice: Microservice, scenarioContext: string): string {
+        const microservicePath = path.join(flight.flightPlan.outputPath, scenarioContext, microservice.name);
         if (!fs.existsSync(microservicePath)) {
             fs.mkdirSync(microservicePath, { recursive: true });
         }
