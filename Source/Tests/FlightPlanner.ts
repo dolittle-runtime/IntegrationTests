@@ -19,7 +19,9 @@ export class FlightPlanner implements IFlightPlanner {
     }
 
     planFor(target: string, ...scenarios: Constructor<Scenario>[]): FlightPlan {
-        const workingDirectory = path.join(process.cwd(), 'tt');
+        const currentDate = new Date();
+        const currentDateString = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()} ${currentDate.getHours()}_${currentDate.getMinutes()}_${currentDate.getSeconds()}`;
+        const workingDirectory = path.join(process.cwd(), 'results', currentDateString);
         if (!fs.existsSync(workingDirectory)) {
             fs.mkdirSync(workingDirectory, { recursive: true });
         }
