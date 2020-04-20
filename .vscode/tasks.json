@@ -94,7 +94,7 @@
         },
         {
             "type": "typescript",
-            "tsconfig": "Source/Tests/tsconfig.json",
+            "tsconfig": "Source/TheAviator/tsconfig.json",
             "problemMatcher": [
                 "$tsc"
             ],
@@ -102,7 +102,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "label": "tsc: build - Source/Tests/tsconfig.json"
+            "label": "tsc: build - Source/TheAviator/tsconfig.json"
         }
     ]
 }
