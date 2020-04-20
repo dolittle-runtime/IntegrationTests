@@ -33,7 +33,8 @@ export class MicroserviceActions implements IMicroserviceActions {
             await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(content),
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 10000
             });
         } catch (ex) { }
     }
@@ -41,7 +42,7 @@ export class MicroserviceActions implements IMicroserviceActions {
     async getRuntimeMetrics(): Promise<string> {
         try {
             const url = `http://localhost:${this._microservice.runtime.boundPorts.get(9700)}/metrics`;
-            const response = await fetch(url);
+            const response = await fetch(url, { timeout: 1000 });
             const result = await response.text();
             return result;
         } catch (ex) {
