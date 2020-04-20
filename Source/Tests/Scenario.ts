@@ -24,11 +24,11 @@ export class Scenario {
         return this._context;
     }
 
-    get whenMethod(): Function | undefined {
+    get whenMethod(): Function | undefined {
         return this._whenMethod;
     }
 
-    get whenDescription(): When | undefined {
+    get whenDescription(): When | undefined {
         return this._whenDescription;
     }
 
@@ -39,6 +39,11 @@ export class Scenario {
     async when() {
         this.throwIfMissingWhenMethod();
 
+        const proto = Object.getPrototypeOf(this);
+        const keys: string[] = [];
+        Object.getOwnPropertyNames(this).forEach(_ => keys.push(_));
+        Object.getOwnPropertyNames(proto).forEach(_ => keys.push(_));
+
         console.log(` ${this._whenDescription?.name}`);
         const result = await (this._whenMethod as Function).apply(this);
         if (result) {
@@ -47,12 +52,23 @@ export class Scenario {
             const resultAsArray = result as any[];
             for (const item of resultAsArray) {
                 this.throwIfWhenMethodResultContainsNonMethod(item);
-                this._whenDescription?.addAnds(item.name);
+
+                let andName = item.name;
+
+                if (!andName || andName === '') {
+                    const property = keys.filter(_ => (this as any)[_] === item);
+                    if (property.length === 1) {
+                        andName = property[0];
+                    }
+                }
+
+                item.actualName = andName;
+                this._whenDescription?.addAnds(andName);
             }
 
             for (const item of resultAsArray) {
                 const itemAsFunction = item as Function;
-                console.log(`   and ${item.name}`);
+                console.log(`   and ${item.actualName}`);
                 await itemAsFunction.apply(this);
             }
         }
