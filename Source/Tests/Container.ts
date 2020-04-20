@@ -82,8 +82,18 @@ export class Container implements IContainer {
         console.log(`Killing '${this.options.friendlyName}'`);
         try {
             const state = await this._container.inspect();
-            if (state.State.Running) {
+            try {
                 await this._container.kill();
+            } catch (kex) {
+            }
+
+            for (const mount of state.Mounts) {
+                if (mount.Name) {
+                    const volume = this._dockerClient.getVolume(mount.Name);
+                    if (volume) {
+                        await volume.remove();
+                    }
+                }
             }
 
             await this._container.remove();
