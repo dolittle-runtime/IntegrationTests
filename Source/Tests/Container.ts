@@ -55,52 +55,51 @@ export class Container implements IContainer {
             stream?.pipe(this.outputStream);
         });
 
-        for (const strategy of waitStrategies) {
-            try {
-                await strategy.wait(this);
-            } catch (ex) { }
-        }
+        await this.waitForStrategies(waitStrategies);
     }
 
     /** @inheritdoc */
-    async stop() {
+    async stop(...waitStrategies: IWaitStrategy[]) {
         if (!this._container) {
             return;
         }
         console.log(`Stopping '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
-            this._container.stop();
+            await this._container.stop();
+            await this.waitForStrategies(waitStrategies);
         }
     }
 
     /** @inheritdoc */
-    async pause() {
+    async pause(...waitStrategies: IWaitStrategy[]) {
         if (!this._container) {
             return;
         }
         console.log(`Pausing '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
-            this._container.stop();
+            await this._container.pause();
+            await this.waitForStrategies(waitStrategies);
         }
     }
 
     /** @inheritdoc */
-    async resume() {
+    async resume(...waitStrategies: IWaitStrategy[]) {
         if (!this._container) {
             return;
         }
         console.log(`Resume '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
-            this._container.stop();
+            await this._container.unpause();
+            await this.waitForStrategies(waitStrategies);
         }
     }
 
 
     /** @inheritdoc */
-    async kill() {
+    async kill(...waitStrategies: IWaitStrategy[]) {
         if (!this._container) {
             return;
         }
@@ -109,6 +108,7 @@ export class Container implements IContainer {
             const state = await this._container.inspect();
             try {
                 await this._container.kill();
+                await this.waitForStrategies(waitStrategies);
             } catch (kex) {
             }
 
@@ -127,12 +127,21 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
-    async restart() {
+    async restart(...waitStrategies: IWaitStrategy[]) {
         if (!this._container) {
             return;
         }
-        await this._container.stop();
-        await this._container.start();
+        await this._container.restart();
+        await this.waitForStrategies(waitStrategies);
+    }
+
+    private async waitForStrategies(waitStrategies: IWaitStrategy[]) {
+        for (const strategy of waitStrategies) {
+            try {
+                await strategy.wait(this);
+            }
+            catch (ex) { }
+        }
     }
 
 
@@ -153,14 +162,6 @@ export class Container implements IContainer {
                 NetworkMode: this.options.networkName ?? 'bridge'
             }
         };
-    }
-
-    private getVolumes() {
-        const volumes: any = {};
-        this.options.mounts?.forEach(mount => {
-            volumes[mount.container] = {};
-        });
-        return volumes;
     }
 
     private getBinds() {

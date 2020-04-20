@@ -28,29 +28,29 @@ export interface IContainer {
      * Stop the instance.
      * @returns {Promise<void>}
      */
-    stop(): Promise<any>;
+    stop(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Pauses the instance.
      * @returns {Promise<void>}
      */
-    pause(): Promise<any>;
+    pause(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Resumes a paused instance.
      * @returns {Promise<void>}
      */
-    resume(): Promise<any>;
+    resume(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Kill the instance.
      * @returns {Promise<void>}
      */
-    kill(): Promise<any>;
+    kill(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Restart the instance.
      * @returns {Promise<void>}
      */
-    restart(): Promise<void>;
+    restart(...waitStrategies: IWaitStrategy[]): Promise<void>;
 }
