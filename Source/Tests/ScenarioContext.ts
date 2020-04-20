@@ -19,9 +19,11 @@ export class ScenarioContext {
     private _tenants: Guid[] | undefined;
     private _microservicesToPrepare: MicroserviceForPreparation[] = [];
 
+    readonly name: string;
     readonly microservices: Map<string, Microservice>;
 
-    constructor(private _microserviceFactory: IMicroserviceFactory, private _workingDirectory: string, private _target: string) {
+    constructor(name: string, private _microserviceFactory: IMicroserviceFactory, private _workingDirectory: string, private _target: string) {
+        this.name = name;
         this.microservices = new Map();
     }
 
