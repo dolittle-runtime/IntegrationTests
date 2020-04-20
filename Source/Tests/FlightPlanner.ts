@@ -39,11 +39,11 @@ export class FlightPlanner implements IFlightPlanner {
             if (!scenariosByGiven.has(givenConstructor)) {
                 const given = new givenConstructor();
                 scenariosByGiven.set(givenConstructor, []);
-                scenarioContext = new ScenarioContext(this._microserviceFactory, workingDirectory, target);
+                scenarioContext = new ScenarioContext(givenConstructor.name, this._microserviceFactory, workingDirectory, target);
                 given.describe(scenarioContext);
                 scenarioContexts.set(givenConstructor, scenarioContext);
             } else {
-                scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContext(this._microserviceFactory, workingDirectory, target);
+                scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContext(givenConstructor.name, this._microserviceFactory, workingDirectory, target);
             }
 
             scenariosByGiven.get(givenConstructor)?.push(scenario);
