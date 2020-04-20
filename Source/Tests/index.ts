@@ -41,7 +41,7 @@ export class single_events_committed extends Scenario {
 
 (async () => {
     const aviator = Aviator.getFor('dotnet');
-    const flight = aviator.performFlightWith(
+    const flight = await aviator.performFlightWith(
         single_events_committed
     );
 })();
