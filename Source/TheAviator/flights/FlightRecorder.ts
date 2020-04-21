@@ -22,7 +22,7 @@ import { IFlightRecorder } from './IFlightRecorder';
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenario: Scenario;
     private _colorRemoverRegEx: RegExp;
-    private _scenarioResultsPerMicroservice: Map<Microservice, ScenarioResult[]> = new Map();
+    private _scenarioResultsPerContext: Map<ScenarioContextDefinition, ScenarioResult[]> = new Map();
 
     constructor(private _flight: Flight, private _serializer: ISerializer) {
         this._colorRemoverRegEx = /#[0-9a-f]{6}|#[0-9a-f]{3}/gi;
@@ -36,8 +36,8 @@ export class FlightRecorder implements IFlightRecorder {
     conclude() {
         const result: any = {};
 
-        for (const [microservice, results] of this._scenarioResultsPerMicroservice) {
-            result[microservice.configuration.name] = results;
+        for (const [context, results] of this._scenarioResultsPerContext) {
+            result[name] = results;
         }
 
         const json = this._serializer.toJSON(result);
@@ -58,15 +58,14 @@ export class FlightRecorder implements IFlightRecorder {
         const json = this._serializer.toJSON(scenarioResult);
         fs.writeFileSync(resultFilePath, json);
 
-        if (!this._scenarioResultsPerMicroservice.has(microservice)) {
-            this._scenarioResultsPerMicroservice.set(microservice, []);
+        if (scenario.context) {
+            if (!this._scenarioResultsPerContext.has(scenario.context.definition)) {
+                this._scenarioResultsPerContext.set(scenario.context.definition, []);
+            }
+            this._scenarioResultsPerContext.get(scenario.context.definition)?.push(scenarioResult);
         }
-        this._scenarioResultsPerMicroservice.get(microservice)?.push(scenarioResult);
 
-        const currentScenarioPath = this._flight.paths.forMicroservice(scenario, microservice);
-        const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
-        const metrics = await microservice.actions.getRuntimeMetrics();
-        fs.writeFileSync(metricsFilePath, metrics);
+        await this.writeMetricsForScenario(scenario, microservice);
     }
 
     writeConfigurationFilesFor(microservices: Microservice[]) {
@@ -100,6 +99,13 @@ export class FlightRecorder implements IFlightRecorder {
                 microservice.eventStoreStorage.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.eventStoreStorage));
             });
         }
+    }
+
+    private async writeMetricsForScenario(scenario: Scenario, microservice: Microservice) {
+        const currentScenarioPath = this._flight.paths.forMicroservice(scenario, microservice);
+        const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
+        const metrics = await microservice.actions.getRuntimeMetrics();
+        fs.writeFileSync(metricsFilePath, metrics);
     }
 
     private getOutputStreamWriterFor(microservice: Microservice, container: IContainer) {
