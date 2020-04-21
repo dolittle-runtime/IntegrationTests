@@ -17,6 +17,7 @@ export class MicroserviceConfiguration {
     runtime: RuntimeConfiguration;
     head: HeadConfiguration;
     mongoHost: string;
+    networkName: string;
 
     constructor(
         platform: string,
@@ -28,6 +29,8 @@ export class MicroserviceConfiguration {
         this.name = name;
         this.identifier = identifier.toString();
         this.shortIdentifier = this.identifier.substr(0, 8);
+
+        this.networkName = `${this.name}-${this.identifier}-network`;
 
         this.mongoHost = `mongo-${this.shortIdentifier}`;
         const runtimeHost = `runtime-${this.shortIdentifier}`;

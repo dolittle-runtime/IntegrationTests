@@ -5,8 +5,6 @@ import * as path from 'path';
 
 import { Guid } from '@dolittle/rudiments';
 
-import { ISerializer } from '../ISerializer';
-
 import { ContainerOptions, IContainer, IContainerEnvironment, Mount } from '../containers';
 
 import { Microservice } from './Microservice';
@@ -25,9 +23,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         const identifier = Guid.create();
         const configuration = new MicroserviceConfiguration(platform, name, identifier, tenants);
 
-        const networkName = this.getNetworkNameFor(identifier, name);
-        await this._containerEnvironment.createNetwork(networkName);
-
+        await this._containerEnvironment.createNetwork(configuration.networkName);
 
         const eventStoreStorage = await this.configureContainer(
             'mongo',
@@ -35,7 +31,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'dolittle/mongodb',
             'latest',
             [27017],
-            networkName,
+            configuration.networkName,
             [{
                 host: path.join(workingDirectory, name, 'data'),
                 container: '/data'
@@ -48,7 +44,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             `dolittle/integrationtests-head-${platform}`,
             'latest',
             [5000],
-            networkName,
+            configuration.networkName,
             this._configurationManager.generateForHead(configuration, workingDirectory)
         );
 
@@ -58,7 +54,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'dolittle/runtime',
             '5.0.0-alpha.15',
             [81, 9700, 50052, 50053],
-            networkName,
+            configuration.networkName,
             this._configurationManager.generateForRuntime(configuration, workingDirectory)
         );
 
@@ -67,7 +63,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
     }
 
     cleanupAfter(microservice: Microservice) {
-        this._containerEnvironment.removeNetwork(this.getNetworkNameFor(Guid.parse(microservice.configuration.identifier), microservice.configuration.name));
+        this._containerEnvironment.removeNetwork(microservice.configuration.networkName);
     }
 
     async configureContainer(
@@ -93,9 +89,5 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         await container.configure();
 
         return container;
-    }
-
-    private getNetworkNameFor(microserviceIdentifier: Guid, microserviceName: string): string {
-        return `${microserviceName}-${microserviceIdentifier.toString()}-network`;
     }
 }
