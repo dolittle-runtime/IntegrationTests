@@ -7,7 +7,7 @@ import { FlightPlan } from './FlightPlan';
 import { IFlightRecorder } from './IFlightRecorder';
 import { IFlightPaths } from './IFlightPaths';
 
-import { Scenario, NoScenario, ScenarioContext } from '../gherkin';
+import { Scenario, NoScenario, ScenarioContext, ScenarioContextDefinition } from '../gherkin';
 
 export class Flight {
     private _recorder: IFlightRecorder | undefined;
@@ -21,7 +21,7 @@ export class Flight {
         this.platform = platform;
         this.plan = plan;
 
-        this.scenarioContext = new BehaviorSubject<ScenarioContext>(new ScenarioContext('NoScenarioContext', {}));
+        this.scenarioContext = new BehaviorSubject<ScenarioContext>(new ScenarioContext(new ScenarioContextDefinition('NoScenarioContext'), {}));
         this.scenario = new BehaviorSubject<Scenario>(new NoScenario());
     }
 
