@@ -5,7 +5,8 @@
         "**/node_modules": true,
         "**/.git": true,
         "**/.svn": true,
-        "**/.DS_Store": true
+        "**/.DS_Store": true,
+        "**/out": true
     },
     "cSpell.words": [
         "Dockerode",
