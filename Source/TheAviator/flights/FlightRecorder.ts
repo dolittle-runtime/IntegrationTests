@@ -4,7 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { RuleSetContainerEvaluation } from '@dolittle/rules';
+import { RuleSetContainerEvaluation, BrokenRule } from '@dolittle/rules';
 import { ISerializer } from '../ISerializer';
 
 import { IContainer } from '../containers';
@@ -45,9 +45,9 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
-    async reportResultFor(scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation) {
+    async reportResultFor(scenario: Scenario, microservice: Microservice, brokenRules: BrokenRule[]) {
         const failedRules: FailedRule[] = [];
-        for (const brokenRule of evaluation.brokenRules) {
+        for (const brokenRule of brokenRules) {
             const subject = brokenRule.subject as ScenarioSubject;
             const message = brokenRule.causes.map(_ => `${_.title} - ${_.description}`).join();
             failedRules.push(new FailedRule(brokenRule.rule.constructor.name, message, subject.then));

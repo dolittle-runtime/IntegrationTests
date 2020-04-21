@@ -38,22 +38,20 @@ export class FlightControl implements IFlightControl {
                 await scenario.then();
 
                 await this.performOnMicroservice(microservices, async (microservice) => {
-                    await microservice.endEvaluation();
-                    if (microservice.eventLogEvaluation) {
-                        await this._flight.recorder.reportResultFor(scenario, microservice, microservice.eventLogEvaluation);
-                    }
+                    const brokenRules = await microservice.endEvaluation();
+                    await this._flight.recorder.reportResultFor(scenario, microservice, brokenRules);
+                    await microservice.eventStore.dump();
+                    await microservice.eventStore.clear();
                 });
-
-                await this.performOnMicroservice(microservices, async (microservice) => await microservice.clearEventStore());
             }
 
-            await this.performOnMicroservice(microservices, async (microservice) => {
-                await microservice.kill();
-                await this._microserviceFactory.cleanupAfter(microservice);
-            });
+            await this.performOnMicroservice(microservices, async (microservice) => { await microservice.kill(); });
         }
 
+        console.log('Conclude');
+
         this._flight.recorder.conclude();
+        console.log('Concluded');
     }
 
     private async prepareMicroservicesFor(context: ScenarioContextDefinition) {

@@ -49,6 +49,7 @@ export class Aviator {
         flight.setRecorder(new FlightRecorder(flight, this.serializer));
         const flightControl = new FlightControl(flight, this.microserviceFactory);
         await flightControl.takeOff();
+        console.log('landed');
         return flight;
     }
 }

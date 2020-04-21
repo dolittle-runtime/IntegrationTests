@@ -58,12 +58,8 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             this._configurationManager.generateForRuntime(configuration, workingDirectory)
         );
 
-        const microservice = new Microservice(configuration, head, runtime, eventStoreStorage);
+        const microservice = new Microservice(configuration, this._containerEnvironment, head, runtime, eventStoreStorage);
         return microservice;
-    }
-
-    cleanupAfter(microservice: Microservice) {
-        this._containerEnvironment.removeNetwork(microservice.configuration.networkName);
     }
 
     async configureContainer(

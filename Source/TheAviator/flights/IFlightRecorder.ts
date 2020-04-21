@@ -1,14 +1,14 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { RuleSetContainerEvaluation } from '@dolittle/rules';
+import { BrokenRule } from '@dolittle/rules';
 
-import { Scenario, ScenarioContextDefinition } from '../gherkin';
+import { Scenario } from '../gherkin';
 import { Microservice } from '../microservices';
 
 export interface IFlightRecorder {
     conclude(): void;
     writeConfigurationFilesFor(microservices: Microservice[]): void;
     collectLogsFor(microservices: Microservice[]): void;
-    reportResultFor(scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation): Promise<void>;
+    reportResultFor(scenario: Scenario, microservice: Microservice, brokenRules: BrokenRule[]): Promise<void>;
 }
