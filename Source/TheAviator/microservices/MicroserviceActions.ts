@@ -23,7 +23,7 @@ export class MicroserviceActions implements IMicroserviceActions {
         }
     }
 
-    async commitEvent(artifactId: Guid, content: any): Promise<void> {
+    async commitEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
         try {
             const url = `${this.getHeadBaseUrl()}/api/Events/Single`;
             await fetch(url, {

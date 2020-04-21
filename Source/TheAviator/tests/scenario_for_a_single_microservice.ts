@@ -20,7 +20,8 @@ export class scenario_for_a_single_microservice extends Scenario {
     }
 
     async commitEvent(event: any) {
-        await this.microservice?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
+        const tenant = Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd');
+        await this.microservice?.actions.commitEvent(tenant, Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
     }
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {
