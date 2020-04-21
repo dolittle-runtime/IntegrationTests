@@ -1,7 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-const byline =  require('byline');
+const byline = require('byline');
 
 import { IWaitStrategy } from './IWaitStrategy';
 import { IContainer } from './IContainer';
@@ -13,6 +13,13 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
     wait(container: IContainer): Promise<void> {
         let done = false;
         return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                if (done) {
+                    return;
+                }
+                resolve();
+            }, 10000);
+
             const stream = byline(container.outputStream);
             stream.on('data', (line: string) => {
                 if (line.toString().includes(this._message)) {
@@ -21,6 +28,7 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
                     }
                     resolve();
                     done = true;
+                    clearTimeout(timeout);
                 }
             });
             stream.on('err', (line: string) => {
@@ -30,6 +38,7 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
                     }
                     resolve();
                     done = true;
+                    clearTimeout(timeout);
                 }
             });
             stream.on('end', (line: string) => {
@@ -38,6 +47,7 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
                 }
                 resolve();
                 done = true;
+                clearTimeout(timeout);
             });
         });
     }
