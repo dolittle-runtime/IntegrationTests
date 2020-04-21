@@ -20,5 +20,5 @@ export class twenty_events_committed extends scenario_for_a_single_microservice 
         }
     }
 
-    then_all_events_should_be_in_event_log = () => this.event_log?.should_contain(this.tenant, this._events);
+    then_all_events_should_be_in_event_log = () => this.event_log?.should_contain(this.tenant, ...this._events);
 }
