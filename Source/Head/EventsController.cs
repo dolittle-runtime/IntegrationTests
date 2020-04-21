@@ -29,10 +29,10 @@ namespace Head
         }
 
         [HttpPost]
-        [Route("Single")]
-        public IActionResult Single([FromBody] MyEvent @event)
+        [Route("Single/{tenantId}")]
+        public IActionResult Single(string tenantId, [FromBody] MyEvent @event)
         {
-            _executionContextManager.CurrentFor((TenantId)Guid.Parse("f79fcfc9-c855-4910-b445-1f167e814bfd"));
+            _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
             var eventStore = _eventStore();
             var events = new UncommittedEvents();
             events.Append(@event);
