@@ -6,13 +6,13 @@ import * as path from 'path';
 import * as Handlebars from 'handlebars';
 
 import { Microservice } from './Microservice';
-import { IContainerEnvironment } from './IContainerEnvironment';
+import { IContainerEnvironment } from '../containers/IContainerEnvironment';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { Guid } from '@dolittle/rudiments';
-import { IContainer } from './IContainer';
-import { ContainerOptions } from 'ContainerOptions';
-import { Mount } from './Mount';
-import { ISerializer } from './ISerializer';
+import { IContainer } from '../containers/IContainer';
+import { ContainerOptions } from 'containers/ContainerOptions';
+import { Mount } from '../containers/Mount';
+import { ISerializer } from '../ISerializer';
 
 const HeadConfig = 'HeadConfig';
 const RuntimeConfig = 'RuntimeConfig';

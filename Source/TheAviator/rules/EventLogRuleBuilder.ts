@@ -3,7 +3,7 @@
 
 import { RuleBuilder, RuleWithSubjectProvider, IRule } from '@dolittle/rules';
 import { EventLogSubjectProvider } from './EventLogSubjectProvider';
-import { Microservice } from '../Microservice';
+import { Microservice } from '../microservices/Microservice';
 
 const stackTrace = require('stack-trace');
 

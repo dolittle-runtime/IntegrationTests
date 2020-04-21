@@ -8,15 +8,15 @@ import { RuleSetContainerEvaluation } from '@dolittle/rules';
 
 import { Flight } from './Flight';
 import { IFlightRecorder } from './IFlightRecorder';
-import { Scenario } from './Scenario';
-import { ISerializer } from './ISerializer';
-import { Microservice } from './Microservice';
-import { IContainer } from './IContainer';
-import { FailedRule } from './FailedRule';
-import { ScenarioSubject } from './rules/ScenarioSubject';
-import { ScenarioResult } from './ScenarioResult';
-import { ScenarioContext } from './ScenarioContext';
-import { NoScenario } from './NoScenario';
+import { Scenario } from '../gherkin/Scenario';
+import { ISerializer } from '../ISerializer';
+import { Microservice } from '../microservices/Microservice';
+import { IContainer } from '../containers/IContainer';
+import { FailedRule } from '../FailedRule';
+import { ScenarioSubject } from '../rules/ScenarioSubject';
+import { ScenarioResult } from '../gherkin/ScenarioResult';
+import { ScenarioContext } from '../gherkin/ScenarioContext';
+import { NoScenario } from '../gherkin/NoScenario';
 
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenarioContext: ScenarioContext;

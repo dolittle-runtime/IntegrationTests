@@ -9,10 +9,10 @@ import * as Docker from 'dockerode';
 
 import { ContainerInspectInfo } from 'dockerode';
 
-import { IContainer } from './IContainer';
-import { ContainerOptions } from './ContainerOptions';
-import { Mount } from './Mount';
-import { IWaitStrategy } from './IWaitStrategy';
+import { IContainer } from '../IContainer';
+import { ContainerOptions } from '../ContainerOptions';
+import { Mount } from '../Mount';
+import { IWaitStrategy } from '../IWaitStrategy';
 
 /**
  * Represents an implementation of {IContainer} for Docker.

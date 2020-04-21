@@ -1,19 +1,19 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IMicroserviceFactory } from './IMicroserviceFactory';
-import { IContainerEnvironment } from './IContainerEnvironment';
-import { ContainerEnvironment } from './ContainerEnvironment';
-import { MicroserviceFactory } from './MicroserviceFactory';
-import { FlightRecorder } from './FlightRecorder';
-import { FlightControl } from './FlightControl';
-import { Scenario } from './Scenario';
-import { Flight } from './Flight';
-import { FlightPlanner } from './FlightPlanner';
+import { IMicroserviceFactory } from './microservices/IMicroserviceFactory';
+import { MicroserviceFactory } from './microservices/MicroserviceFactory';
+import { ContainerEnvironment } from './containers/docker/ContainerEnvironment';
+import { IContainerEnvironment } from './containers/IContainerEnvironment';
+import { FlightRecorder } from './flights/FlightRecorder';
+import { FlightControl } from './flights/FlightControl';
+import { Scenario } from './gherkin/Scenario';
+import { Flight } from './flights/Flight';
+import { FlightPlanner } from './flights/FlightPlanner';
 import { Constructor } from './Constructor';
 import { ISerializer } from './ISerializer';
 import { Serializer } from './Serializer';
-import { FlightPaths } from './FlightPaths';
+import { FlightPaths } from './flights/FlightPaths';
 
 export class Aviator {
     readonly platform: string;

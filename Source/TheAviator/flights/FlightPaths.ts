@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ScenarioContext } from './ScenarioContext';
-import { Scenario } from './Scenario';
-import { Microservice } from 'Microservice';
+import { ScenarioContext } from '../gherkin/ScenarioContext';
+import { Scenario } from '../gherkin/Scenario';
+import { Microservice } from '../microservices/Microservice';
 import { IFlightPaths } from './IFlightPaths';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
@@ -24,7 +24,7 @@ export class FlightPaths implements IFlightPaths {
     constructor() {
         const currentDate = new Date();
         const currentDateString = `${currentDate.getFullYear()}-${zeroPad(currentDate.getMonth(), 2)}-${zeroPad(currentDate.getDate(), 2)} ${zeroPad(currentDate.getHours(), 2)}_${zeroPad(currentDate.getMinutes(), 2)}_${zeroPad(currentDate.getSeconds(), 2)}`;
-        this.base = path.join(process.cwd(), 'results', currentDateString);
+        this.base = path.join(process.cwd(), 'resultOutput', currentDateString);
         this.ensureDirectory(this.base);
         this.global = path.join(this.base, '_global');
         this.ensureDirectory(this.global);

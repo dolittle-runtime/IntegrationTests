@@ -4,8 +4,7 @@
 import { RuleSetContainerBuilder, RuleSetBuilder, IRule } from '@dolittle/rules';
 import { EventWithContentShouldBeInEventLog } from './EventWithContentShouldBeInEventLog';
 import { EventLogRuleBuilder } from './EventLogRuleBuilder';
-import { Microservice } from '../Microservice';
-import { Constructor } from '../Constructor';
+import { Microservice } from '../microservices/Microservice';
 
 export class EventLogRuleSetContainerBuilder extends RuleSetContainerBuilder {
     private _ruleSetBuilder: RuleSetBuilder;

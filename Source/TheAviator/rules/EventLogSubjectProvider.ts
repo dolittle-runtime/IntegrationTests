@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { ISubjectProvider, IRuleContext } from '@dolittle/rules';
-import { Microservice } from '../Microservice';
+import { Microservice } from '../microservices/Microservice';
 import { EventLogQuerySubject } from './EventLogSubject';
 
 export class EventLogSubjectProvider implements ISubjectProvider {

@@ -2,10 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { RuleSetContainerEvaluation } from '@dolittle/rules';
-import { Flight } from './Flight';
-import { Scenario } from './Scenario';
-import { Microservice } from './Microservice';
-import { ScenarioContext } from './ScenarioContext';
+import { Scenario } from '../gherkin/Scenario';
+import { Microservice } from '../microservices/Microservice';
+import { ScenarioContext } from '../gherkin/ScenarioContext';
 
 export interface IFlightRecorder {
     conclude(): void;

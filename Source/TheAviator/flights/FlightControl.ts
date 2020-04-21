@@ -6,9 +6,9 @@ const asyncTimeout = util.promisify(setTimeout);
 
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
-import { Microservice } from './Microservice';
-import { ScenarioContext } from './ScenarioContext';
-import { IMicroserviceFactory } from './IMicroserviceFactory';
+import { Microservice } from '../microservices/Microservice';
+import { ScenarioContext } from '../gherkin/ScenarioContext';
+import { IMicroserviceFactory } from '../microservices/IMicroserviceFactory';
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 

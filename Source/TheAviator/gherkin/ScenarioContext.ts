@@ -1,10 +1,10 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Microservice } from './Microservice';
-import { IMicroserviceFactory } from './IMicroserviceFactory';
+import { Microservice } from '../microservices/Microservice';
+import { IMicroserviceFactory } from '../microservices/IMicroserviceFactory';
 import { Guid } from '@dolittle/rudiments';
-import { IFlightPaths } from './IFlightPaths';
+import { IFlightPaths } from '../flights/IFlightPaths';
 
 class MicroserviceForPreparation {
     readonly name: string;

@@ -1,14 +1,14 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Scenario } from './Scenario';
+import { Scenario } from '../gherkin/Scenario';
 import { FlightPlan } from './FlightPlan';
-import { Constructor } from './Constructor';
+import { Constructor } from '../Constructor';
 import { IFlightPlanner } from './IFlightPlanner';
-import { IGiven } from './IGiven';
-import { NoContext } from './NoContext';
-import { IMicroserviceFactory } from './IMicroserviceFactory';
-import { ScenarioContext } from './ScenarioContext';
+import { IGiven } from '../gherkin/IGiven';
+import { NoContext } from '../gherkin/NoContext';
+import { IMicroserviceFactory } from '../microservices/IMicroserviceFactory';
+import { ScenarioContext } from '../gherkin/ScenarioContext';
 import { IFlightPaths } from './IFlightPaths';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');

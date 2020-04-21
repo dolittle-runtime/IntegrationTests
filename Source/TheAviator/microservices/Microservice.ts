@@ -4,11 +4,11 @@
 import { Guid } from '@dolittle/rudiments';
 import { RuleSetContainerEvaluation } from '@dolittle/rules';
 
-import { IContainer } from './IContainer';
-import { EventLogRuleSetContainerBuilder } from './rules/EventLogRuleSetContainerBuilder';
+import { IContainer } from '../containers/IContainer';
+import { EventLogRuleSetContainerBuilder } from '../rules/EventLogRuleSetContainerBuilder';
 import { IMicroserviceActions } from './IMicroserviceActions';
 import { MicroserviceActions } from './MicroserviceActions';
-import { LogMessageWaitStrategy } from './LogMessageWaitStrategy';
+import { LogMessageWaitStrategy } from '../containers/LogMessageWaitStrategy';
 
 import { MongoClient, Db, FilterQuery } from 'mongodb';
 
