@@ -62,7 +62,7 @@ export interface IContainer {
     /**
      * Execute a command within the container.
      * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
-     * @param {*} options Configuration options
+     * @param {*} options? Configuration options
      */
-    exec(command: string[], options: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
+    exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
 }

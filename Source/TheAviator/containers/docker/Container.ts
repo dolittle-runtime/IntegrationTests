@@ -1,6 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import { retry } from 'async';
 const getPort = require('get-port');
 
 import { PassThrough } from 'stream';
@@ -46,6 +47,7 @@ export class Container implements IContainer {
         console.log(`Starting '${this.options.friendlyName}'`);
         await this._container.start();
         this._container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
+            stream?.setEncoding('utf8');
             stream?.pipe(this.outputStream);
         });
 
@@ -130,11 +132,33 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
-    async exec(command: string[], options: any, ...waitStrategies: IWaitStrategy[]) {
+    async exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void> {
         if (!this._container) {
             return;
         }
-        await this._container.exec({ Cmd: command });
+
+        options = options || {};
+        options.AttachStdout = true;
+        options.AttachStderr = true;
+        options.Tty = false;
+        options.Cmd = command;
+
+        const exec = await this._container.exec(options);
+        const result = await exec.start({ 'Detach': false, 'Tty': false, stream: true, stdout: true, stderr: true });
+        result.output.setEncoding('utf8');
+        result.output.pipe(this.outputStream);
+
+        try {
+            await retry({ times: 10, interval: 200 }, async (callback, results) => {
+                const info = await exec.inspect();
+                if (info.Running) {
+                    callback(new Error('Running'));
+                } else {
+                    callback(null);
+                }
+            });
+        } catch (ex) {}
+
         await this.waitForStrategies(waitStrategies);
     }
 
