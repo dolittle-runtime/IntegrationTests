@@ -48,7 +48,7 @@ export class ConfigurationManager implements IConfigurationManager {
     }
 
     private getAndEnsureHostPathFor(configuration: MicroserviceConfiguration, target: string, file: string, workingDirectory: string) {
-        const hostPath = path.join(workingDirectory, configuration.name, target);
+        const hostPath = path.join(workingDirectory, '_microservices', configuration.name, target);
         if (!fs.existsSync(hostPath)) {
             fs.mkdirSync(hostPath, { recursive: true });
         }
