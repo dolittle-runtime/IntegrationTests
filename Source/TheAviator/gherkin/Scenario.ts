@@ -3,18 +3,21 @@
 
 import { Constructor } from '../Constructor';
 import { IGiven } from './IGiven';
-import { ScenarioContextDefinition } from './ScenarioContextDefinition';
-import { When } from './When';
 import { ScenarioContext } from './ScenarioContext';
+import { When } from './When';
+import { Then } from './Then';
 
 export class Scenario {
     private _context: ScenarioContext | undefined;
-    given: Constructor<IGiven> | undefined;
     private _whenMethod: Function | undefined;
     private _whenDescription: When | undefined;
+    readonly thens: Then[] = [];
+
+    given: Constructor<IGiven> | undefined;
 
     constructor() {
-        this.configure();
+        this.configureWhen();
+        this.populateThens();
     }
 
     get name(): string {
@@ -50,7 +53,11 @@ export class Scenario {
         Object.getOwnPropertyNames(proto).forEach(_ => keys.push(_));
 
         console.log(` ${this._whenDescription?.name}`);
-        const result = await (this._whenMethod as Function).apply(this);
+        let result: any = null;
+        try {
+            result = await (this._whenMethod as Function).apply(this);
+        } catch (ex) { }
+
         if (result) {
             this.throwIfResultNotArray(result);
 
@@ -80,6 +87,14 @@ export class Scenario {
     }
 
     async then() {
+        for (const then of this.thens) {
+            try {
+                await then.method.apply(this);
+            } catch (ex) { }
+        }
+    }
+
+    private populateThens() {
         const proto = Object.getPrototypeOf(this);
         const keys: string[] = [];
         Object.getOwnPropertyNames(this).forEach(_ => keys.push(_));
@@ -89,8 +104,7 @@ export class Scenario {
             if (key.toString().indexOf('then_') === 0) {
                 const method = (this as any)[key];
                 this.throwIfThenIsNotMethod(method, key);
-
-                await (method as Function).apply(this);
+                this.thens.push(new Then(key, method));
             }
         }
     }
@@ -101,7 +115,7 @@ export class Scenario {
         }
     }
 
-    private configure() {
+    private configureWhen() {
         const proto = Object.getPrototypeOf(this);
         const keys: string[] = [];
         Object.getOwnPropertyNames(this).forEach(_ => keys.push(_));
