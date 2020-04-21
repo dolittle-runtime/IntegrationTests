@@ -33,8 +33,8 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             [27017],
             configuration.networkName,
             [{
-                host: path.join(workingDirectory, name, 'data'),
-                container: '/data'
+                host: path.join(workingDirectory, name, 'backup'),
+                container: '/backup'
             }]
         );
 
