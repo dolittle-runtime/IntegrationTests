@@ -48,6 +48,7 @@ export class FlightPaths implements IFlightPaths {
     forMicroservice(scenario: Scenario, microservice: Microservice): string {
         const scenarioDirectory = this.forScenario(scenario);
         const directory = path.join(scenarioDirectory, microservice.name);
+        this.ensureDirectory(directory);
         return directory;
     }
 
