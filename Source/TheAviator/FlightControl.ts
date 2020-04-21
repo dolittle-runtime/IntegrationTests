@@ -4,8 +4,6 @@
 import * as util from 'util';
 const asyncTimeout = util.promisify(setTimeout);
 
-import { IFlightRecorder } from './IFlightRecorder';
-import { FlightPlan } from './FlightPlan';
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
 import { Microservice } from './Microservice';
@@ -15,33 +13,28 @@ import { IMicroserviceFactory } from './IMicroserviceFactory';
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
 export class FlightControl implements IFlightControl {
-    constructor(private _flightRecorder: IFlightRecorder, private _microserviceFactory: IMicroserviceFactory) {
+    constructor(private _flight: Flight, private _microserviceFactory: IMicroserviceFactory) {
     }
 
-    async takeOffWith(flightPlan: FlightPlan): Promise<Flight> {
-        const flight = new Flight(flightPlan);
-
+    async takeOff(): Promise<void> {
         console.log('takeOff');
 
-        for (const [context, scenarios] of flightPlan.scenariosByContexts) {
+        for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
             console.log('prepare context');
             await context.prepare();
             console.log('context prepared');
         }
 
-        console.log('Start recording');
-        this._flightRecorder.recordFor(flight);
-
         console.log('Run through scenarios, context by context');
-        for (const [context, scenarios] of flightPlan.scenariosByContexts) {
-            this._flightRecorder.setCurrentScenarioContext(context);
+        for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
+            this._flight.recorder.setCurrentScenarioContext(context);
             await this.performOnMicroservice(context, async (microservice) => await microservice.start());
 
             for (const scenario of scenarios) {
                 console.log(`Begin scenario ${scenario.name}`);
                 await this.performOnMicroservice(context, async (microservice) => await microservice.beginEvaluation());
 
-                this._flightRecorder.setCurrentScenario(scenario);
+                this._flight.recorder.setCurrentScenario(scenario);
 
                 console.log('Given');
                 scenario.setContext(context);
@@ -59,7 +52,7 @@ export class FlightControl implements IFlightControl {
                     await microservice.endEvaluation();
                     if (microservice.eventLogEvaluation) {
                         console.log('Talk to flight recorder for reporting');
-                        await this._flightRecorder.reportResultFor(flight, scenario, microservice, microservice.eventLogEvaluation);
+                        await this._flight.recorder.reportResultFor(scenario, microservice, microservice.eventLogEvaluation);
                         console.log('Reported');
                     }
                 });
@@ -76,9 +69,7 @@ export class FlightControl implements IFlightControl {
         }
 
         console.log('Conclude');
-        this._flightRecorder.conclude(flight);
-
-        return flight;
+        this._flight.recorder.conclude();
     }
 
     private async performOnMicroservice(context: ScenarioContext, method: MicroserviceMethod) {

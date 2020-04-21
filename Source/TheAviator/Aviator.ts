@@ -1,10 +1,8 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IFlightControl } from './IFlightControl';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { IContainerEnvironment } from './IContainerEnvironment';
-import { IFlightRecorder } from './IFlightRecorder';
 import { ContainerEnvironment } from './ContainerEnvironment';
 import { MicroserviceFactory } from './MicroserviceFactory';
 import { FlightRecorder } from './FlightRecorder';
@@ -22,8 +20,6 @@ export class Aviator {
     readonly serializer: ISerializer;
     readonly containerFactory: IContainerEnvironment;
     readonly microserviceFactory: IMicroserviceFactory;
-    readonly flightRecorder: IFlightRecorder;
-    readonly flightControl: IFlightControl;
     readonly flightPlanner: IFlightPlanner;
 
     private constructor(target: string) {
@@ -31,8 +27,6 @@ export class Aviator {
         this.serializer = new Serializer();
         this.containerFactory = new ContainerEnvironment();
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.serializer);
-        this.flightRecorder = new FlightRecorder(this.serializer);
-        this.flightControl = new FlightControl(this.flightRecorder, this.microserviceFactory);
         this.flightPlanner = new FlightPlanner(this.microserviceFactory);
     }
 
@@ -42,7 +36,10 @@ export class Aviator {
 
     async performFlightWith(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
         const flightPlan = this.flightPlanner.planFor(this.target, ...scenarios);
-        const flight = await this.flightControl.takeOffWith(flightPlan);
+        const flight = new Flight(flightPlan);
+        flight.setRecorder(new FlightRecorder(flight, this.serializer));
+        const flightControl = new FlightControl(flight, this.microserviceFactory);
+        await flightControl.takeOff();
         return flight;
     }
 }
