@@ -17,7 +17,8 @@ docker tag dolittle/integrationtests-head-dotnet dolittle/integrationtests-head-
 
 if [ $PRE_RELEASE_TAG = $VERSION ]; then
     echo Pushing latest
-    docker push dolittle/runtime:latest
+    docker tag dolittle/integrationtests-head-dotnet dolittle/integrationtests-head-dotnet:latest
+    docker push dolittle/integrationtests-head-dotnet:latest
 fi
 
 docker push dolittle/integrationtests-head-dotnet:$IMAGE_VERSION
