@@ -1,18 +1,26 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import { BehaviorSubject } from 'rxjs';
+
 import { FlightPlan } from './FlightPlan';
 import { IFlightRecorder } from './IFlightRecorder';
 import { IFlightPaths } from './IFlightPaths';
+
+import { Scenario, NoScenario } from '../gherkin';
 
 export class Flight {
     private _recorder: IFlightRecorder | undefined;
     readonly plan: FlightPlan;
     readonly platform: string;
 
+    readonly scenario: BehaviorSubject<Scenario>;
+
     constructor(platform: string, plan: FlightPlan) {
         this.platform = platform;
         this.plan = plan;
+
+        this.scenario = new BehaviorSubject<Scenario>(new NoScenario());
     }
 
     get paths(): IFlightPaths {

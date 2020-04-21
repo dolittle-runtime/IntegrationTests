@@ -31,7 +31,9 @@ export class FlightRecorder implements IFlightRecorder {
         this.writeFlightPlan();
         this.writeMicroservicesConfigurations();
         this.hookUpLogOutputFor();
-        this._currentScenario = new NoScenario();
+
+        _flight.scenario.subscribe((scenario) => this._currentScenario = scenario);
+        this._currentScenario = _flight.scenario.getValue();
     }
 
     conclude() {
@@ -44,10 +46,6 @@ export class FlightRecorder implements IFlightRecorder {
         const json = this._serializer.toJSON(result);
         const resultFilePath = path.join(this._flight.paths.base, 'results.json');
         fs.writeFileSync(resultFilePath, json);
-    }
-
-    setCurrentScenario(scenario: Scenario): void {
-        this._currentScenario = scenario;
     }
 
     async reportResultFor(scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation) {

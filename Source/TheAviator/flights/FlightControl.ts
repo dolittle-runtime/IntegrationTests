@@ -22,7 +22,7 @@ export class FlightControl implements IFlightControl {
             for (const scenario of scenarios) {
                 await this.performOnMicroservice(context, async (microservice) => await microservice.beginEvaluation());
 
-                this._flight.recorder.setCurrentScenario(scenario);
+                this._flight.scenario.next(scenario);
 
                 scenario.setContext(context);
                 await scenario.when();
