@@ -6,7 +6,7 @@ import { IFlightControl } from './IFlightControl';
 
 import { Microservice, IMicroserviceFactory } from '../microservices';
 
-import { ScenarioContext } from '../gherkin';
+import { ScenarioContext, ScenarioContextDefinition } from '../gherkin';
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
@@ -15,31 +15,37 @@ export class FlightControl implements IFlightControl {
     }
 
     async takeOff(): Promise<void> {
-        for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
-            await context.prepare();
-            await this.performOnMicroservice(context, async (microservice) => await microservice.start());
+        for (const [contextDefinition, scenarios] of this._flight.plan.scenariosByContexts) {
+            const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
+            const microservices = Object.values(microservicesByName);
+            const context = new ScenarioContext(contextDefinition.name, microservicesByName);
+
+            this._flight.recorder.writeConfigurationFilesFor(microservices);
+            this._flight.recorder.collectLogsFor(microservices);
+
+            await this.performOnMicroservice(microservices, async (microservice) => await microservice.start());
 
             for (const scenario of scenarios) {
                 scenario.setContext(context);
 
-                await this.performOnMicroservice(context, async (microservice) => await microservice.beginEvaluation());
+                await this.performOnMicroservice(microservices, async (microservice) => await microservice.beginEvaluation());
 
                 this._flight.scenario.next(scenario);
 
                 await scenario.when();
                 await scenario.then();
 
-                await this.performOnMicroservice(context, async (microservice) => {
+                await this.performOnMicroservice(microservices, async (microservice) => {
                     await microservice.endEvaluation();
                     if (microservice.eventLogEvaluation) {
                         await this._flight.recorder.reportResultFor(scenario, microservice, microservice.eventLogEvaluation);
                     }
                 });
 
-                await this.performOnMicroservice(context, async (microservice) => await microservice.clearEventStore());
+                await this.performOnMicroservice(microservices, async (microservice) => await microservice.clearEventStore());
             }
 
-            await this.performOnMicroservice(context, async (microservice) => {
+            await this.performOnMicroservice(microservices, async (microservice) => {
                 await microservice.kill();
                 await this._microserviceFactory.cleanupAfter(microservice);
             });
@@ -48,8 +54,22 @@ export class FlightControl implements IFlightControl {
         this._flight.recorder.conclude();
     }
 
-    private async performOnMicroservice(context: ScenarioContext, method: MicroserviceMethod) {
-        for (const microservice of context.microservices.values()) {
+    private async prepareMicroservicesFor(context: ScenarioContextDefinition) {
+        const microservicesByName: { [key: string]: Microservice } = {};
+
+        for (const microservice of context.microservices) {
+            const workingDirectory = this._flight.paths.forScenarioContext(context);
+            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, microservice.name, microservice.tenants, workingDirectory);
+            if (microserviceInstance) {
+                microservicesByName[microservice.name] = microserviceInstance;
+            }
+        }
+
+        return microservicesByName;
+    }
+
+    private async performOnMicroservice(microservices: Microservice[], method: MicroserviceMethod) {
+        for (const microservice of microservices.values()) {
             await method(microservice);
         }
     }

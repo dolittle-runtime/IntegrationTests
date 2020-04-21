@@ -10,7 +10,7 @@ import { ISerializer } from '../ISerializer';
 import { IContainer } from '../containers';
 import { Microservice } from '../microservices';
 
-import { Scenario, ScenarioResult, ScenarioContext, NoScenario } from '../gherkin';
+import { Scenario, ScenarioResult, ScenarioContextDefinition, NoScenario } from '../gherkin';
 
 import { ScenarioSubject } from '../rules/ScenarioSubject';
 
@@ -24,13 +24,10 @@ export class FlightRecorder implements IFlightRecorder {
     private _colorRemoverRegEx: RegExp;
     private _scenarioResultsPerMicroservice: Map<Microservice, ScenarioResult[]> = new Map();
 
-
     constructor(private _flight: Flight, private _serializer: ISerializer) {
         this._colorRemoverRegEx = /#[0-9a-f]{6}|#[0-9a-f]{3}/gi;
         this._colorRemoverRegEx.compile();
         this.writeFlightPlan();
-        this.writeMicroservicesConfigurations();
-        this.hookUpLogOutputFor();
 
         _flight.scenario.subscribe((scenario) => this._currentScenario = scenario);
         this._currentScenario = _flight.scenario.getValue();
@@ -72,9 +69,9 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(metricsFilePath, metrics);
     }
 
-    private writeMicroservicesConfigurations() {
+    writeConfigurationFilesFor(microservices: Microservice[]) {
         for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
-            context.microservices.forEach(microservice => {
+            microservices.forEach(microservice => {
                 const microservicePath = this._flight.paths.forMicroserviceInContext(context, microservice);
 
                 const writeOptionsFile = (container: IContainer) => {
@@ -95,9 +92,9 @@ export class FlightRecorder implements IFlightRecorder {
         }
     }
 
-    private hookUpLogOutputFor() {
+    collectLogsFor(microservices: Microservice[]) {
         for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
-            context.microservices.forEach(microservice => {
+            microservices.forEach(microservice => {
                 microservice.head.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.head));
                 microservice.runtime.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime));
                 microservice.eventStoreStorage.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.eventStoreStorage));

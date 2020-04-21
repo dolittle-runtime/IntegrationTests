@@ -13,7 +13,7 @@ export class scenario_for_a_single_microservice extends Scenario {
     microservice: Microservice | undefined;
 
     async when() {
-        this.microservice = this.context?.microservices.get('main');
+        this.microservice = this.context?.microservices.main;
         return super.when();
     }
 }

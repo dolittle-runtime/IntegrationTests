@@ -4,7 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Scenario, ScenarioContext } from '../gherkin';
+import { Scenario, ScenarioContextDefinition } from '../gherkin';
 import { Microservice } from '../microservices';
 
 import { IFlightPaths } from './IFlightPaths';
@@ -31,7 +31,7 @@ export class FlightPaths implements IFlightPaths {
     }
 
     /** @inheritdoc */
-    forScenarioContext(context: ScenarioContext): string {
+    forScenarioContext(context: ScenarioContextDefinition): string {
         const directory = path.join(this.base, context.name);
         this.ensureDirectory(directory);
         return directory;
@@ -53,7 +53,7 @@ export class FlightPaths implements IFlightPaths {
     }
 
     /** @inheritdoc */
-    forMicroserviceInContext(context: ScenarioContext, microservice: Microservice): string {
+    forMicroserviceInContext(context: ScenarioContextDefinition, microservice: Microservice): string {
         const scenarioDirectory = this.forScenarioContext(context);
         const directory = path.join(scenarioDirectory, '_microservices', microservice.configuration.name);
         this.ensureDirectory(directory);

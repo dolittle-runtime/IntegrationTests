@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { IGiven } from './IGiven';
-import { ScenarioContext } from './ScenarioContext';
+import { ScenarioContextDefinition } from './ScenarioContextDefinition';
 
 export class NoContext implements IGiven {
-    describe(context: ScenarioContext): void {
+    describe(context: ScenarioContextDefinition): void {
     }
 }

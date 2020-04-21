@@ -1,49 +1,14 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Microservice, IMicroserviceFactory } from '../microservices';
-import { Guid } from '@dolittle/rudiments';
-import { IFlightPaths } from '../flights/IFlightPaths';
-
-class MicroserviceForPreparation {
-    readonly name: string;
-    readonly tenants: Guid[];
-
-    constructor(name: string, tenants: Guid[]) {
-        this.name = name;
-        this.tenants = tenants;
-    }
-}
+import { Microservice } from '../microservices';
 
 export class ScenarioContext {
-    private _tenants: Guid[] | undefined;
-    private _microservicesToPrepare: MicroserviceForPreparation[] = [];
-
     readonly name: string;
-    readonly microservices: Map<string, Microservice>;
+    readonly microservices: {[key: string]: Microservice};
 
-    constructor(name: string, private _platform: string, private _paths: IFlightPaths, private _microserviceFactory?: IMicroserviceFactory) {
+    constructor(name: string, microservices: {[key: string]: Microservice}) {
         this.name = name;
-        this.microservices = new Map();
-    }
-
-    withTenants(tenants: Guid[]): ScenarioContext {
-        this._tenants = tenants;
-        return this;
-    }
-
-    withMicroservice(name: string, tenants: Guid[] | undefined): ScenarioContext {
-        this._microservicesToPrepare.push(new MicroserviceForPreparation(name, (tenants ?? this._tenants) ?? []));
-        return this;
-    }
-
-    async prepare() {
-        for (const ms of this._microservicesToPrepare) {
-            const workingDirectory = this._paths.forScenarioContext(this);
-            const microservice = await this._microserviceFactory?.create(this._platform, ms.name, ms.tenants, workingDirectory);
-            if (microservice) {
-                this.microservices.set(ms.name, microservice);
-            }
-        }
+        this.microservices = microservices;
     }
 }

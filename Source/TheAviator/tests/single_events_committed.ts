@@ -11,7 +11,7 @@ export class single_events_committed extends scenario_for_a_single_microservice 
     readonly second_event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
     async when_committing_a_single_event() {
-        await this.context?.microservices.get('main')?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), this.first_event_committed);
+        await this.microservice?.actions.commitEvent(Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), this.first_event_committed);
         return [
             this.pausing_the_head,
             this.waiting_for_two_seconds,

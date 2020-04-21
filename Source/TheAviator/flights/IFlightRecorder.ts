@@ -3,10 +3,12 @@
 
 import { RuleSetContainerEvaluation } from '@dolittle/rules';
 
-import { Scenario, ScenarioContext } from '../gherkin';
+import { Scenario, ScenarioContextDefinition } from '../gherkin';
 import { Microservice } from '../microservices';
 
 export interface IFlightRecorder {
     conclude(): void;
+    writeConfigurationFilesFor(microservices: Microservice[]): void;
+    collectLogsFor(microservices: Microservice[]): void;
     reportResultFor(scenario: Scenario, microservice: Microservice, evaluation: RuleSetContainerEvaluation): Promise<void>;
 }

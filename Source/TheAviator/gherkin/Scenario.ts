@@ -3,8 +3,9 @@
 
 import { Constructor } from '../Constructor';
 import { IGiven } from './IGiven';
-import { ScenarioContext } from './ScenarioContext';
+import { ScenarioContextDefinition } from './ScenarioContextDefinition';
 import { When } from './When';
+import { ScenarioContext } from './ScenarioContext';
 
 export class Scenario {
     private _context: ScenarioContext | undefined;

@@ -7,7 +7,7 @@ import { IGiven, NoContext } from '../gherkin';
 
 import { IMicroserviceFactory } from '../microservices';
 
-import { Scenario, ScenarioContext } from '../gherkin';
+import { Scenario, ScenarioContextDefinition } from '../gherkin';
 
 import { IFlightPlanner } from './IFlightPlanner';
 import { FlightPlan } from './FlightPlan';
@@ -22,8 +22,8 @@ export class FlightPlanner implements IFlightPlanner {
 
     planFor(platform: string, ...scenarios: Constructor<Scenario>[]): FlightPlan {
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
-        const scenarioContexts: Map<Constructor<IGiven>, ScenarioContext> = new Map();
-        const scenariosByContexts: Map<ScenarioContext, Scenario[]> = new Map();
+        const scenarioContexts: Map<Constructor<IGiven>, ScenarioContextDefinition> = new Map();
+        const scenariosByContexts: Map<ScenarioContextDefinition, Scenario[]> = new Map();
 
         for (const scenarioConstructor of scenarios) {
             const scenario = new scenarioConstructor() as Scenario;
@@ -32,15 +32,15 @@ export class FlightPlanner implements IFlightPlanner {
                 givenConstructor = NoContext;
             }
 
-            let scenarioContext: ScenarioContext;
+            let scenarioContext: ScenarioContextDefinition;
             if (!scenariosByGiven.has(givenConstructor)) {
                 const given = new givenConstructor();
                 scenariosByGiven.set(givenConstructor, []);
-                scenarioContext = new ScenarioContext(givenConstructor.name, platform, this._flightPaths, this._microserviceFactory);
+                scenarioContext = new ScenarioContextDefinition(givenConstructor.name);
                 given.describe(scenarioContext);
                 scenarioContexts.set(givenConstructor, scenarioContext);
             } else {
-                scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContext(givenConstructor.name, platform, this._flightPaths, this._microserviceFactory);
+                scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContextDefinition(givenConstructor.name);
             }
 
             scenariosByGiven.get(givenConstructor)?.push(scenario);

@@ -7,5 +7,6 @@ export * from './NoContext';
 export * from './NoScenario';
 export * from './Scenario';
 export * from './ScenarioContext';
+export * from './ScenarioContextDefinition';
 export * from './ScenarioResult';
 export * from './When';
