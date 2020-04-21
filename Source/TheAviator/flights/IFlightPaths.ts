@@ -1,9 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { ScenarioContext } from '../gherkin/ScenarioContext';
-import { Scenario } from '../gherkin/Scenario';
-import { Microservice } from '../microservices/Microservice';
+import { Scenario, ScenarioContext } from '../gherkin';
+
+import { Microservice } from '../microservices';
 
 /**
  * Defines a system for maintaining paths for a flight.

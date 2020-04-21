@@ -1,8 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Microservice } from '../microservices/Microservice';
-import { IMicroserviceFactory } from '../microservices/IMicroserviceFactory';
+import { Microservice, IMicroserviceFactory } from '../microservices';
 import { Guid } from '@dolittle/rudiments';
 import { IFlightPaths } from '../flights/IFlightPaths';
 
@@ -41,7 +40,7 @@ export class ScenarioContext {
     async prepare() {
         for (const ms of this._microservicesToPrepare) {
             const workingDirectory = this._paths.forScenarioContext(this);
-            const microservice = await this._microserviceFactory?.create(ms.name, workingDirectory, ms.tenants, this._platform);
+            const microservice = await this._microserviceFactory?.create(this._platform, ms.name, ms.tenants, workingDirectory);
             if (microservice) {
                 this.microservices.set(ms.name, microservice);
             }

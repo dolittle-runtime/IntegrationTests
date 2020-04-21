@@ -1,31 +1,40 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IMicroserviceFactory } from './microservices/IMicroserviceFactory';
-import { MicroserviceFactory } from './microservices/MicroserviceFactory';
-import { ContainerEnvironment } from './containers/docker/ContainerEnvironment';
-import { IContainerEnvironment } from './containers/IContainerEnvironment';
-import { FlightRecorder } from './flights/FlightRecorder';
-import { FlightControl } from './flights/FlightControl';
-import { Scenario } from './gherkin/Scenario';
-import { Flight } from './flights/Flight';
-import { FlightPlanner } from './flights/FlightPlanner';
 import { Constructor } from './Constructor';
 import { ISerializer } from './ISerializer';
 import { Serializer } from './Serializer';
-import { FlightPaths } from './flights/FlightPaths';
+
+import { IMicroserviceFactory, MicroserviceFactory } from './microservices';
+
+import { IContainerEnvironment } from './containers';
+import { ContainerEnvironment } from './containers/docker';
+
+import {
+    FlightRecorder,
+    FlightControl,
+    Flight,
+    FlightPlanner,
+    FlightPaths
+} from './flights';
+
+import { Scenario } from './gherkin/Scenario';
+import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
 
 export class Aviator {
     readonly platform: string;
     readonly serializer: ISerializer;
     readonly containerFactory: IContainerEnvironment;
     readonly microserviceFactory: IMicroserviceFactory;
+    readonly configurationManager: IConfigurationManager;
 
     private constructor(platform: string) {
         this.platform = platform;
         this.serializer = new Serializer();
         this.containerFactory = new ContainerEnvironment();
-        this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.serializer);
+        this.configurationManager = new ConfigurationManager();
+
+        this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.configurationManager);
     }
 
     static getFor(platform: string) {

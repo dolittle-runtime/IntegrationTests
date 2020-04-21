@@ -1,8 +1,8 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Scenario } from '../gherkin/Scenario';
-import { ScenarioContext } from '../gherkin/ScenarioContext';
+import { Scenario, ScenarioContext } from '../gherkin';
+
 import { IFlightPaths } from 'flights/IFlightPaths';
 
 export class FlightPlan {

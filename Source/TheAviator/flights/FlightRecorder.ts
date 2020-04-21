@@ -5,18 +5,19 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { RuleSetContainerEvaluation } from '@dolittle/rules';
+import { ISerializer } from '../ISerializer';
+
+import { IContainer } from '../containers';
+import { Microservice } from '../microservices';
+
+import { Scenario, ScenarioResult, ScenarioContext, NoScenario } from '../gherkin';
+
+import { ScenarioSubject } from '../rules/ScenarioSubject';
+
+import { FailedRule } from '../FailedRule';
 
 import { Flight } from './Flight';
 import { IFlightRecorder } from './IFlightRecorder';
-import { Scenario } from '../gherkin/Scenario';
-import { ISerializer } from '../ISerializer';
-import { Microservice } from '../microservices/Microservice';
-import { IContainer } from '../containers/IContainer';
-import { FailedRule } from '../FailedRule';
-import { ScenarioSubject } from '../rules/ScenarioSubject';
-import { ScenarioResult } from '../gherkin/ScenarioResult';
-import { ScenarioContext } from '../gherkin/ScenarioContext';
-import { NoScenario } from '../gherkin/NoScenario';
 
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenarioContext: ScenarioContext;
@@ -39,7 +40,7 @@ export class FlightRecorder implements IFlightRecorder {
         const result: any = {};
 
         for (const [microservice, results] of this._scenarioResultsPerMicroservice) {
-            result[microservice.name] = results;
+            result[microservice.configuration.name] = results;
         }
 
         const json = this._serializer.toJSON(result);

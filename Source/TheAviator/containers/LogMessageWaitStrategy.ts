@@ -1,9 +1,10 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+const byline =  require('byline');
+
 import { IWaitStrategy } from './IWaitStrategy';
 import { IContainer } from './IContainer';
-const byline =  require('byline');
 
 export class LogMessageWaitStrategy implements IWaitStrategy {
     constructor(private _message: string) {

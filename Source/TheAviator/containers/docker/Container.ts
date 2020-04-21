@@ -1,18 +1,12 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { PassThrough } from 'stream';
-
 const getPort = require('get-port');
 
+import { PassThrough } from 'stream';
 import * as Docker from 'dockerode';
 
-import { ContainerInspectInfo } from 'dockerode';
-
-import { IContainer } from '../IContainer';
-import { ContainerOptions } from '../ContainerOptions';
-import { Mount } from '../Mount';
-import { IWaitStrategy } from '../IWaitStrategy';
+import { ContainerOptions, IContainer, Mount, IWaitStrategy } from '../';
 
 /**
  * Represents an implementation of {IContainer} for Docker.

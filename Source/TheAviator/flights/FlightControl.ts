@@ -1,14 +1,12 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import * as util from 'util';
-const asyncTimeout = util.promisify(setTimeout);
-
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
-import { Microservice } from '../microservices/Microservice';
-import { ScenarioContext } from '../gherkin/ScenarioContext';
-import { IMicroserviceFactory } from '../microservices/IMicroserviceFactory';
+
+import { Microservice, IMicroserviceFactory } from '../microservices';
+
+import { ScenarioContext } from '../gherkin';
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 

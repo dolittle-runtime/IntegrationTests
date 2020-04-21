@@ -5,6 +5,6 @@ import { Microservice } from './Microservice';
 import { Guid } from '@dolittle/rudiments';
 
 export interface IMicroserviceFactory {
-    create(name: string, workingDirectory: string, tenants: Guid[], target: string): Promise<Microservice>
+    create(platform: string, name: string, tenants: Guid[], workingDirectory: string): Promise<Microservice>
     cleanupAfter(microservice: Microservice): void;
 }

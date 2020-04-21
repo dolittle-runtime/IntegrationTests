@@ -1,0 +1,10 @@
+{
+    "public": {
+        "host": "{{runtime.host}}",
+        "port": "{{runtime.publicPort}}"
+    },
+    "private": {
+        "host": "{{runtime.host}}",
+        "port": "{{runtime.privatePort}}"
+    }
+}

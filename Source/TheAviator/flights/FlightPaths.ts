@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ScenarioContext } from '../gherkin/ScenarioContext';
-import { Scenario } from '../gherkin/Scenario';
-import { Microservice } from '../microservices/Microservice';
+import { Scenario, ScenarioContext } from '../gherkin';
+import { Microservice } from '../microservices';
+
 import { IFlightPaths } from './IFlightPaths';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
@@ -47,7 +47,7 @@ export class FlightPaths implements IFlightPaths {
     /** @inheritdoc */
     forMicroservice(scenario: Scenario, microservice: Microservice): string {
         const scenarioDirectory = this.forScenario(scenario);
-        const directory = path.join(scenarioDirectory, '_microservices', microservice.name);
+        const directory = path.join(scenarioDirectory, '_microservices', microservice.configuration.name);
         this.ensureDirectory(directory);
         return directory;
     }
@@ -55,7 +55,7 @@ export class FlightPaths implements IFlightPaths {
     /** @inheritdoc */
     forMicroserviceInContext(context: ScenarioContext, microservice: Microservice): string {
         const scenarioDirectory = this.forScenarioContext(context);
-        const directory = path.join(scenarioDirectory, '_microservices', microservice.name);
+        const directory = path.join(scenarioDirectory, '_microservices', microservice.configuration.name);
         this.ensureDirectory(directory);
         return directory;
     }

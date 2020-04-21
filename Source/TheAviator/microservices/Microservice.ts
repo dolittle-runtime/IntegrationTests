@@ -4,28 +4,34 @@
 import { Guid } from '@dolittle/rudiments';
 import { RuleSetContainerEvaluation } from '@dolittle/rules';
 
-import { IContainer } from '../containers/IContainer';
 import { EventLogRuleSetContainerBuilder } from '../rules/EventLogRuleSetContainerBuilder';
+
+import { IContainer, LogMessageWaitStrategy } from '../containers';
+
 import { IMicroserviceActions } from './IMicroserviceActions';
 import { MicroserviceActions } from './MicroserviceActions';
-import { LogMessageWaitStrategy } from '../containers/LogMessageWaitStrategy';
+import { MicroserviceConfiguration } from './configuration/MicroserviceConfiguration';
 
-import { MongoClient, Db, FilterQuery } from 'mongodb';
+
+import { MongoClient, FilterQuery } from 'mongodb';
 
 export class Microservice {
-    readonly name: string;
+    readonly configuration: MicroserviceConfiguration;
     readonly head: IContainer;
     readonly runtime: IContainer;
     readonly eventStoreStorage: IContainer;
-    readonly uniqueIdentifier: Guid;
     readonly actions: IMicroserviceActions;
 
     event_log: EventLogRuleSetContainerBuilder | undefined;
     eventLogEvaluation: RuleSetContainerEvaluation | undefined;
 
-    constructor(uniqueIdentifier: Guid, name: string, head: IContainer, runtime: IContainer, eventStoreStorage: IContainer) {
-        this.uniqueIdentifier = uniqueIdentifier;
-        this.name = name;
+    constructor(
+        configuration: MicroserviceConfiguration,
+        head: IContainer,
+        runtime: IContainer,
+        eventStoreStorage: IContainer) {
+
+        this.configuration = configuration;
         this.head = head;
         this.runtime = runtime;
         this.eventStoreStorage = eventStoreStorage;
@@ -59,7 +65,7 @@ export class Microservice {
     }
 
     async kill() {
-        console.log(`Kill containers for '${this.name}'`);
+        console.log(`Kill containers for '${this.configuration.name}'`);
 
         await this.head.kill();
         await this.runtime.kill();

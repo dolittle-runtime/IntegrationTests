@@ -2,15 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import fetch from 'node-fetch';
+import { Guid } from '@dolittle/rudiments';
 
 import { Microservice } from './Microservice';
 import { IMicroserviceActions } from './IMicroserviceActions';
-import { Guid } from '@dolittle/rudiments';
 
-/*
-Should not be allowed to mix interfaces for ICanHandleEvents and ICanHandleExternalEvents in the same
-implementation
-*/
 
 export class MicroserviceActions implements IMicroserviceActions {
     constructor(private _microservice: Microservice) {

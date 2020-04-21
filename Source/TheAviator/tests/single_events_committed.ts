@@ -1,8 +1,8 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import * as util from 'util';
-const asyncTimeout = util.promisify(setTimeout);
+import asyncTimeout from '../asyncTimeout';
+
 import { Guid } from '@dolittle/rudiments';
 import { scenario_for_a_single_microservice } from './scenario_for_a_single_microservice';
 

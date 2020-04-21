@@ -1,14 +1,12 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IContainerEnvironment } from '../IContainerEnvironment';
-import { IContainer } from '../IContainer';
-import { ContainerOptions } from '../ContainerOptions';
-import { Container } from './Container';
-
 import { retry } from 'async';
-
 import Docker from 'dockerode';
+
+import { ContainerOptions, IContainerEnvironment, IContainer } from '../';
+
+import { Container } from './Container';
 
 export class ContainerEnvironment implements IContainerEnvironment {
     private _docker: Docker;
