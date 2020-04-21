@@ -5,6 +5,7 @@ using System;
 using Dolittle.DependencyInversion;
 using Dolittle.Events;
 using Dolittle.Execution;
+using Dolittle.Logging;
 using Dolittle.Tenancy;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +16,16 @@ namespace Head
     {
         readonly IExecutionContextManager _executionContextManager;
         readonly FactoryFor<IEventStore> _eventStore;
+        readonly ILogger _logger;
 
-        public EventsController(IExecutionContextManager executionContextManager, FactoryFor<IEventStore> eventStore)
+        public EventsController(
+            IExecutionContextManager executionContextManager,
+            FactoryFor<IEventStore> eventStore,
+            ILogger logger)
         {
             _executionContextManager = executionContextManager;
             _eventStore = eventStore;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -32,12 +38,22 @@ namespace Head
         [Route("Single/{tenantId}")]
         public IActionResult Single(string tenantId, [FromBody] MyEvent @event)
         {
-            _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
-            var eventStore = _eventStore();
-            var events = new UncommittedEvents();
-            events.Append(@event);
-            eventStore.Commit(events);
-            return Ok();
+            try
+            {
+                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
+                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                var eventStore = _eventStore();
+                var events = new UncommittedEvents();
+                events.Append(@event);
+                eventStore.Commit(events);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Problem committing event");
+                return Problem(ex.Message, tenantId, 500);
+            }
         }
     }
 }
