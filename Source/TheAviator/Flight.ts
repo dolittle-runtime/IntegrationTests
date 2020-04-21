@@ -3,13 +3,20 @@
 
 import { FlightPlan } from './FlightPlan';
 import { IFlightRecorder } from './IFlightRecorder';
+import { IFlightPaths } from './IFlightPaths';
 
 export class Flight {
     private _recorder: IFlightRecorder | undefined;
     readonly plan: FlightPlan;
+    readonly platform: string;
 
-    constructor(plan: FlightPlan) {
+    constructor(platform: string, plan: FlightPlan) {
+        this.platform = platform;
         this.plan = plan;
+    }
+
+    get paths(): IFlightPaths {
+        return this.plan.paths;
     }
 
     get recorder(): IFlightRecorder {

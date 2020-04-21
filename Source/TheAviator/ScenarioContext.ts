@@ -4,6 +4,7 @@
 import { Microservice } from './Microservice';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { Guid } from '@dolittle/rudiments';
+import { IFlightPaths } from './IFlightPaths';
 
 class MicroserviceForPreparation {
     readonly name: string;
@@ -22,7 +23,7 @@ export class ScenarioContext {
     readonly name: string;
     readonly microservices: Map<string, Microservice>;
 
-    constructor(name: string, private _microserviceFactory: IMicroserviceFactory, private _workingDirectory: string, private _target: string) {
+    constructor(name: string, private _platform: string, private _paths: IFlightPaths, private _microserviceFactory?: IMicroserviceFactory) {
         this.name = name;
         this.microservices = new Map();
     }
@@ -39,8 +40,11 @@ export class ScenarioContext {
 
     async prepare() {
         for (const ms of this._microservicesToPrepare) {
-            const microservice = await this._microserviceFactory.create(ms.name, this._workingDirectory, ms.tenants, this._target);
-            this.microservices.set(ms.name, microservice);
+            const workingDirectory = this._paths.forScenarioContext(this);
+            const microservice = await this._microserviceFactory?.create(ms.name, workingDirectory, ms.tenants, this._platform);
+            if (microservice) {
+                this.microservices.set(ms.name, microservice);
+            }
         }
     }
 }

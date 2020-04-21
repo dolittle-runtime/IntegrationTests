@@ -3,13 +3,14 @@
 
 import { Scenario } from './Scenario';
 import { ScenarioContext } from 'ScenarioContext';
+import { IFlightPaths } from 'IFlightPaths';
 
 export class FlightPlan {
-    readonly outputPath: string;
+    readonly paths: IFlightPaths;
     readonly scenariosByContexts: Map<ScenarioContext, Scenario[]>;
 
-    constructor(outputPath: string, scenariosByContexts: Map<ScenarioContext, Scenario[]>) {
-        this.outputPath = outputPath;
+    constructor(paths: IFlightPaths, scenariosByContexts: Map<ScenarioContext, Scenario[]>) {
+        this.paths = paths;
         this.scenariosByContexts = scenariosByContexts;
     }
 }
