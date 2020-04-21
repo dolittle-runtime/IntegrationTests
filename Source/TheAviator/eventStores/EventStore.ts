@@ -53,6 +53,18 @@ export class EventStore implements IEventStore {
     }
 
     async clear(): Promise<void> {
+        try {
+            const client = await this.getMongoClient();
+            for (const eventStoreForTenant of this.microservice.configuration.eventStoreForTenants) {
+                const db = client.db(eventStoreForTenant.database);
+                const collections = await db.collections();
+                for (const collection of collections) {
+                    await collection.deleteMany({});
+                }
+            }
+        } catch (ex) {
+
+        }
     }
 
     private async findDocumentsInCollection(tenantId: Guid, collectionName: string, filter: FilterQuery<any>): Promise<any[]> {
@@ -62,7 +74,7 @@ export class EventStore implements IEventStore {
                 return [];
             }
 
-            const client = await this.getMongoClientForEventStoreStorage();
+            const client = await this.getMongoClient();
             const collection = client.db(eventStoresForTenants[0].database).collection(collectionName);
             const result = await collection.find(filter).toArray();
             await client.close();
@@ -73,7 +85,7 @@ export class EventStore implements IEventStore {
         }
     }
 
-    private async getMongoClientForEventStoreStorage() {
+    private async getMongoClient() {
         const url = `mongodb://localhost:${this.microservice.eventStoreStorage.boundPorts.get(27017)}`;
         const client = await MongoClient.connect(url, { useUnifiedTopology: true });
         return client;
