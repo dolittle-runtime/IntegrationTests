@@ -20,7 +20,6 @@ import { Flight } from './Flight';
 import { IFlightRecorder } from './IFlightRecorder';
 
 export class FlightRecorder implements IFlightRecorder {
-    private _currentScenarioContext: ScenarioContext;
     private _currentScenario: Scenario;
     private _colorRemoverRegEx: RegExp;
     private _scenarioResultsPerMicroservice: Map<Microservice, ScenarioResult[]> = new Map();
@@ -32,7 +31,6 @@ export class FlightRecorder implements IFlightRecorder {
         this.writeFlightPlan();
         this.writeMicroservicesConfigurations();
         this.hookUpLogOutputFor();
-        this._currentScenarioContext = new ScenarioContext('NoScenarioContext', _flight.platform, _flight.paths);
         this._currentScenario = new NoScenario();
     }
 
@@ -46,10 +44,6 @@ export class FlightRecorder implements IFlightRecorder {
         const json = this._serializer.toJSON(result);
         const resultFilePath = path.join(this._flight.paths.base, 'results.json');
         fs.writeFileSync(resultFilePath, json);
-    }
-
-    setCurrentScenarioContext(scenarioContext: ScenarioContext): void {
-        this._currentScenarioContext = scenarioContext;
     }
 
     setCurrentScenario(scenario: Scenario): void {
