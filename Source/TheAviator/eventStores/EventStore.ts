@@ -38,12 +38,12 @@ export class EventStore implements IEventStore {
     async dump(): Promise<string[]> {
         const backups: string[] = [];
         for (const eventStoreForTenant of this.microservice.configuration.eventStoreForTenants) {
-            const backupName = `${Guid.create()}-${eventStoreForTenant.tenantId}-backup`;
+            const backupName = `${Guid.create()} ${eventStoreForTenant.tenantId}`;
             backups.push(backupName);
 
             await this.microservice.eventStoreStorage.exec([
                 'mongodump',
-                `--archive=/backup/${backupName}`,
+                `--archive="/backup/${backupName}"`,
                 '-d',
                 eventStoreForTenant.database
             ], {});

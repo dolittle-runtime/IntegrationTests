@@ -1,12 +1,15 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import fs from 'fs';
+import path from 'path';
+
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
 
 import { Microservice, IMicroserviceFactory } from '../microservices';
 
-import { ScenarioContext, ScenarioContextDefinition } from '../gherkin';
+import { ScenarioContext, ScenarioContextDefinition, Scenario } from '../gherkin';
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
@@ -18,7 +21,7 @@ export class FlightControl implements IFlightControl {
         for (const [contextDefinition, scenarios] of this._flight.plan.scenariosByContexts) {
             const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
             const microservices = Object.values(microservicesByName);
-            const context = new ScenarioContext(contextDefinition.name, microservicesByName);
+            const context = new ScenarioContext(contextDefinition, microservicesByName);
 
             this._flight.recorder.writeConfigurationFilesFor(microservices);
             this._flight.recorder.collectLogsFor(microservices);
@@ -40,7 +43,7 @@ export class FlightControl implements IFlightControl {
                 await this.performOnMicroservice(microservices, async (microservice) => {
                     const brokenRules = await microservice.endEvaluation();
                     await this._flight.recorder.reportResultFor(scenario, microservice, brokenRules);
-                    await microservice.eventStore.dump();
+                    await this.dumpEventStore(microservice, scenario);
                     await microservice.eventStore.clear();
                 });
             }
@@ -48,10 +51,26 @@ export class FlightControl implements IFlightControl {
             await this.performOnMicroservice(microservices, async (microservice) => { await microservice.kill(); });
         }
 
-        console.log('Conclude');
-
         this._flight.recorder.conclude();
-        console.log('Concluded');
+    }
+
+    private async dumpEventStore(microservice: Microservice, scenario: Scenario) {
+        if (scenario.context) {
+            const backups = await microservice.eventStore.dump();
+            const sourceDirectory = this._flight.paths.forMicroserviceInContext(scenario.context.definition, microservice);
+            const backupDirectory = path.join(sourceDirectory, 'backup');
+            for (const backup of backups) {
+                const tenantId = backup.split(' ')[1];
+                const microserviceDestinationDirectory = this._flight.paths.forMicroservice(scenario, microservice);
+                const destinationDirectory = path.join(microserviceDestinationDirectory, 'eventStore');
+                if (!fs.existsSync(destinationDirectory)) {
+                    fs.mkdirSync(destinationDirectory, { recursive: true });
+                }
+                const sourceFile = path.join(backupDirectory, backup);
+                const destinationFile = path.join(destinationDirectory, tenantId);
+                fs.renameSync(sourceFile, destinationFile);
+            }
+        }
     }
 
     private async prepareMicroservicesFor(context: ScenarioContextDefinition) {
