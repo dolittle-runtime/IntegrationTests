@@ -37,7 +37,7 @@ export class FlightRecorder implements IFlightRecorder {
         const result: any = {};
 
         for (const [context, results] of this._scenarioResultsPerContext) {
-            result[name] = results;
+            result[context.name] = results;
         }
 
         const json = this._serializer.toJSON(result);
