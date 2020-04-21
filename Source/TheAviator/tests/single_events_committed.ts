@@ -25,6 +25,6 @@ export class single_events_committed extends scenario_for_a_single_microservice 
     resuming_the_head = async () => await this.microservice?.head.resume();
     waiting_for_two_seconds = async () => await asyncTimeout(2000);
 
-    then_first_event_should_be_in_event_log = () => this.event_log?.should_contain(this.first_event_committed);
-    then_second_event_should_be_in_event_log = () => this.event_log?.should_contain(this.second_event_committed);
+    then_first_event_should_be_in_event_log = () => this.event_log?.should_contain(this.tenant, this.first_event_committed);
+    then_second_event_should_be_in_event_log = () => this.event_log?.should_contain(this.tenant, this.second_event_committed);
 }

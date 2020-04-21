@@ -10,6 +10,8 @@ import { EventLogRuleSetContainerBuilder } from 'rules/EventLogRuleSetContainerB
 import { Guid } from '@dolittle/rudiments';
 
 export class scenario_for_a_single_microservice extends Scenario {
+    protected tenant = Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd');
+
     given = a_single_microservice;
 
     microservice: Microservice | undefined;
@@ -20,8 +22,7 @@ export class scenario_for_a_single_microservice extends Scenario {
     }
 
     async commitEvent(event: any) {
-        const tenant = Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd');
-        await this.microservice?.actions.commitEvent(tenant, Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
+        await this.microservice?.actions.commitEvent(this.tenant, Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
     }
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {
