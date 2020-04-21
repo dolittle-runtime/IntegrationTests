@@ -129,6 +129,15 @@ export class Container implements IContainer {
         await this.waitForStrategies(waitStrategies);
     }
 
+    /** @inheritdoc */
+    async exec(command: string[], options: any, ...waitStrategies: IWaitStrategy[]) {
+        if (!this._container) {
+            return;
+        }
+        await this._container.exec({ Cmd: command });
+        await this.waitForStrategies(waitStrategies);
+    }
+
     private async waitForStrategies(waitStrategies: IWaitStrategy[]) {
         for (const strategy of waitStrategies) {
             try {

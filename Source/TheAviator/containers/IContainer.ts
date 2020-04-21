@@ -26,31 +26,43 @@ export interface IContainer {
 
     /**
      * Stop the instance.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
      */
     stop(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Pauses the instance.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
      */
     pause(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Resumes a paused instance.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
      */
     resume(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Kill the instance.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
      */
     kill(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
      * Restart the instance.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
      */
     restart(...waitStrategies: IWaitStrategy[]): Promise<void>;
+
+    /**
+     * Execute a command within the container.
+     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
+     * @param {*} options Configuration options
+     */
+    exec(command: string[], options: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
 }
