@@ -23,6 +23,8 @@ export class FlightControl implements IFlightControl {
             this._flight.recorder.writeConfigurationFilesFor(microservices);
             this._flight.recorder.collectLogsFor(microservices);
 
+            this._flight.scenarioContext.next(context);
+
             await this.performOnMicroservice(microservices, async (microservice) => await microservice.start());
 
             for (const scenario of scenarios) {
