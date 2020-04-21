@@ -47,7 +47,7 @@ export class FlightPaths implements IFlightPaths {
     /** @inheritdoc */
     forMicroservice(scenario: Scenario, microservice: Microservice): string {
         const scenarioDirectory = this.forScenario(scenario);
-        const directory = path.join(scenarioDirectory, microservice.name);
+        const directory = path.join(scenarioDirectory, '_microservices', microservice.name);
         this.ensureDirectory(directory);
         return directory;
     }
@@ -55,7 +55,8 @@ export class FlightPaths implements IFlightPaths {
     /** @inheritdoc */
     forMicroserviceInContext(context: ScenarioContext, microservice: Microservice): string {
         const scenarioDirectory = this.forScenarioContext(context);
-        const directory = path.join(scenarioDirectory, microservice.name);
+        const directory = path.join(scenarioDirectory, '_microservices', microservice.name);
+        this.ensureDirectory(directory);
         return directory;
     }
 
