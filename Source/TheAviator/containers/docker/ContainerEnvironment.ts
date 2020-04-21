@@ -38,6 +38,8 @@ export class ContainerEnvironment implements IContainerEnvironment {
                     callback(null);
                 }
             });
+
+            await network.remove();
             console.log(`Network '${name}' removed`);
         } catch (ex) {
             console.log(`Unable to remove network '${name}'`);
