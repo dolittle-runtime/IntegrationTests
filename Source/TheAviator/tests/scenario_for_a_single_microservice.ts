@@ -5,7 +5,6 @@ import { Scenario } from '../Scenario';
 import { a_single_microservice } from './a_single_microservice';
 import { Microservice } from '../Microservice';
 
-
 export class scenario_for_a_single_microservice extends Scenario {
     given = a_single_microservice;
 
