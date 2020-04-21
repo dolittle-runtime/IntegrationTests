@@ -6,6 +6,9 @@ import { Aviator } from './Aviator';
 import { single_events_committed } from './tests/single_events_committed';
 import { twenty_events_committed } from './tests/twenty_events_committed';
 
+
+// https://unicode-table.com/en/
+
 (async () => {
     const aviator = Aviator.getFor('dotnet');
     const flight = await aviator.performFlightWith(
