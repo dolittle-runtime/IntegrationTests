@@ -25,7 +25,7 @@ export class MicroserviceActions implements IMicroserviceActions {
 
     async commitEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
         try {
-            const url = `${this.getHeadBaseUrl()}/api/Events/Single`;
+            const url = `${this.getHeadBaseUrl()}/api/Events/Single/${tenantId.toString()}`;
             await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(content),
