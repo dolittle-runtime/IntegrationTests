@@ -49,7 +49,7 @@ export class EventStore implements IEventStore {
                 };
             }
             return {
-                Position: parseFloat(result.Position.toString()),
+                Position: parseInt(result.Position.toString(), 10),
                 FailingPartitions: result.FailingPartitions
             };
         } catch (ex) {
