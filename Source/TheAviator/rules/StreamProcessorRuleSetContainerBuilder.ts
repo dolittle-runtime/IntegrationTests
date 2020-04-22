@@ -3,15 +3,16 @@
 
 import { Guid } from '@dolittle/rudiments';
 
-import { EventWithContentShouldBeInEventLog } from './EventWithContentShouldBeInEventLog';
 import { Microservice } from '../microservices/Microservice';
 
+import { StreamProcessorShouldBeAtPosition } from './StreamProcessorShouldBeAtPosition';
 import { ScenarioRuleSetContainerBuilder } from './ScenarioRuleSetContainerBuilder';
 
-export class EventLogRuleSetContainerBuilder extends ScenarioRuleSetContainerBuilder {
+export class StreamProcessorRuleSetContainerBuilder extends ScenarioRuleSetContainerBuilder {
     constructor(microservice: Microservice) {
         super(microservice);
     }
 
-    should_contain = (tenantId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInEventLog(tenantId, events));
+    should_have_event_handler_at_position = (tenantId: Guid, eventHandlerId: Guid, position: number) => this.addRuleBuilderFor(new StreamProcessorShouldBeAtPosition(tenantId, eventHandlerId, position));
 }
+

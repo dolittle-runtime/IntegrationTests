@@ -2,12 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { RuleBuilder, RuleWithSubjectProvider, IRule } from '@dolittle/rules';
-import { EventLogSubjectProvider } from './EventLogSubjectProvider';
+import { ScenarioWithThenSubjectProvider } from './ScenarioWithThenSubjectProvider';
 import { Microservice } from '../microservices/Microservice';
 
 const stackTrace = require('stack-trace');
 
-export class EventLogRuleBuilder extends RuleBuilder {
+export class ScenarioRuleBuilder extends RuleBuilder {
     private _then: string;
     private _scenario: string;
 
@@ -28,6 +28,6 @@ export class EventLogRuleBuilder extends RuleBuilder {
     }
 
     build(): RuleWithSubjectProvider {
-        return new RuleWithSubjectProvider(this._rule, new EventLogSubjectProvider(this._microservice, this._scenario, this._then));
+        return new RuleWithSubjectProvider(this._rule, new ScenarioWithThenSubjectProvider(this._microservice, this._scenario, this._then));
     }
 }

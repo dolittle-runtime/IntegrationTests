@@ -45,6 +45,7 @@ export class Aviator {
         console.log('\u2708 \u2708 Welcome to The Aviator - please enjoy the flight \u2708 \u2708');
         console.log('\u2705');
         console.log('\u274C');
+        console.log('✔✗');
         const flightPaths = new FlightPaths();
         const flightPlanner = new FlightPlanner(flightPaths, this.microserviceFactory);
         const flightPlan = flightPlanner.planFor(this.platform, ...scenarios);

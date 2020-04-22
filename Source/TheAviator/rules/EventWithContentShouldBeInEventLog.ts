@@ -4,18 +4,18 @@
 import { Guid } from '@dolittle/rudiments';
 
 import { IRule, IRuleContext, Reason } from '@dolittle/rules';
-import { EventLogQuerySubject } from './EventLogSubject';
+import { ScenarioWithThenSubject } from './ScenarioWithThenSubject';
 
 const EventIsMissing: Reason = Reason.create('ffa82a7b-4dd3-49df-8ab0-08970f7508cc', 'Event is missing');
 
-export class EventWithContentShouldBeInEventLog implements IRule<EventLogQuerySubject> {
+export class EventWithContentShouldBeInEventLog implements IRule<ScenarioWithThenSubject> {
     private _events: any[];
 
     constructor(private _tenantId: Guid, ...events: any[]) {
         this._events = [].concat(...events);
     }
 
-    async evaluate(context: IRuleContext, subject: EventLogQuerySubject) {
+    async evaluate(context: IRuleContext, subject: ScenarioWithThenSubject) {
         const eventsToLookFor: any[] = this._events.map(_ => {
             return { 'Content.uniqueIdentifier': _.uniqueIdentifier };
         });

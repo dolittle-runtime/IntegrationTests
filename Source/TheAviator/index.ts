@@ -3,8 +3,10 @@
 
 import { Aviator } from './Aviator';
 
-import { single_events_committed } from './tests/single_events_committed';
+import { single_event_committed } from './tests/single_event_committed';
+import { two_events_with_pause_inbetween_committed } from './tests/two_events_with_pause_inbetween_committed';
 import { twenty_events_committed } from './tests/twenty_events_committed';
+
 
 
 // https://unicode-table.com/en/
@@ -12,7 +14,8 @@ import { twenty_events_committed } from './tests/twenty_events_committed';
 (async () => {
     const aviator = Aviator.getFor('dotnet');
     const flight = await aviator.performFlightWith(
-        single_events_committed,
+        single_event_committed,
+        two_events_with_pause_inbetween_committed,
         twenty_events_committed
     );
 

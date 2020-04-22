@@ -64,7 +64,6 @@ export class Microservice {
     }
 
     async endEvaluation(): Promise<BrokenRule[]> {
-        const result = await this.eventStore.endEvaluation();
-        return result.brokenRules.slice();
+        return await this.eventStore.endEvaluation();
     }
 }

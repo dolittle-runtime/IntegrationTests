@@ -1,17 +1,21 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { MongoClient, FilterQuery } from 'mongodb';
-import { Guid } from '@dolittle/rudiments';
-import { RuleSetContainerEvaluation, RuleSetContainer } from '@dolittle/rules';
+import { MongoClient, FilterQuery, Decimal128 } from 'mongodb';
+import MUUID from 'uuid-mongodb';
 
-import { EventLogRuleSetContainerBuilder } from '../rules/EventLogRuleSetContainerBuilder';
+import { Guid } from '@dolittle/rudiments';
+import { RuleSetContainerEvaluation, BrokenRule } from '@dolittle/rules';
+
+import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../rules';
+
 import { IEventStore } from './IEventStore';
 import { Microservice } from '../microservices';
 
 export class EventStore implements IEventStore {
     readonly microservice: Microservice;
     eventLog: EventLogRuleSetContainerBuilder | undefined;
+    streamProcessors: StreamProcessorRuleSetContainerBuilder | undefined;
 
     constructor(microservice: Microservice) {
         this.microservice = microservice;
@@ -21,18 +25,60 @@ export class EventStore implements IEventStore {
         return this.findDocumentsInCollection(tenantId, 'event-log', filter);
     }
 
-    async beginEvaluation() {
-        this.eventLog = new EventLogRuleSetContainerBuilder(this.microservice);
+    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<any> {
+        try {
+            const eventStoresForTenants = this.microservice.configuration.eventStoreForTenants.filter(_ => _.tenantId);
+            if (eventStoresForTenants.length !== 1) {
+                return {};
+            }
+
+            const client = await this.getMongoClient();
+            const collection = client.db(eventStoresForTenants[0].database).collection('stream-processor-states');
+
+            const query = {
+                '_id.EventProcessorId': MUUID.from(eventProcessorId.toString()),
+                '_id.SourceStreamId': MUUID.from(sourceStreamId.toString())
+            };
+
+            const result = await collection.findOne(query);
+            await client.close();
+            if (!result) {
+                return {
+                    Position: -1,
+                    FailingPartitions: {}
+                };
+            }
+            return {
+                Position: parseFloat(result.Position.toString()),
+                FailingPartitions: result.FailingPartitions
+            };
+        } catch (ex) {
+            return {};
+        }
     }
 
-    async endEvaluation(): Promise<RuleSetContainerEvaluation> {
+    async beginEvaluation() {
+        this.eventLog = new EventLogRuleSetContainerBuilder(this.microservice);
+        this.streamProcessors = new StreamProcessorRuleSetContainerBuilder(this.microservice);
+    }
+
+    async endEvaluation(): Promise<BrokenRule[]> {
+        let brokenRules: BrokenRule[] = [];
+
         if (this.eventLog) {
             const eventLogRuleSetContainer = this.eventLog.build();
             const eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
             await eventLogEvaluation.evaluate(this);
-            return eventLogEvaluation;
+            brokenRules = brokenRules.concat(eventLogEvaluation.brokenRules);
         }
-        return new RuleSetContainerEvaluation(new RuleSetContainer());
+
+        if (this.streamProcessors) {
+            const streamProcessorRuleSetContainer = this.streamProcessors.build();
+            const streamProcessorEvaluation = new RuleSetContainerEvaluation(streamProcessorRuleSetContainer);
+            await streamProcessorEvaluation.evaluate(this);
+            brokenRules = brokenRules.concat(streamProcessorEvaluation.brokenRules);
+        }
+        return brokenRules;
     }
 
     async dump(): Promise<string[]> {

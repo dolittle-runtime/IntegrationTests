@@ -12,7 +12,7 @@ import { Microservice } from '../microservices';
 
 import { Scenario, ScenarioResult, ScenarioContextDefinition, NoScenario } from '../gherkin';
 
-import { ScenarioSubject } from '../rules/ScenarioSubject';
+import { ScenarioWithThenSubject } from '../rules';
 
 import { FailedRule } from '../FailedRule';
 
@@ -48,7 +48,7 @@ export class FlightRecorder implements IFlightRecorder {
     async reportResultFor(scenario: Scenario, microservice: Microservice, brokenRules: BrokenRule[]) {
         const failedRules: FailedRule[] = [];
         for (const brokenRule of brokenRules) {
-            const subject = brokenRule.subject as ScenarioSubject;
+            const subject = brokenRule.subject as ScenarioWithThenSubject;
             const message = brokenRule.causes.map(_ => `${_.title} - ${_.description}`).join();
             failedRules.push(new FailedRule(brokenRule.rule.constructor.name, message, subject.then));
         }
