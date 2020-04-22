@@ -23,9 +23,10 @@ export class MicroserviceActions implements IMicroserviceActions {
         }
     }
 
-    async commitEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
+    async commitEvent(tenantId: Guid, artifactId: Guid, content: any, publicEvent: boolean = false): Promise<void> {
         try {
-            const url = `${this.getHeadBaseUrl()}/api/Events/Single/${tenantId.toString()}`;
+            const action = publicEvent ? 'SinglePublic' : 'Single';
+            const url = `${this.getHeadBaseUrl()}/api/Events/${action}/${tenantId.toString()}`;
             await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(content),
@@ -34,6 +35,23 @@ export class MicroserviceActions implements IMicroserviceActions {
             });
         } catch (ex) { }
     }
+
+    async commitPublicEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
+        this.commitEvent(tenantId, artifactId, content, true);
+    }
+
+    async commitAggregateEvent(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
+        try {
+            const url = `${this.getHeadBaseUrl()}/api/Events/SingleAggreate/${tenantId.toString()}/${eventSource.toString}/${version}`;
+            await fetch(url, {
+                method: 'post',
+                body: JSON.stringify(content),
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 10000
+            });
+        } catch (ex) { }
+    }
+
 
     async getRuntimeMetrics(): Promise<string> {
         try {
