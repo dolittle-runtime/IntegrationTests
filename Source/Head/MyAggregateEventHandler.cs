@@ -8,10 +8,10 @@ using Dolittle.Events.Handling;
 
 namespace Head
 {
-    [EventHandler("3dbe18b8-c74f-4b57-9c60-f88de4b024a5")]
-    public class MyEventHandler : ICanHandleEvents
+    [EventHandler("2a494827-841c-43c2-b163-238ac9314f4a")]
+    public class MyAggregateEventHandler : ICanHandleEvents
     {
-        public Task Handle(MyEvent @event, EventContext context)
+        public Task Handle(MyAggregateEvent @event, EventContext context)
         {
             if (@event.Fail) throw new Exception("Failed");
             return Task.CompletedTask;

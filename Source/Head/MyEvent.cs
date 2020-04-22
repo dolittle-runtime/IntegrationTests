@@ -8,5 +8,6 @@ namespace Head
     public class MyEvent : IEvent
     {
         public string UniqueIdentifier { get; set; }
+        public bool Fail { get; set; } = false;
     }
 }

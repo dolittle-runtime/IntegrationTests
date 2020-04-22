@@ -80,7 +80,7 @@ namespace Head
 
         [HttpPost]
         [Route("SingleAggregate/{tenantId}/{eventSource}/{version}")]
-        public IActionResult SingleAggregate(string tenantId, string eventSource, ulong version, [FromBody] MyEvent @event)
+        public IActionResult SingleAggregate(string tenantId, string eventSource, ulong version, [FromBody] MyAggregateEvent @event)
         {
             try
             {
