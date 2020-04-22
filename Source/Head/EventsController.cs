@@ -55,5 +55,48 @@ namespace Head
                 return Problem(ex.Message, tenantId, 500);
             }
         }
+
+        [HttpPost]
+        [Route("SinglePublic/{tenantId}")]
+        public IActionResult SinglePublic(string tenantId, [FromBody] MyPublicEvent @event)
+        {
+            try
+            {
+                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
+                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                var eventStore = _eventStore();
+                var events = new UncommittedEvents();
+                events.Append(@event);
+                eventStore.Commit(events);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Problem committing event");
+                return Problem(ex.Message, tenantId, 500);
+            }
+        }
+
+        [HttpPost]
+        [Route("SingleAggregate/{tenantId}/{eventSource}/{version}")]
+        public IActionResult SingleAggregate(string tenantId, string eventSource, ulong version, [FromBody] MyEvent @event)
+        {
+            try
+            {
+                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
+                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                var eventStore = _eventStore();
+                var events = new UncommittedAggregateEvents(Guid.Parse(eventSource), typeof(MyAggregate), version);
+                events.Append(@event);
+                eventStore.CommitForAggregate(events);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Problem committing event");
+                return Problem(ex.Message, tenantId, 500);
+            }
+        }
     }
 }

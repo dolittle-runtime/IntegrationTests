@@ -5,7 +5,7 @@ using Dolittle.Events;
 
 namespace Head
 {
-    public class MyEvent : IEvent
+    public class MyPublicEvent : IPublicEvent
     {
         public string UniqueIdentifier { get; set; }
     }

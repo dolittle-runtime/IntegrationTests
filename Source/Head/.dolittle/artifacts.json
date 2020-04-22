@@ -7,7 +7,12 @@
                 "type": "Head.MyEvent, Head"
               }            
         },
-        "eventSources": {},
+        "eventSources": {
+            "e31271d9-3c0c-4df4-874f-468960e4fef0": {
+                "generation": 1,
+                "type": "Head.MyAggreate, Head"
+            }
+        },
         "readModels": {},
         "queries": {}
     }
