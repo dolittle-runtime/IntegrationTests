@@ -5,12 +5,12 @@
             "0e984977-1686-4036-98ef-14dc9f55f705": {
                 "generation": 1,
                 "type": "Head.MyEvent, Head"
-              }            
+            }
         },
         "eventSources": {
             "e31271d9-3c0c-4df4-874f-468960e4fef0": {
                 "generation": 1,
-                "type": "Head.MyAggreate, Head"
+                "type": "Head.MyAggregate, Head"
             }
         },
         "readModels": {},
