@@ -1,0 +1,6 @@
+{
+    {{#each tenants}}
+    "{{tenantId}}": {}
+    {{/each}}
+}
+

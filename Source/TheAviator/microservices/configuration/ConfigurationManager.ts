@@ -25,6 +25,7 @@ export class ConfigurationManager implements IConfigurationManager {
     generateForRuntime(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[] {
         const mounts: Mount[] = [];
         mounts.push(this.generateFile(configuration, RuntimeConfig, 'resources.json', workingDirectory));
+        mounts.push(this.generateFile(configuration, RuntimeConfig, 'tenants.json', workingDirectory));
         return mounts;
     }
 
