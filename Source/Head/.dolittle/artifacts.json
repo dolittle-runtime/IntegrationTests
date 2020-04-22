@@ -5,6 +5,14 @@
             "0e984977-1686-4036-98ef-14dc9f55f705": {
                 "generation": 1,
                 "type": "Head.MyEvent, Head"
+            },
+            "4d5e9860-d80c-442a-803c-68b324f3c9fe": {
+                "generation": 1,
+                "type": "Head.MyAggregateEvent, Head"
+            },
+            "e317fb1a-40bd-4630-ba9c-f8f92b90b7f4": {
+                "generation": 1,
+                "type": "Head.MyPublicEvent, Head"
             }
         },
         "eventSources": {

@@ -4,7 +4,7 @@
             "servers": [
                 "mongo"
             ],
-            "database": "dolittle_event_store_pricing"
+            "database": "event_store"
         }
     }
 }
