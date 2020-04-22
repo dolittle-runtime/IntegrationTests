@@ -14,17 +14,17 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
 
     async evaluate(context: IRuleContext, subject: ScenarioWithThenSubject) {
         const result = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._eventProcessorId);
-        if (!result) {
-            MissingStreamProcessorState.withArguments({
+        if (!result && result.position === -1) {
+            context.fail(this, subject, MissingStreamProcessorState.withArguments({
                 processor: this._eventProcessorId.toString()
-            });
+            }));
         }
         if (result?.position !== this._position) {
-            StreamProcessorPositionIsWrong.withArguments({
+            context.fail(this, subject, StreamProcessorPositionIsWrong.withArguments({
                 expectedPosition: this._position,
                 actualPosition: result.position,
                 processor: this._eventProcessorId.toString()
-            });
+            }));
         }
     }
 }
