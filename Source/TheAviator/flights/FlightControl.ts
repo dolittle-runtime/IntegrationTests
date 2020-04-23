@@ -42,7 +42,8 @@ export class FlightControl implements IFlightControl {
 
                 await this.performOnMicroservice(microservices, async (microservice) => {
                     const brokenRules = await microservice.endEvaluation();
-                    await this._flight.recorder.reportResultFor(scenario, microservice, brokenRules);
+                    scenario.handleBrokenRules(brokenRules);
+                    await this._flight.recorder.reportResultFor(scenario, microservice);
                     await this.dumpEventStore(microservice, scenario);
                     await microservice.eventStore.clear();
                 });

@@ -44,7 +44,6 @@ export class Container implements IContainer {
         const createOptions = this.getCreateOptions();
         this._container = await this._dockerClient.createContainer(createOptions);
 
-        console.log(`Starting '${this.options.friendlyName}'`);
         await this._container.start();
         this._container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
             stream?.setEncoding('utf8');
@@ -59,7 +58,6 @@ export class Container implements IContainer {
         if (!this._container) {
             return;
         }
-        console.log(`Stopping '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
             await this._container.stop();
@@ -72,7 +70,6 @@ export class Container implements IContainer {
         if (!this._container) {
             return;
         }
-        console.log(`Pausing '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
             await this._container.pause();
@@ -85,7 +82,6 @@ export class Container implements IContainer {
         if (!this._container) {
             return;
         }
-        console.log(`Resume '${this.options.friendlyName}'`);
         const state = await this._container.inspect();
         if (state.State.Running) {
             await this._container.unpause();
@@ -99,7 +95,6 @@ export class Container implements IContainer {
         if (!this._container) {
             return;
         }
-        console.log(`Killing '${this.options.friendlyName}'`);
         try {
             const state = await this._container.inspect();
             try {

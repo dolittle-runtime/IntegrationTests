@@ -4,7 +4,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { RuleSetContainerEvaluation, BrokenRule } from '@dolittle/rules';
 import { ISerializer } from '../ISerializer';
 
 import { IContainer } from '../containers';
@@ -12,12 +11,11 @@ import { Microservice } from '../microservices';
 
 import { Scenario, ScenarioResult, ScenarioContextDefinition, NoScenario } from '../gherkin';
 
-import { ScenarioWithThenSubject } from '../rules';
-
 import { FailedRule } from '../FailedRule';
 
 import { Flight } from './Flight';
 import { IFlightRecorder } from './IFlightRecorder';
+import { FailedRuleCause } from '../FailedRuleCause';
 
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenario: Scenario;
@@ -45,14 +43,16 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
-    async reportResultFor(scenario: Scenario, microservice: Microservice, brokenRules: BrokenRule[]) {
-        const failedRules: FailedRule[] = [];
-        for (const brokenRule of brokenRules) {
-            const subject = brokenRule.subject as ScenarioWithThenSubject;
-            const message = brokenRule.causes.map(_ => `${_.title} - ${_.description}`).join();
-            failedRules.push(new FailedRule(brokenRule.rule.constructor.name, message, subject.then));
+    async reportResultFor(scenario: Scenario, microservice: Microservice) {
+        const thens: any = {};
+        for (const then of scenario.thens) {
+            thens[then.name] = then.brokenRules.map(brokenRule => {
+                const causes = brokenRule.causes.map(cause => new FailedRuleCause(cause.title, cause.description));
+                return new FailedRule(brokenRule.rule.constructor.name, causes);
+            });
         }
-        const scenarioResult = new ScenarioResult(scenario.name, scenario.given?.name ?? '[unknown]', failedRules);
+
+        const scenarioResult = new ScenarioResult(scenario.name, scenario.given?.name ?? '[unknown]', thens);
         const currentScenarioPathPath = this._flight.paths.forScenario(scenario);
         const resultFilePath = path.join(currentScenarioPathPath, 'result.json');
         const json = this._serializer.toJSON(scenarioResult);

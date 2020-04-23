@@ -6,6 +6,8 @@ import { IGiven } from './IGiven';
 import { ScenarioContext } from './ScenarioContext';
 import { When } from './When';
 import { Then } from './Then';
+import { BrokenRule } from '@dolittle/rules';
+import { ScenarioWithThenSubject } from 'rules';
 
 export class Scenario {
     private _context: ScenarioContext | undefined;
@@ -51,6 +53,8 @@ export class Scenario {
         Object.getOwnPropertyNames(this).forEach(_ => keys.push(_));
         Object.getOwnPropertyNames(proto).forEach(_ => keys.push(_));
 
+        console.log(`given ${this.given?.name}`);
+
         console.log(` ${this._whenDescription?.name}`);
         let result: any = null;
         try {
@@ -92,6 +96,24 @@ export class Scenario {
             try {
                 await then.method.apply(this);
             } catch (ex) { }
+        }
+    }
+
+    handleBrokenRules(brokenRules: BrokenRule[]): void {
+        for (const brokenRule of brokenRules) {
+            const subject = brokenRule.subject as ScenarioWithThenSubject;
+
+            for (const then of this.thens) {
+                if (subject.then === then.name) {
+                    then.addBrokenRules([brokenRule]);
+                }
+            }
+        }
+
+        for (const then of this.thens) {
+            const prefix = then.brokenRules.length === 0 ? '\x1b[32m✔' : '\x1b[31m✗';
+
+            console.log(`  ${prefix} \x1b[0m${then.name}`);
         }
     }
 

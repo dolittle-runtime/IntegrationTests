@@ -6,11 +6,11 @@ import { FailedRule } from '../FailedRule';
 export class ScenarioResult {
     readonly name: string;
     readonly context: string;
-    readonly failedRules: FailedRule[];
+    readonly thens: { [key: string]: FailedRule[] };
 
-    constructor(name: string, context: string, failedRules: FailedRule[]) {
+    constructor(name: string, context: string, thens: { [key: string]: FailedRule[] }) {
         this.name = name;
         this.context = context;
-        this.failedRules = failedRules;
+        this.thens = thens;
     }
 }
