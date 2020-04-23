@@ -1,6 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import fs from 'fs';
+import path from 'path';
+
 import { Constructor } from './Constructor';
 import { ISerializer } from './ISerializer';
 import { Serializer } from './Serializer';
@@ -42,10 +45,18 @@ export class Aviator {
     }
 
     async performFlightWith(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
-        console.log('\u2708 \u2708 Welcome to The Aviator - please enjoy the flight \u2708 \u2708');
-        console.log('\u2705');
-        console.log('\u274C');
-        console.log('✔✗');
+        console.log('\n');
+        console.log(fs.readFileSync(path.join(process.cwd(), 'logo.txt')).toString());
+
+        let airplaneLine = '';
+        for (let i = 0; i < 42; i += 1) {
+            airplaneLine = airplaneLine + '\u2708 ';
+        }
+        console.log('\n');
+        console.log(airplaneLine);
+        console.log('\n');
+        console.log('Welcome to The Aviator - please enjoy the flight.');
+        console.log('\n');
         const flightPaths = new FlightPaths();
         const flightPlanner = new FlightPlanner(flightPaths, this.microserviceFactory);
         const flightPlan = flightPlanner.planFor(this.platform, ...scenarios);
