@@ -6,6 +6,7 @@ import { BrokenRule } from '@dolittle/rules';
 import { Guid } from '@dolittle/rudiments';
 
 import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from 'rules';
+import { StreamProcessorState } from './StreamProcessorState';
 
 export interface IEventStore {
     eventLog: EventLogRuleSetContainerBuilder | undefined;
@@ -15,7 +16,7 @@ export interface IEventStore {
     beginEvaluation(): Promise<void>;
     endEvaluation(): Promise<BrokenRule[]>;
 
-    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<any>;
+    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState>;
 
     dump(): Promise<string[]>;
     clear(): Promise<void>;

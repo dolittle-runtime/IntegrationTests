@@ -11,6 +11,7 @@ import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder
 
 import { IEventStore } from './IEventStore';
 import { Microservice } from '../microservices';
+import { StreamProcessorState } from './StreamProcessorState';
 
 export class EventStore implements IEventStore {
     readonly microservice: Microservice;
@@ -25,11 +26,12 @@ export class EventStore implements IEventStore {
         return this.findDocumentsInCollection(tenantId, 'event-log', filter);
     }
 
-    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<any> {
+    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState> {
+        const nullState = new StreamProcessorState(eventProcessorId, sourceStreamId);
         try {
             const eventStoresForTenants = this.microservice.configuration.eventStoreForTenants.filter(_ => _.tenantId);
             if (eventStoresForTenants.length !== 1) {
-                return {};
+                return nullState;
             }
 
             const client = await this.getMongoClient();
@@ -43,17 +45,16 @@ export class EventStore implements IEventStore {
             const result = await collection.findOne(query);
             await client.close();
             if (!result) {
-                return {
-                    Position: -1,
-                    FailingPartitions: {}
-                };
+                return nullState;
             }
-            return {
-                Position: parseInt(result.Position.toString(), 10),
-                FailingPartitions: result.FailingPartitions
-            };
+            return new StreamProcessorState(
+                eventProcessorId,
+                sourceStreamId,
+                Guid.empty,
+                parseInt(result.Position.toString(), 10),
+                result.FailingPartitions);
         } catch (ex) {
-            return {};
+            return nullState;
         }
     }
 
