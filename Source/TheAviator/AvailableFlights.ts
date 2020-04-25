@@ -9,6 +9,7 @@ import { Aviator } from './Aviator';
 import { single_event_committed } from './tests/single_event_committed';
 import { two_events_with_pause_inbetween_committed } from './tests/two_events_with_pause_inbetween_committed';
 import { twenty_events_committed } from './tests/twenty_events_committed';
+import { single_aggregate_event_committed } from './tests/single_aggregate_event_committed';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -26,6 +27,7 @@ export class AvailableFlights {
             const aviator = Aviator.getFor('dotnet');
             const flight = await aviator.performFlightWith(
                 single_event_committed,
+                single_aggregate_event_committed,
                 two_events_with_pause_inbetween_committed,
                 twenty_events_committed
             );
