@@ -27,7 +27,6 @@ export class ContainerEnvironment implements IContainerEnvironment {
 
     async removeNetwork(name: string): Promise<void> {
         try {
-            console.log(`Remove network '${name}'`);
             const network = await this._docker.getNetwork(name);
 
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
@@ -40,7 +39,6 @@ export class ContainerEnvironment implements IContainerEnvironment {
             });
 
             await network.remove();
-            console.log(`Network '${name}' removed`);
         } catch (ex) {
             console.log(`Unable to remove network '${name}'`);
         }
