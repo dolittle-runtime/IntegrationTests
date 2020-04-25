@@ -9,7 +9,7 @@ export class single_aggregate_event_committed extends scenario_for_a_single_micr
     readonly version = 0;
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
-    async when_committing_a_single_event() {
+    async when_committing_a_single_aggregate_event() {
         await this.commitAggregateEvent(this.eventSource, this. version, this.event_committed);
     }
 
