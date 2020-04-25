@@ -14,7 +14,7 @@ You can even debug straight into the [bot code](./teamsConversationBot.ts).
 If you're using VSCode, you can set a breakpoint and simply press F5, fire up the emulator and see
 how things work.
 
-!()[./images/0_bot_emulator.gif]
+![](./images/0_bot_emulator.gif)
 
 If you want to learn more about the Bot Framework emulator, go [here](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-debug-emulator?view=azure-bot-service-4.0&tabs=csharp).
 
