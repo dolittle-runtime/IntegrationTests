@@ -27,6 +27,8 @@ export class FlightPlanner implements IFlightPlanner {
 
         for (const scenarioConstructor of scenarios) {
             const scenario = new scenarioConstructor() as Scenario;
+            scenario.prepare();
+
             let givenConstructor = scenario.given;
             if (!givenConstructor) {
                 givenConstructor = NoContext;

@@ -18,7 +18,11 @@ export class Scenario {
     given: Constructor<IGiven> | undefined;
 
     constructor() {
+    }
+
+    prepare() {
         this.configureWhen();
+        this.populateThens();
     }
 
     get name(): string {
@@ -60,8 +64,6 @@ export class Scenario {
         try {
             result = await (this._whenMethod as Function).apply(this);
         } catch (ex) { }
-
-        this.populateThens();
 
         if (result) {
             this.throwIfResultNotArray(result);
