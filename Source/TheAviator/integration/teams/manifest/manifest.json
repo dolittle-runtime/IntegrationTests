@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.5",
+  "version": "1.0.3",
+  "id": "ef28f046-025c-4fc1-98d5-dd11c68c0de9",
+  "packageName": "com.dolittle.teamsbot",
+  "developer": {
+    "name": "Dolittle",
+    "websiteUrl": "https://www.dolittle.com",
+    "privacyUrl": "https://www.dolittle.com",
+    "termsOfUseUrl": "https://www.dolittle.com"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "Dolittle",
+    "full": "Dolittle Teams Bot"
+  },
+  "description": {
+    "short": "This bot exposes Dolittle functionality",
+    "full": "This has more details"
+  },
+  "accentColor": "#FFFFFF",
+  "bots": [
+    {
+      "botId": "ef28f046-025c-4fc1-98d5-dd11c68c0de9",
+      "scopes": [
+        "personal",
+        "groupchat",
+        "team"
+      ],
+      "commandLists": [
+        {
+          "scopes": [
+            "personal",
+            "groupchat",
+            "team"
+          ],
+          "commands": [
+            {
+              "title": "Run Tests",
+              "description": "Starts running integrations tests"
+            },
+            {
+              "title": "Show Welcome",
+              "description": "Shows the welcome card"
+            },
+            {
+                "title": "Show Last Test Reults",
+                "description": "Show the test results for the last run"
+            }
+            ]
+        }
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": []
+}
