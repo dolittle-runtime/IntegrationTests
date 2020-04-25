@@ -1,0 +1,7 @@
+{
+    "extends": "@dolittle/typescript.build/TSConfig/tslint.json",
+    "rules": {
+        "no-angle-bracket-type-assertion": false,
+        "increment-decrement": false
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig.settings.json",
+    "compilerOptions": {
+        "target": "es2015",
+        "experimentalDecorators": true,
+        "rootDir": ".",
+        "baseUrl": "./features",
+        "sourceRoot": "./features",
+        "declaration": false,
+    }
+}
