@@ -1,25 +1,56 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Aviator } from './Aviator';
+import fs from 'fs';
+import path from 'path';
 
-import { single_event_committed } from './tests/single_event_committed';
-import { two_events_with_pause_inbetween_committed } from './tests/two_events_with_pause_inbetween_committed';
-import { twenty_events_committed } from './tests/twenty_events_committed';
+import express from 'express';
+import Banner from './Banner';
 
+import teamsIntegration from './integration/teams';
+import { AvailableFlights } from './AvailableFlights';
 
+const port = 3000;
+const app = express();
+
+const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
+const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
+const getOutputsDirectory = () => {
+    return path.join(process.cwd(), 'resultOutput');
+};
 
 // https://unicode-table.com/en/
+Banner.present();
 
-(async () => {
-    const aviator = Aviator.getFor('dotnet');
-    const flight = await aviator.performFlightWith(
-        single_event_committed,
-        two_events_with_pause_inbetween_committed,
-        twenty_events_committed
-    );
+app.get('/api/flight/start', async (request, response) => {
+    response.send('Taking off');
+    AvailableFlights.main();
+});
 
-    console.log('We are done');
+app.get('/api/flights', (request, response) => {
+    const outputDirectory = getOutputsDirectory();
+    if (!fs.existsSync(outputDirectory)) {
+        response.json([]);
+    } else {
+        const directories = getDirectories(outputDirectory).map(_ => _.substr(outputDirectory.length + 1));
+        response.json(directories.sort().reverse());
+    }
+});
 
-    process.exit();
-})();
+app.get('/api/flights/:flight', (request, response) => {
+    const flightPlanFile = path.join(getOutputsDirectory(), request.params.flight, 'flightplan.json');
+    if (!fs.existsSync(flightPlanFile)) {
+        response.json({});
+    } else {
+        const flightPlan = fs.readFileSync(flightPlanFile).toString();
+        response.json(JSON.parse(flightPlan));
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Running on port '::${port}' - awaiting your command.\n`);
+    teamsIntegration();
+    console.log('ctrl + c to exit.\n');
+    console.log(Banner.separator);
+    console.log('\n');
+});
