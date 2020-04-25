@@ -12,7 +12,7 @@ Out of the box, you can start **The Aviator** and point the [Bot Framework emula
 
 You can even debug straight into the [bot code](./teamsConversationBot.ts).
 If you're using VSCode, you can set a breakpoint and simply press F5, fire up the emulator and see
-how things work.
+how things work. Connect it to `http://localhost:3978/api/messages`.
 
 ![](./images/0_bot_emulator.gif)
 
