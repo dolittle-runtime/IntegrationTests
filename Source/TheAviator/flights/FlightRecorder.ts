@@ -120,19 +120,18 @@ export class FlightRecorder implements IFlightRecorder {
     }
 
     private writeFlightPlan() {
-        let flattenedScenarios: Scenario[] = [];
-        this._flight.plan.scenariosByContexts.forEach((scenarios) => flattenedScenarios = [...scenarios]);
+        const flightPlan: any = {};
 
-        const flightPlanSerialized: any = {
-            scenarios: flattenedScenarios.map((scenario: Scenario) => {
+        for (const context of this._flight.plan.scenariosByContexts.keys()) {
+            flightPlan[context.name] = this._flight.plan.scenariosByContexts.get(context)?.map((scenario: Scenario) => {
                 return {
-                    given: scenario.given?.name ?? 'No Context',
-                    scenario: scenario.name
+                    name: scenario.name,
+                    thens: scenario.thens.map(_ => _.name)
                 };
-            })
-        };
+            });
+        }
 
-        const serialized = this._serializer.toJSON(flightPlanSerialized);
+        const serialized = this._serializer.toJSON(flightPlan);
         const outputFile = path.join(this._flight.paths.base, 'flightplan.json');
 
         fs.writeFileSync(outputFile, serialized);
