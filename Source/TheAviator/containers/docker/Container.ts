@@ -14,9 +14,10 @@ import { ContainerOptions, IContainer, Mount, IWaitStrategy } from '../';
  */
 export class Container implements IContainer {
     readonly options: ContainerOptions;
-    readonly outputStream: NodeJS.ReadWriteStream;
     readonly boundPorts: Map<number, number>;
 
+    _outputStream: NodeJS.ReadWriteStream;
+    _startWaitStrategies: IWaitStrategy[] = [];
     _container: Docker.Container | undefined;
 
     /**
@@ -26,8 +27,13 @@ export class Container implements IContainer {
      */
     constructor(options: ContainerOptions, private _dockerClient: Docker) {
         this.options = options;
-        this.outputStream = new PassThrough();
+        this._outputStream = new PassThrough();
         this.boundPorts = new Map<number, number>();
+    }
+
+    /** @inheritdoc */
+    get outputStream(): NodeJS.ReadWriteStream {
+        return this._outputStream;
     }
 
     /** @inheritdoc */
@@ -41,15 +47,12 @@ export class Container implements IContainer {
 
     /** @inheritdoc */
     async start(...waitStrategies: IWaitStrategy[]) {
+        this._startWaitStrategies = waitStrategies;
         const createOptions = this.getCreateOptions();
         this._container = await this._dockerClient.createContainer(createOptions);
 
         await this._container.start();
-        this._container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
-            stream?.setEncoding('utf8');
-            stream?.pipe(this.outputStream);
-        });
-
+        await this.captureOutputFromContainer();
         await this.waitForStrategies(waitStrategies);
     }
 
@@ -118,13 +121,15 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
-    async restart(...waitStrategies: IWaitStrategy[]) {
+    async restart() {
         if (!this._container) {
             return;
         }
         await this._container.restart();
-        await this.waitForStrategies(waitStrategies);
+        await this.captureOutputFromContainer();
+        await this.waitForStrategies(this._startWaitStrategies);
     }
+
 
     /** @inheritdoc */
     async exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void> {
@@ -152,9 +157,18 @@ export class Container implements IContainer {
                     callback(null);
                 }
             });
-        } catch (ex) {}
+        } catch (ex) { }
 
         await this.waitForStrategies(waitStrategies);
+    }
+
+    private async captureOutputFromContainer() {
+        if (this._container) {
+            this._outputStream = new PassThrough();
+            const stream = await this._container.attach({ stream: true, stdout: true, stderr: true });
+            stream.setEncoding('utf8');
+            stream.pipe(this.outputStream);
+        }
     }
 
     private async waitForStrategies(waitStrategies: IWaitStrategy[]) {

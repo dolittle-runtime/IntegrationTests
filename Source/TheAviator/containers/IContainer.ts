@@ -53,11 +53,10 @@ export interface IContainer {
     kill(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
-     * Restart the instance.
-     * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
+     * Restart the instance. It will use the same wait strategies as for starting.
      * @returns {Promise<void>}
      */
-    restart(...waitStrategies: IWaitStrategy[]): Promise<void>;
+    restart(): Promise<void>;
 
     /**
      * Execute a command within the container.
