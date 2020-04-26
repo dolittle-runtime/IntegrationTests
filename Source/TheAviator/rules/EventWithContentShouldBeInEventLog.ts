@@ -1,6 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import { retry } from 'async';
 import { Guid } from '@dolittle/rudiments';
 
 import { IRule, IRuleContext, Reason } from '@dolittle/rules';
@@ -19,8 +20,17 @@ export class EventWithContentShouldBeInEventLog implements IRule<ScenarioWithThe
         const eventsToLookFor: any[] = this._events.map(_ => {
             return { 'Content.uniqueIdentifier': _.uniqueIdentifier };
         });
-        const result = await subject.microservice.eventStore.findEvents(this._tenantId, { $or: eventsToLookFor });
-        if (result.length !== this._events.length) {
+
+        try {
+            await retry({ times: 5, interval: 200 }, async (callback, results) => {
+                const result = await subject.microservice.eventStore.findEvents(this._tenantId, { $or: eventsToLookFor });
+                if (result.length !== this._events.length) {
+                    callback(new Error('No event found'));
+                } else {
+                    callback(null);
+                }
+            });
+        } catch (ex) {
             context.fail(this, subject, EventIsMissing.noArguments());
         }
     }
