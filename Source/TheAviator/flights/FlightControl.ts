@@ -46,6 +46,7 @@ export class FlightControl implements IFlightControl {
                     await this._flight.recorder.reportResultFor(scenario, microservice);
                     await this.dumpEventStore(microservice, scenario);
                     await microservice.eventStore.clear();
+                    await microservice.head.restart();
                 });
             }
 
