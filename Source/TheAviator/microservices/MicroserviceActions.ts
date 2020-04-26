@@ -42,7 +42,7 @@ export class MicroserviceActions implements IMicroserviceActions {
 
     async commitAggregateEvent(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
         try {
-            const url = `${this.getHeadBaseUrl()}/api/Events/SingleAggreate/${tenantId.toString()}/${eventSource.toString}/${version}`;
+            const url = `${this.getHeadBaseUrl()}/api/Events/SingleAggregate/${tenantId.toString()}/${eventSource.toString()}/${version}`;
             await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(content),
