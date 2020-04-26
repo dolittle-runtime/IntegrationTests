@@ -20,6 +20,7 @@ export class Container implements IContainer {
     _outputStream: BehaviorSubject<NodeJS.ReadWriteStream>;
     _startWaitStrategies: IWaitStrategy[] = [];
     _container: Docker.Container | undefined;
+    _containerInspectInfo: Docker.ContainerInspectInfo | undefined;
 
     /**
      * Creates an instance of container.
@@ -30,6 +31,11 @@ export class Container implements IContainer {
         this.options = options;
         this._outputStream = new BehaviorSubject<NodeJS.ReadWriteStream>(new PassThrough());
         this.boundPorts = new Map<number, number>();
+    }
+
+    /** @inheritdoc */
+    get id() {
+        return this._container?.id ?? '';
     }
 
     /** @inheritdoc */
@@ -53,6 +59,7 @@ export class Container implements IContainer {
         this._container = await this._dockerClient.createContainer(createOptions);
 
         await this._container.start();
+        this._containerInspectInfo = await this._container.inspect();
         await this.captureOutputFromContainer();
         await this.waitForStrategies(waitStrategies);
     }
@@ -127,6 +134,7 @@ export class Container implements IContainer {
             return;
         }
         await this._container.restart();
+        this._containerInspectInfo = await this._container.inspect();
         await this.captureOutputFromContainer();
         await this.waitForStrategies(this._startWaitStrategies);
     }
@@ -161,6 +169,36 @@ export class Container implements IContainer {
         } catch (ex) { }
 
         await this.waitForStrategies(waitStrategies);
+    }
+
+
+    /** @inheritdoc */
+    async connectToNetwork(networkName: string): Promise<void> {
+        try {
+            const network = await this._dockerClient.getNetwork(networkName);
+            await network.connect({ Container: this.id });
+        } catch (ex) { }
+    }
+
+    async disconnectFromNetwork(networkName: string): Promise<void> {
+        try {
+            const network = await this._dockerClient.getNetwork(networkName);
+            await network.disconnect({ Container: this.id });
+        } catch (ex) { }
+    }
+
+    /** @inheritdoc */
+    getIPAddressForNetwork(networkName: string | undefined): string {
+        if (!networkName) {
+            if (this.options.networkName) {
+                networkName = this.options.networkName;
+            }
+        }
+
+        if (!networkName) {
+            throw new Error("Can't get IP address - no network name specified");
+        }
+        return this._containerInspectInfo?.NetworkSettings.Networks[networkName].IPAddress || '';
     }
 
     private async captureOutputFromContainer() {

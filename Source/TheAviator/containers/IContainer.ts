@@ -12,6 +12,7 @@ export interface IContainer {
     readonly options: ContainerOptions;
     readonly outputStream: BehaviorSubject<NodeJS.ReadWriteStream>;
     readonly boundPorts: Map<number, number>;
+    readonly id: string;
 
     /**
      * Configure all properties and make it ready.
@@ -65,4 +66,22 @@ export interface IContainer {
      * @param {*} options? Configuration options
      */
     exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
+
+    /**
+     * Connect the container to a specific network.
+     * @param {string} networkName Name of network.
+     */
+    connectToNetwork(networkName: string): Promise<void>;
+
+    /**
+     * Disconnect the container from a specific network.
+     * @param {string} networkName Name of network.
+     */
+    disconnectFromNetwork(networkName: string): Promise<void>;
+
+    /**
+     * Get the IP address for a specific network the container is part of.
+     * @param {string} networkName Name of network - default to undefined, which means the first network.
+     */
+    getIPAddressForNetwork(networkName: string | undefined): string;
 }
