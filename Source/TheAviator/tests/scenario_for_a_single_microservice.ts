@@ -6,7 +6,7 @@ import { Scenario } from '../gherkin';
 import { Microservice } from '../microservices';
 
 import { a_single_microservice } from './a_single_microservice';
-import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../rules';
+import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../rules';
 import { Guid } from '@dolittle/rudiments';
 
 export class scenario_for_a_single_microservice extends Scenario {
@@ -34,6 +34,10 @@ export class scenario_for_a_single_microservice extends Scenario {
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {
         return this.microservice?.eventStore.eventLog;
+    }
+
+    get streams(): StreamsRuleSetContainerBuilder | undefined {
+        return this.microservice?.eventStore.streams;
     }
 
     get stream_processors(): StreamProcessorRuleSetContainerBuilder | undefined {
