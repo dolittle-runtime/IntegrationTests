@@ -3,7 +3,7 @@
 
 import { Guid } from '@dolittle/rudiments';
 
-import { EventWithContentShouldBeInEventLog } from './EventWithContentShouldBeInEventLog';
+import { EventWithContentShouldBeInStream } from './EventWithContentShouldBeInStream';
 import { Microservice } from '../microservices/Microservice';
 
 import { ScenarioRuleSetContainerBuilder } from './ScenarioRuleSetContainerBuilder';
@@ -13,5 +13,5 @@ export class EventLogRuleSetContainerBuilder extends ScenarioRuleSetContainerBui
         super(microservice);
     }
 
-    should_contain = (tenantId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInEventLog(tenantId, events));
+    should_contain = (tenantId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, 'event-log', events));
 }

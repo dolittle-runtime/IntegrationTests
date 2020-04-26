@@ -9,10 +9,12 @@ import { ScenarioWithThenSubject } from './ScenarioWithThenSubject';
 
 const EventIsMissing: Reason = Reason.create('ffa82a7b-4dd3-49df-8ab0-08970f7508cc', 'Event is missing');
 
-export class EventWithContentShouldBeInEventLog implements IRule<ScenarioWithThenSubject> {
+export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenSubject> {
+    private _stream: string;
     private _events: any[];
 
-    constructor(private _tenantId: Guid, ...events: any[]) {
+    constructor(private _tenantId: Guid, stream: string, ...events: any[]) {
+        this._stream = stream;
         this._events = [].concat(...events);
     }
 
@@ -23,7 +25,7 @@ export class EventWithContentShouldBeInEventLog implements IRule<ScenarioWithThe
 
         try {
             await retry({ times: 5, interval: 200 }, async (callback, results) => {
-                const result = await subject.microservice.eventStore.findEvents(this._tenantId, { $or: eventsToLookFor });
+                const result = await subject.microservice.eventStore.findEvents(this._tenantId, this._stream, { $or: eventsToLookFor });
                 if (result.length !== this._events.length) {
                     callback(new Error('No event found'));
                 } else {

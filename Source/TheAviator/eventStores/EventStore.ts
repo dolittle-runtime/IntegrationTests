@@ -22,8 +22,8 @@ export class EventStore implements IEventStore {
         this.microservice = microservice;
     }
 
-    async findEvents(tenantId: Guid, filter: FilterQuery<any>): Promise<any[]> {
-        return this.findDocumentsInCollection(tenantId, 'event-log', filter);
+    async findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]> {
+        return this.findDocumentsInCollection(tenantId, stream, filter);
     }
 
     async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null> {

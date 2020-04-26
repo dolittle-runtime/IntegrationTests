@@ -12,7 +12,7 @@ export interface IEventStore {
     eventLog: EventLogRuleSetContainerBuilder | undefined;
     streamProcessors: StreamProcessorRuleSetContainerBuilder | undefined;
 
-    findEvents(tenantId: Guid, filter: FilterQuery<any>): Promise<any[]>
+    findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]>
     beginEvaluation(): Promise<void>;
     endEvaluation(): Promise<BrokenRule[]>;
 
