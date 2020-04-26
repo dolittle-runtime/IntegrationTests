@@ -33,7 +33,8 @@ export class MicroserviceActions implements IMicroserviceActions {
                 headers: { 'Content-Type': 'application/json' },
                 timeout: 10000
             });
-        } catch (ex) { }
+        } catch (ex) {
+        }
     }
 
     async commitPublicEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {

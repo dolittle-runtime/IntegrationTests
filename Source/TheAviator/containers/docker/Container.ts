@@ -1,8 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { retry } from 'async';
 const getPort = require('get-port');
+import { retry } from 'async';
+import { BehaviorSubject } from 'rxjs';
 
 import { PassThrough } from 'stream';
 import * as Docker from 'dockerode';
@@ -16,7 +17,7 @@ export class Container implements IContainer {
     readonly options: ContainerOptions;
     readonly boundPorts: Map<number, number>;
 
-    _outputStream: NodeJS.ReadWriteStream;
+    _outputStream: BehaviorSubject<NodeJS.ReadWriteStream>;
     _startWaitStrategies: IWaitStrategy[] = [];
     _container: Docker.Container | undefined;
 
@@ -27,12 +28,12 @@ export class Container implements IContainer {
      */
     constructor(options: ContainerOptions, private _dockerClient: Docker) {
         this.options = options;
-        this._outputStream = new PassThrough();
+        this._outputStream = new BehaviorSubject<NodeJS.ReadWriteStream>(new PassThrough());
         this.boundPorts = new Map<number, number>();
     }
 
     /** @inheritdoc */
-    get outputStream(): NodeJS.ReadWriteStream {
+    get outputStream(): BehaviorSubject<NodeJS.ReadWriteStream> {
         return this._outputStream;
     }
 
@@ -146,7 +147,7 @@ export class Container implements IContainer {
         const exec = await this._container.exec(options);
         const result = await exec.start({ 'Detach': false, 'Tty': false, stream: true, stdout: true, stderr: true });
         result.output.setEncoding('utf8');
-        result.output.pipe(this.outputStream);
+        result.output.pipe(this.outputStream.value);
 
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
@@ -164,10 +165,10 @@ export class Container implements IContainer {
 
     private async captureOutputFromContainer() {
         if (this._container) {
-            this._outputStream = new PassThrough();
+            this._outputStream.next(new PassThrough());
             const stream = await this._container.attach({ stream: true, stdout: true, stderr: true });
             stream.setEncoding('utf8');
-            stream.pipe(this.outputStream);
+            stream.pipe(this.outputStream.value);
         }
     }
 

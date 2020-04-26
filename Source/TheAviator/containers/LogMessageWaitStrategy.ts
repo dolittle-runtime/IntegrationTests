@@ -20,7 +20,7 @@ export class LogMessageWaitStrategy implements IWaitStrategy {
                 resolve();
             }, 10000);
 
-            const stream = byline(container.outputStream);
+            const stream = byline(container.outputStream.value);
             stream.on('data', (line: string) => {
                 if (line.toString().includes(this._message)) {
                     if (done) {

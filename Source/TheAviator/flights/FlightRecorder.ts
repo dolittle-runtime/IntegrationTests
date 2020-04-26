@@ -94,9 +94,9 @@ export class FlightRecorder implements IFlightRecorder {
     collectLogsFor(microservices: Microservice[]) {
         for (const [context, scenarios] of this._flight.plan.scenariosByContexts) {
             microservices.forEach(microservice => {
-                microservice.head.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.head));
-                microservice.runtime.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime));
-                microservice.eventStoreStorage.outputStream.on('data', this.getOutputStreamWriterFor(microservice, microservice.eventStoreStorage));
+                microservice.head.outputStream.subscribe(stream => stream.on('data', this.getOutputStreamWriterFor(microservice, microservice.head)));
+                microservice.runtime.outputStream.subscribe(stream => stream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime)));
+                microservice.eventStoreStorage.outputStream.subscribe(stream => stream.on('data', this.getOutputStreamWriterFor(microservice, microservice.eventStoreStorage)));
             });
         }
     }

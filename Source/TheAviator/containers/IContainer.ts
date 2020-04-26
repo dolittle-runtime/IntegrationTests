@@ -1,6 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import { BehaviorSubject } from 'rxjs';
 import { IWaitStrategy } from './IWaitStrategy';
 import { ContainerOptions } from './ContainerOptions';
 
@@ -9,7 +10,7 @@ import { ContainerOptions } from './ContainerOptions';
  */
 export interface IContainer {
     readonly options: ContainerOptions;
-    readonly outputStream: NodeJS.ReadWriteStream;
+    readonly outputStream: BehaviorSubject<NodeJS.ReadWriteStream>;
     readonly boundPorts: Map<number, number>;
 
     /**
