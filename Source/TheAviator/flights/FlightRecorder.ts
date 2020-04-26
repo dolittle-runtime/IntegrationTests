@@ -11,11 +11,11 @@ import { Microservice } from '../microservices';
 
 import { Scenario, ScenarioResult, ScenarioContextDefinition, NoScenario } from '../gherkin';
 
-import { FailedRule } from '../FailedRule';
+import { FailedRule } from './FailedRule';
 
 import { Flight } from './Flight';
 import { IFlightRecorder } from './IFlightRecorder';
-import { FailedRuleCause } from '../FailedRuleCause';
+import { FailedRuleCause } from './FailedRuleCause';
 
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenario: Scenario;
