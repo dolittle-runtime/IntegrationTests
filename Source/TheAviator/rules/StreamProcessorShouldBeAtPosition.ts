@@ -21,21 +21,18 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
         try {
             await retry({ times: 5, interval: 200 }, async (callback, results) => {
                 state = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._eventProcessorId);
-                if (!state) {
+                if (!state || state.position !== this._position) {
                     callback(new Error('No state'));
                 } else {
                     callback(null);
                 }
             });
         } catch (ex) {
-            context.fail(this, subject, MissingStreamProcessorState.withArguments({
-                processor: this._eventProcessorId.toString()
-            }));
-            return;
-        }
-
-        if (state) {
-            if (state.position !== this._position) {
+            if (!state) {
+                context.fail(this, subject, MissingStreamProcessorState.withArguments({
+                    processor: this._eventProcessorId.toString()
+                }));
+            } else {
                 context.fail(this, subject, StreamProcessorPositionIsWrong.withArguments({
                     expectedPosition: this._position,
                     actualPosition: state.position,
