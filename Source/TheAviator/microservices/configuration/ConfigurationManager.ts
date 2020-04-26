@@ -15,17 +15,20 @@ const RuntimeConfig = 'runtime';
 
 export class ConfigurationManager implements IConfigurationManager {
     generateForHead(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[] {
-        const mounts: Mount[] = [];
-        mounts.push(this.generateFile(configuration, HeadConfig, 'resources.json', workingDirectory));
-        mounts.push(this.generateFile(configuration, HeadConfig, 'tenants.json', workingDirectory));
-        mounts.push(this.generateFile(configuration, HeadConfig, 'clients.json', workingDirectory));
-        return mounts;
+        return this.generateFiles(configuration, HeadConfig, workingDirectory);
     }
 
     generateForRuntime(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[] {
+        return this.generateFiles(configuration, RuntimeConfig, workingDirectory);
+    }
+
+    private generateFiles(configuration: MicroserviceConfiguration, target: string, workingDirectory: string) {
         const mounts: Mount[] = [];
-        mounts.push(this.generateFile(configuration, RuntimeConfig, 'resources.json', workingDirectory));
-        mounts.push(this.generateFile(configuration, RuntimeConfig, 'tenants.json', workingDirectory));
+        const sourcePath = this.getSourcePathFor(target);
+        const files = fs.readdirSync(sourcePath);
+        for (const file of files) {
+            mounts.push(this.generateFile(configuration, target, file, workingDirectory));
+        }
         return mounts;
     }
 
@@ -43,8 +46,11 @@ export class ConfigurationManager implements IConfigurationManager {
         };
     }
 
-    private getSourcePathFor(target: string, file: string) {
+    private getSourcePathFor(target: string, file?: string) {
         const sourcePath = path.join(process.cwd(), 'microservices', 'configuration', target);
+        if (!file) {
+            return sourcePath;
+        }
         return path.join(sourcePath, file);
     }
 

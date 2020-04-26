@@ -3,14 +3,13 @@
 
 import * as path from 'path';
 
-import { Guid } from '@dolittle/rudiments';
-
 import { ContainerOptions, IContainer, IContainerEnvironment, Mount } from '../containers';
 
 import { Microservice } from './Microservice';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { MicroserviceConfiguration } from './configuration/MicroserviceConfiguration';
 import { IConfigurationManager } from './configuration/IConfigurationManager';
+import { MicroserviceDefinition } from './MicroserviceDefinition';
 
 export class MicroserviceFactory implements IMicroserviceFactory {
 
@@ -19,9 +18,8 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         private _configurationManager: IConfigurationManager) {
     }
 
-    async create(platform: string, name: string, tenants: Guid[], workingDirectory: string): Promise<Microservice> {
-        const identifier = Guid.create();
-        const configuration = new MicroserviceConfiguration(platform, name, identifier, tenants);
+    async create(platform: string, workingDirectory: string, definition: MicroserviceDefinition): Promise<Microservice> {
+        const configuration = new MicroserviceConfiguration(platform, definition.name, definition.identifier, definition.tenants);
 
         await this._containerEnvironment.createNetwork(configuration.networkName);
 

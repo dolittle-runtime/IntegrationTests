@@ -59,6 +59,18 @@ export class Microservice {
         await this._containerEnvironment.removeNetwork(this.configuration.networkName);
     }
 
+    async connectToProducer(producer: Microservice) {
+        await this.head.connectToNetwork(producer.configuration.networkName);
+        await this.runtime.connectToNetwork(producer.configuration.networkName);
+        await this.eventStoreStorage.connectToNetwork(producer.configuration.networkName);
+    }
+
+    async disconnectFromProducer(producer: Microservice) {
+        await this.head.disconnectFromNetwork(producer.configuration.networkName);
+        await this.runtime.disconnectFromNetwork(producer.configuration.networkName);
+        await this.eventStoreStorage.disconnectFromNetwork(producer.configuration.networkName);
+    }
+
     async beginEvaluation() {
         this.eventStore.beginEvaluation();
     }

@@ -4,11 +4,18 @@
 import { Guid } from '@dolittle/rudiments';
 
 export class MicroserviceDefinition {
+    readonly identifier: Guid;
     readonly name: string;
     readonly tenants: Guid[];
+    readonly producers: MicroserviceDefinition[] = [];
 
     constructor(name: string, tenants: Guid[]) {
+        this.identifier = Guid.create();
         this.name = name;
         this.tenants = tenants;
+    }
+
+    addProducer(consumer: MicroserviceDefinition) {
+        this.producers.push(consumer);
     }
 }

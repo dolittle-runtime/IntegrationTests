@@ -5,5 +5,6 @@ export * from './IMicroserviceActions';
 export * from './IMicroserviceFactory';
 export * from './Microservice';
 export * from './MicroserviceActions';
+export * from './MicroserviceDefinition';
 export * from './configuration/MicroserviceConfiguration';
 export * from './MicroserviceFactory';

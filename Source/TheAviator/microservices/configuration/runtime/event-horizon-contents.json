@@ -1,0 +1,13 @@
+{
+    {{#each consents}}
+    "{{producerTenant}}": [
+        {
+            "microservice": "{{microservice}}",
+            "tenant": "{{consumerTenant}}",
+            "stream": "{{stream}}",
+            "partition": "00000000-0000-0000-0000-000000000000",
+            "consent": "aaf66b7d-2fb7-4ded-9722-23d48f6bb2af"
+        }
+    ]
+    {{/each}}
+}
