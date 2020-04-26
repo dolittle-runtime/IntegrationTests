@@ -29,6 +29,7 @@ export class FlightControl implements IFlightControl {
             this._flight.scenarioContext.next(context);
 
             await this.performOnMicroservice(microservices, async (microservice) => await microservice.start());
+            await this.connectConsumersToProducers(microservices, contextDefinition);
 
             for (const scenario of scenarios) {
                 scenario.setContext(context);
@@ -49,6 +50,8 @@ export class FlightControl implements IFlightControl {
                     await microservice.head.restart();
                 });
             }
+
+            await this.disconnectConsumersFromProducers(microservices, contextDefinition);
 
             await this.performOnMicroservice(microservices, async (microservice) => { await microservice.kill(); });
         }
@@ -88,6 +91,35 @@ export class FlightControl implements IFlightControl {
 
         return microservicesByName;
     }
+
+    private async connectConsumersToProducers(microservices: Microservice[], contextDefinition: ScenarioContextDefinition) {
+        for (const consumerName of Object.keys(contextDefinition.consumerToProducerMap)) {
+            const consumer = microservices.find(_ => _.configuration.name === consumerName);
+            if (consumer) {
+                for (const producerDefinition of contextDefinition.consumerToProducerMap[consumerName]) {
+                    const producer = microservices.find(_ => _.configuration.name === producerDefinition.name);
+                    if (producer) {
+                        await consumer.connectToProducer(producer);
+                    }
+                }
+            }
+        }
+    }
+
+    private async disconnectConsumersFromProducers(microservices: Microservice[], contextDefinition: ScenarioContextDefinition) {
+        for (const consumerName of Object.keys(contextDefinition.consumerToProducerMap)) {
+            const consumer = microservices.find(_ => _.configuration.name === consumerName);
+            if (consumer) {
+                for (const producerDefinition of contextDefinition.consumerToProducerMap[consumerName]) {
+                    const producer = microservices.find(_ => _.configuration.name === producerDefinition.name);
+                    if (producer) {
+                        await consumer.disconnectFromProducer(producer);
+                    }
+                }
+            }
+        }
+    }
+
 
     private async performOnMicroservice(microservices: Microservice[], method: MicroserviceMethod) {
         for (const microservice of microservices.values()) {
