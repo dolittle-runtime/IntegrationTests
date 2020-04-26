@@ -19,7 +19,7 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
         let state: StreamProcessorState | null = new StreamProcessorState(this._eventProcessorId, this._eventProcessorId);
 
         try {
-            await retry({ times: 5, interval: 200 }, async (callback, results) => {
+            await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 state = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._eventProcessorId);
                 if (!state || state.position !== this._position) {
                     callback(new Error('No state'));
