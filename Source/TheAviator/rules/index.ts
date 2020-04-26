@@ -9,3 +9,4 @@ export * from './ScenarioWithThenSubject';
 export * from './ScenarioWithThenSubjectProvider';
 export * from './StreamProcessorRuleSetContainerBuilder';
 export * from './StreamProcessorShouldBeAtPosition';
+export * from './StreamsRuleSetContainerBuilder';

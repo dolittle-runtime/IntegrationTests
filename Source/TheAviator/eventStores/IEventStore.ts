@@ -5,12 +5,13 @@ import { FilterQuery } from 'mongodb';
 import { BrokenRule } from '@dolittle/rules';
 import { Guid } from '@dolittle/rudiments';
 
-import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from 'rules';
+import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from 'rules';
 import { StreamProcessorState } from './StreamProcessorState';
 
 export interface IEventStore {
     eventLog: EventLogRuleSetContainerBuilder | undefined;
     streamProcessors: StreamProcessorRuleSetContainerBuilder | undefined;
+    streams: StreamsRuleSetContainerBuilder | undefined;
 
     findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]>
     beginEvaluation(): Promise<void>;

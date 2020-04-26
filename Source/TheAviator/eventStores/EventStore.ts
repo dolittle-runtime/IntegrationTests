@@ -7,7 +7,12 @@ import MUUID from 'uuid-mongodb';
 import { Guid } from '@dolittle/rudiments';
 import { RuleSetContainerEvaluation, BrokenRule } from '@dolittle/rules';
 
-import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../rules';
+import {
+    EventLogRuleSetContainerBuilder,
+    StreamProcessorRuleSetContainerBuilder,
+    StreamsRuleSetContainerBuilder,
+    ScenarioRuleSetContainerBuilder
+} from '../rules';
 
 import { IEventStore } from './IEventStore';
 import { Microservice } from '../microservices';
@@ -17,6 +22,7 @@ export class EventStore implements IEventStore {
     readonly microservice: Microservice;
     eventLog: EventLogRuleSetContainerBuilder | undefined;
     streamProcessors: StreamProcessorRuleSetContainerBuilder | undefined;
+    streams: StreamsRuleSetContainerBuilder | undefined;
 
     constructor(microservice: Microservice) {
         this.microservice = microservice;
@@ -60,24 +66,16 @@ export class EventStore implements IEventStore {
     async beginEvaluation() {
         this.eventLog = new EventLogRuleSetContainerBuilder(this.microservice);
         this.streamProcessors = new StreamProcessorRuleSetContainerBuilder(this.microservice);
+        this.streams = new StreamsRuleSetContainerBuilder(this.microservice);
     }
 
     async endEvaluation(): Promise<BrokenRule[]> {
         let brokenRules: BrokenRule[] = [];
 
-        if (this.eventLog) {
-            const eventLogRuleSetContainer = this.eventLog.build();
-            const eventLogEvaluation = new RuleSetContainerEvaluation(eventLogRuleSetContainer);
-            await eventLogEvaluation.evaluate(this);
-            brokenRules = brokenRules.concat(eventLogEvaluation.brokenRules);
-        }
+        brokenRules = brokenRules.concat(await this.evaluateAndGetBrokenRules(this.eventLog));
+        brokenRules = brokenRules.concat(await this.evaluateAndGetBrokenRules(this.streamProcessors));
+        brokenRules = brokenRules.concat(await this.evaluateAndGetBrokenRules(this.streams));
 
-        if (this.streamProcessors) {
-            const streamProcessorRuleSetContainer = this.streamProcessors.build();
-            const streamProcessorEvaluation = new RuleSetContainerEvaluation(streamProcessorRuleSetContainer);
-            await streamProcessorEvaluation.evaluate(this);
-            brokenRules = brokenRules.concat(streamProcessorEvaluation.brokenRules);
-        }
         return brokenRules;
     }
 
@@ -111,6 +109,16 @@ export class EventStore implements IEventStore {
         } catch (ex) {
 
         }
+    }
+
+    private async evaluateAndGetBrokenRules(ruleSetContainerBuilder: ScenarioRuleSetContainerBuilder | undefined) {
+        if (!ruleSetContainerBuilder) {
+            return [];
+        }
+        const ruleSetContainer = ruleSetContainerBuilder.build();
+        const evaluation = new RuleSetContainerEvaluation(ruleSetContainer);
+        await evaluation.evaluate(this);
+        return evaluation.brokenRules;
     }
 
     private async findDocumentsInCollection(tenantId: Guid, collectionName: string, filter: FilterQuery<any>): Promise<any[]> {
