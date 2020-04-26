@@ -33,7 +33,7 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
             }));
             return;
         }
-        
+
         if (state) {
             if (state.position !== this._position) {
                 context.fail(this, subject, StreamProcessorPositionIsWrong.withArguments({
