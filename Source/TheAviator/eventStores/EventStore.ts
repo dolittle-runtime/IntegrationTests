@@ -26,12 +26,11 @@ export class EventStore implements IEventStore {
         return this.findDocumentsInCollection(tenantId, 'event-log', filter);
     }
 
-    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState> {
-        const nullState = new StreamProcessorState(eventProcessorId, sourceStreamId);
+    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null> {
         try {
             const eventStoresForTenants = this.microservice.configuration.eventStoreForTenants.filter(_ => _.tenantId);
             if (eventStoresForTenants.length !== 1) {
-                return nullState;
+                return null;
             }
 
             const client = await this.getMongoClient();
@@ -45,7 +44,7 @@ export class EventStore implements IEventStore {
             const result = await collection.findOne(query);
             await client.close();
             if (!result) {
-                return nullState;
+                return null;
             }
             return new StreamProcessorState(
                 eventProcessorId,
@@ -54,7 +53,7 @@ export class EventStore implements IEventStore {
                 parseInt(result.Position.toString(), 10),
                 result.FailingPartitions);
         } catch (ex) {
-            return nullState;
+            return null;
         }
     }
 

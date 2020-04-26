@@ -16,7 +16,7 @@ export interface IEventStore {
     beginEvaluation(): Promise<void>;
     endEvaluation(): Promise<BrokenRule[]>;
 
-    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState>;
+    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null>;
 
     dump(): Promise<string[]>;
     clear(): Promise<void>;
