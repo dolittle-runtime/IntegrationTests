@@ -3,6 +3,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { retry } from 'async';
 
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
@@ -72,12 +73,26 @@ export class FlightControl implements IFlightControl {
                 const tenantId = backup.split(' ')[1];
                 const microserviceDestinationDirectory = this._flight.paths.forMicroservice(scenario, microservice);
                 const destinationDirectory = path.join(microserviceDestinationDirectory, 'eventStore');
+
                 if (!fs.existsSync(destinationDirectory)) {
                     fs.mkdirSync(destinationDirectory, { recursive: true });
                 }
+
                 const sourceFile = path.join(backupDirectory, backup);
                 const destinationFile = path.join(destinationDirectory, `backup-for-tenant-${tenantId}`);
-                fs.renameSync(sourceFile, destinationFile);
+
+                try {
+                    await retry({ times: 5, interval: 200 }, async (callback, results) => {
+                        if (!fs.existsSync(sourceFile)) {
+                            callback(new Error('Backup file not there yet'));
+                        } else {
+                            fs.renameSync(sourceFile, destinationFile);
+                            callback(null);
+                        }
+                    });
+                } catch (ex) {
+                    console.log(`Couldn't copy backup file '${sourceFile}' - reason: '${ex}'`);
+                }
             }
         }
     }
