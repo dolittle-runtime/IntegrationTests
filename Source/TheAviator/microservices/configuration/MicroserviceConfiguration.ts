@@ -56,7 +56,7 @@ export class MicroserviceConfiguration {
         producer.addConsumer(this);
 
         for (const tenant of this.tenants) {
-            this.eventHorizons.push(new EventHorizonConfiguration(tenant.tenantId, tenant.tenantId, producer.identifier, 'de594e7b-d160-44e4-9901-ae84fc70424a', '77ab759e-89b2-48c3-bedd-6b7327847f07'));
+            this.eventHorizons.push(new EventHorizonConfiguration(tenant.tenantId, tenant.tenantId, producer.identifier, 'de594e7b-d160-44e4-9901-ae84fc70424a', '82f35eaa-8317-4c8b-9bd6-f16c212fda96'));
         }
     }
 
