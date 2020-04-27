@@ -183,10 +183,23 @@ export class Container implements IContainer {
         } catch (ex) { }
     }
 
+    /** @inheritdoc */
     async disconnectFromNetwork(networkName: string): Promise<void> {
         try {
             const network = await this._dockerClient.getNetwork(networkName);
             await network.disconnect({ Container: this.id });
+
+            await retry({ times: 5, interval: 100 }, async (callback, results) => {
+                const result = await this._container?.inspect();
+                if (result) {
+                    const keys = Object.keys(result.NetworkSettings.Networks);
+                    if (keys.some(_ => _ === networkName)) {
+                        callback(new Error('Still connected'));
+                    } else {
+                        callback(null);
+                    }
+                }
+            });
         } catch (ex) { }
     }
 
