@@ -59,6 +59,7 @@ export class Container implements IContainer {
         this._container = await this._dockerClient.createContainer(createOptions);
 
         await this._container.start();
+        await this.waitForContainerToBeReady();
         this._containerInspectInfo = await this._container.inspect();
         await this.captureOutputFromContainer();
         await this.waitForStrategies(waitStrategies);
@@ -96,6 +97,7 @@ export class Container implements IContainer {
         const state = await this._container.inspect();
         if (state.State.Running) {
             await this._container.unpause();
+            await this.waitForContainerToBeReady();
             await this.waitForStrategies(waitStrategies);
         }
     }
@@ -134,6 +136,7 @@ export class Container implements IContainer {
             return;
         }
         await this._container.restart();
+        await this.waitForContainerToBeReady();
         this._containerInspectInfo = await this._container.inspect();
         await this.captureOutputFromContainer();
         await this.waitForStrategies(this._startWaitStrategies);
@@ -199,6 +202,21 @@ export class Container implements IContainer {
             throw new Error("Can't get IP address - no network name specified");
         }
         return this._containerInspectInfo?.NetworkSettings.Networks[networkName].IPAddress || '';
+    }
+
+    private async waitForContainerToBeReady() {
+        try {
+            await retry({ times: 5, interval: 100 }, async (callback, results) => {
+                const result = await this._container?.inspect();
+                if (result?.State.Running) {
+                    callback(null);
+                } else {
+                    callback(new Error('Not Ready'));
+                }
+            });
+        } catch (ex) {
+            console.log(`Container ${this.id} is unresponsive - not getting ready`);
+        }
     }
 
     private async captureOutputFromContainer() {
