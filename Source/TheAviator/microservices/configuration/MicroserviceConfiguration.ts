@@ -8,6 +8,7 @@ import { Guid } from '@dolittle/rudiments';
 import { Tenant } from './Tenant';
 import { EventHorizonTenantConsentConfiguration } from './EventHorizonTenantConsentConfiguration';
 import { EventHorizonConfiguration } from './EventHorizonConfiguration';
+import { MicroserviceDefinition } from '../MicroserviceDefinition';
 
 
 export class MicroserviceConfiguration {
@@ -65,5 +66,10 @@ export class MicroserviceConfiguration {
         for (const tenant of this.tenants) {
             this.consents.push(new EventHorizonTenantConsentConfiguration(tenant.tenantId, tenant.tenantId, consumer.identifier, '82f35eaa-8317-4c8b-9bd6-f16c212fda96'));
         }
+    }
+
+    static from(platform: string, definition: MicroserviceDefinition) {
+        const configuration = new MicroserviceConfiguration(platform, definition.name, definition.identifier, definition.tenants);
+        return configuration;
     }
 }

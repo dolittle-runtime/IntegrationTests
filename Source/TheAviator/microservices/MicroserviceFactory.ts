@@ -18,9 +18,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         private _configurationManager: IConfigurationManager) {
     }
 
-    async create(platform: string, workingDirectory: string, definition: MicroserviceDefinition): Promise<Microservice> {
-        const configuration = new MicroserviceConfiguration(platform, definition.name, definition.identifier, definition.tenants);
-
+    async create(platform: string, workingDirectory: string, configuration: MicroserviceConfiguration): Promise<Microservice> {
         await this._containerEnvironment.createNetwork(configuration.networkName);
 
         const eventStoreStorage = await this.configureContainer(
@@ -31,7 +29,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             [27017],
             configuration.networkName,
             [{
-                host: path.join(workingDirectory, '_microservices', definition.name, 'backup'),
+                host: path.join(workingDirectory, '_microservices', configuration.name, 'backup'),
                 container: '/backup'
             }]
         );
