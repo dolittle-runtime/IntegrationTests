@@ -7,7 +7,7 @@ import path from 'path';
 import { Flight } from './Flight';
 import { IFlightControl } from './IFlightControl';
 
-import { Microservice, IMicroserviceFactory } from '../microservices';
+import { Microservice, IMicroserviceFactory, MicroserviceConfiguration } from '../microservices';
 
 import { ScenarioContext, ScenarioContextDefinition, Scenario } from '../gherkin';
 
@@ -44,7 +44,11 @@ export class FlightControl implements IFlightControl {
                 await this.performOnMicroservice(microservices, async (microservice) => {
                     const brokenRules = await microservice.endEvaluation();
                     scenario.handleBrokenRules(brokenRules);
-                    await this._flight.recorder.reportResultFor(scenario, microservice);
+                });
+                await this._flight.recorder.reportResultFor(scenario);
+
+                await this.performOnMicroservice(microservices, async (microservice) => {
+                    await this._flight.recorder.captureMetricsFor(scenario, microservice);
                     await this.dumpEventStore(microservice, scenario);
                     await microservice.eventStore.clear();
                     await microservice.head.restart();
@@ -72,24 +76,46 @@ export class FlightControl implements IFlightControl {
                     fs.mkdirSync(destinationDirectory, { recursive: true });
                 }
                 const sourceFile = path.join(backupDirectory, backup);
-                const destinationFile = path.join(destinationDirectory, tenantId);
+                const destinationFile = path.join(destinationDirectory, `backup-for-tenant-${tenantId}`);
                 fs.renameSync(sourceFile, destinationFile);
             }
         }
     }
 
-    private async prepareMicroservicesFor(context: ScenarioContextDefinition) {
+    private async prepareMicroservicesFor(context: ScenarioContextDefinition): Promise<{ [key: string]: Microservice }> {
         const microservicesByName: { [key: string]: Microservice } = {};
+        const microserviceConfigurations = this.prepareMicroserviceConfigurations(context);
 
-        for (const microservice of context.microservices) {
+        for (const microserviceConfiguration of microserviceConfigurations) {
             const workingDirectory = this._flight.paths.forScenarioContext(context);
-            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, workingDirectory, microservice);
+            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, workingDirectory, microserviceConfiguration);
             if (microserviceInstance) {
-                microservicesByName[microservice.name] = microserviceInstance;
+                microservicesByName[microserviceConfiguration.name] = microserviceInstance;
             }
         }
 
         return microservicesByName;
+    }
+
+    private prepareMicroserviceConfigurations(context: ScenarioContextDefinition): MicroserviceConfiguration[] {
+        const microserviceConfigurations: MicroserviceConfiguration[] = [];
+        for (const microserviceDefinition of context.microservices) {
+            microserviceConfigurations.push(MicroserviceConfiguration.from(this._flight.platform, microserviceDefinition));
+        }
+
+        for (const consumerDefinition of context.microservices) {
+            const consumer = microserviceConfigurations.find(_ => _.name === consumerDefinition.name);
+            if (consumer) {
+                for (const producerDefinition of consumerDefinition.producers) {
+                    const producer = microserviceConfigurations.find(_ => _.name === producerDefinition.name);
+                    if (producer) {
+                        consumer.addProducer(producer);
+                    }
+                }
+            }
+        }
+
+        return microserviceConfigurations;
     }
 
     private async connectConsumersToProducers(microservices: Microservice[], contextDefinition: ScenarioContextDefinition) {

@@ -43,7 +43,7 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
-    async reportResultFor(scenario: Scenario, microservice: Microservice) {
+    async reportResultFor(scenario: Scenario) {
         const thens: any = {};
         for (const then of scenario.thens) {
             thens[then.name] = then.brokenRules.map(brokenRule => {
@@ -65,7 +65,16 @@ export class FlightRecorder implements IFlightRecorder {
             this._scenarioResultsPerContext.get(scenario.context.definition)?.push(scenarioResult);
         }
 
-        await this.writeMetricsForScenario(scenario, microservice);
+        for (const then of scenario.thens) {
+            const prefix = then.brokenRules.length === 0 ? '\x1b[32m✔' : '\x1b[31m✗';
+
+            console.log(`  ${prefix} \x1b[0m${then.name}`);
+            for (const brokenRule of then.brokenRules) {
+                for (const cause of brokenRule.causes) {
+                    console.log(`      \x1b[31m${cause.title}\x1b[0m`);
+                }
+            }
+        }
     }
 
     writeConfigurationFilesFor(microservices: Microservice[]) {
@@ -101,7 +110,7 @@ export class FlightRecorder implements IFlightRecorder {
         }
     }
 
-    private async writeMetricsForScenario(scenario: Scenario, microservice: Microservice) {
+    async captureMetricsFor(scenario: Scenario, microservice: Microservice) {
         const currentScenarioPath = this._flight.paths.forMicroservice(scenario, microservice);
         const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
         const metrics = await microservice.actions.getRuntimeMetrics();

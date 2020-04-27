@@ -10,5 +10,6 @@ export interface IFlightRecorder {
     conclude(): void;
     writeConfigurationFilesFor(microservices: Microservice[]): void;
     collectLogsFor(microservices: Microservice[]): void;
-    reportResultFor(scenario: Scenario, microservice: Microservice): Promise<void>;
+    reportResultFor(scenario: Scenario): Promise<void>;
+    captureMetricsFor(scenario: Scenario, microservice: Microservice): Promise<void>;
 }
