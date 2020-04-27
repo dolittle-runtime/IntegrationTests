@@ -83,7 +83,7 @@ export class FlightControl implements IFlightControl {
 
         for (const microservice of context.microservices) {
             const workingDirectory = this._flight.paths.forScenarioContext(context);
-            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, microservice.name, microservice.tenants, workingDirectory);
+            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, workingDirectory, microservice);
             if (microserviceInstance) {
                 microservicesByName[microservice.name] = microserviceInstance;
             }
