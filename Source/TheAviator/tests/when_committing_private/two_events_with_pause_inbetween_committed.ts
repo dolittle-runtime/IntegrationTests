@@ -3,9 +3,9 @@
 
 import { Guid } from '@dolittle/rudiments';
 
-import asyncTimeout from '../asyncTimeout';
+import asyncTimeout from '../../asyncTimeout';
 
-import { scenario_for_a_single_microservice } from './scenario_for_a_single_microservice';
+import { scenario_for_a_single_microservice } from '../scenario_for_a_single_microservice';
 
 export class two_events_with_pause_inbetween_committed extends scenario_for_a_single_microservice {
     readonly first_event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };

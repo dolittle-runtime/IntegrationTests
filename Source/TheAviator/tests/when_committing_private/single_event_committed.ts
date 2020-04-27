@@ -3,8 +3,8 @@
 
 import { Guid } from '@dolittle/rudiments';
 
-import { scenario_for_a_single_microservice } from './scenario_for_a_single_microservice';
-import { EventHandlers } from './EventHandlers';
+import { scenario_for_a_single_microservice } from '../scenario_for_a_single_microservice';
+import { EventHandlers } from '../shared/EventHandlers';
 
 export class single_event_committed extends scenario_for_a_single_microservice {
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };

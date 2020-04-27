@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
-import { scenario_for_a_single_microservice } from './scenario_for_a_single_microservice';
-import { EventHandlers } from './EventHandlers';
+import { scenario_for_a_single_microservice } from '../scenario_for_a_single_microservice';
+import { EventHandlers } from '../shared/EventHandlers';
 
 export class single_aggregate_event_committed extends scenario_for_a_single_microservice {
     readonly eventSource = Guid.create();

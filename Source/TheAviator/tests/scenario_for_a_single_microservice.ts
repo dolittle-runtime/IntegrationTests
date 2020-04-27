@@ -5,40 +5,40 @@ import { Scenario } from '../gherkin';
 
 import { Microservice } from '../microservices';
 
-import { a_single_microservice } from './a_single_microservice';
+import { a_single_microservice } from './given/a_single_microservice';
 import { EventLogRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../rules';
 import { Guid } from '@dolittle/rudiments';
+import { Tenants } from './shared/Tenants';
+import { Artifacts } from './shared/Artifacts';
 
 export class scenario_for_a_single_microservice extends Scenario {
-    protected tenant = Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd');
+    tenant: Guid = Tenants.tenant;
 
     given = a_single_microservice;
 
-    microservice: Microservice | undefined;
+    microservice: Microservice | undefined;
 
-    async when() {
+    async establish() {
         this.microservice = this.context?.microservices.main;
-        return super.when();
     }
 
     async commitEvent(event: any) {
-        await this.microservice?.actions.commitEvent(this.tenant, Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
+        await this.microservice?.actions.commitEvent(Tenants.tenant, Artifacts.event, event);
     }
 
     async commitAggregateEvent(eventSource: Guid, version: number, event: any) {
-        await this.microservice?.actions.commitAggregateEvent(this.tenant, eventSource, version, Guid.parse('0e984977-1686-4036-98ef-14dc9f55f705'), event);
+        await this.microservice?.actions.commitAggregateEvent(Tenants.tenant, eventSource, version, Artifacts.aggregateEvent, event);
     }
 
-    get event_log(): EventLogRuleSetContainerBuilder | undefined {
+    get event_log(): EventLogRuleSetContainerBuilder | undefined {
         return this.microservice?.eventStore.eventLog;
     }
 
-    get streams(): StreamsRuleSetContainerBuilder | undefined {
+    get streams(): StreamsRuleSetContainerBuilder | undefined {
         return this.microservice?.eventStore.streams;
     }
 
-    get stream_processors(): StreamProcessorRuleSetContainerBuilder | undefined {
+    get stream_processors(): StreamProcessorRuleSetContainerBuilder | undefined {
         return this.microservice?.eventStore.streamProcessors;
     }
 }
-
