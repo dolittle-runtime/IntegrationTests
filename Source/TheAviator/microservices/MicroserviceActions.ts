@@ -38,7 +38,7 @@ export class MicroserviceActions implements IMicroserviceActions {
     }
 
     async commitPublicEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
-        this.commitEvent(tenantId, artifactId, content, true);
+        await this.commitEvent(tenantId, artifactId, content, true);
     }
 
     async commitAggregateEvent(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
