@@ -116,6 +116,11 @@ export class Scenario {
             const prefix = then.brokenRules.length === 0 ? '\x1b[32m✔' : '\x1b[31m✗';
 
             console.log(`  ${prefix} \x1b[0m${then.name}`);
+            for (const brokenRule of then.brokenRules) {
+                for (const cause of brokenRule.causes) {
+                    console.log(`      \x1b[31m${cause.title}\x1b[0m`);
+                }
+            }
         }
     }
 
