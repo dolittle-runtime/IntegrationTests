@@ -12,9 +12,6 @@ import { Guid } from '@dolittle/rudiments';
 export class scenario_for_a_single_microservice extends Scenario {
     protected tenant = Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd');
 
-    protected eventHandlerId = Guid.parse('3dbe18b8-c74f-4b57-9c60-f88de4b024a5');
-    protected aggregateEventHandlerId = Guid.parse('2a494827-841c-43c2-b163-238ac9314f4a');
-
     given = a_single_microservice;
 
     microservice: Microservice | undefined;
@@ -44,3 +41,4 @@ export class scenario_for_a_single_microservice extends Scenario {
         return this.microservice?.eventStore.streamProcessors;
     }
 }
+
