@@ -39,6 +39,7 @@ export class FlightControl implements IFlightControl {
 
                 this._flight.scenario.next(scenario);
 
+                await scenario.establish();
                 await scenario.when();
                 await scenario.then();
 

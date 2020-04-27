@@ -49,6 +49,9 @@ export class Scenario {
         this._context = context;
     }
 
+    async establish() {
+    }
+
     async when() {
         this.throwIfMissingWhenMethod();
 
