@@ -12,7 +12,7 @@ export class Index {
     scenarios: any[] = [];
 
     currentFlight: any | undefined;
-    currentFlightPlan: any | undefined;
+    currentPreflightChecklist: any | undefined;
     currentContext: any | undefined;
 
     constructor(private _httpClient: HttpClient) {
@@ -34,10 +34,10 @@ export class Index {
         });
     }
 
-    private async getFlightPlan(flight: string) {
+    private async getPreflightChecklist(flight: string) {
         const result = await this._httpClient.get(`/api/flights/${flight}`);
         const json = await result.json();
-        this.currentFlightPlan = json;
+        this.currentPreflightChecklist = json;
 
         this.contexts = Object.keys(json).map(_ => {
             return { name: _ };
@@ -50,11 +50,11 @@ export class Index {
 
     async selectedFlightChanged(flight: any) {
         this.currentFlight = flight;
-        await this.getFlightPlan(flight.name);
+        await this.getPreflightChecklist(flight.name);
     }
 
     async selectedContextChanged(context: any) {
         this.currentContext = context;
-        this.scenarios = this.currentFlightPlan[context.name];
+        this.scenarios = this.currentPreflightChecklist[context.name];
     }
 }

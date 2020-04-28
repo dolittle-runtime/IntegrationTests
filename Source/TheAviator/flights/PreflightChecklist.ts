@@ -3,9 +3,9 @@
 
 import { Scenario, ScenarioContextDefinition } from '../gherkin';
 
-import { IFlightPaths } from 'flights/IFlightPaths';
+import { IFlightPaths } from './IFlightPaths';
 
-export class FlightPlan {
+export class PreflightChecklist {
     readonly paths: IFlightPaths;
     readonly scenariosByContexts: Map<ScenarioContextDefinition, Scenario[]>;
 

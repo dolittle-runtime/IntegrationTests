@@ -6,11 +6,12 @@ import path from 'path';
 
 import { Aviator } from './Aviator';
 
-import { single_event_committed } from './tests/single_event_committed';
-import { two_events_with_pause_inbetween_committed } from './tests/two_events_with_pause_inbetween_committed';
-import { twenty_events_committed } from './tests/twenty_events_committed';
-import { single_aggregate_event_committed } from './tests/single_aggregate_event_committed';
-import { twenty_aggregate_events_committed } from './tests/twenty_aggregate_events_committed';
+import { single_event_committed } from './tests/when_committing_private/single_event_committed';
+import { two_events_with_pause_inbetween_committed } from './tests/when_committing_private/two_events_with_pause_inbetween_committed';
+import { twenty_events_committed } from './tests/when_committing_private/twenty_events_committed';
+import { single_aggregate_event_committed } from './tests/when_committing_private/single_aggregate_event_committed';
+import { twenty_aggregate_events_committed } from './tests/when_committing_private/twenty_aggregate_events_committed';
+import { single_public_event_committed } from './tests/when_committing_public/single_public_event_committed';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -22,20 +23,21 @@ export class AvailableFlights {
 
     static async main() {
         try {
-            console.log('Taking off');
+            console.log('Running pre-flight checklist');
             console.log('\n');
 
             const aviator = Aviator.getFor('dotnet');
-            const flight = await aviator.performFlightWith(
+            const flight = await aviator.performPreflightChecklist(
                 single_event_committed,
                 single_aggregate_event_committed,
                 two_events_with_pause_inbetween_committed,
                 twenty_events_committed,
-                twenty_aggregate_events_committed
+                twenty_aggregate_events_committed,
+                single_public_event_committed
             );
 
             console.log('\n');
-            console.log('Arrived and landed at destination');
+            console.log('Checklist has been performed');
         } catch (ex) {
             console.log(ex);
         }
@@ -48,8 +50,8 @@ export class AvailableFlights {
             return {};
         }
         const sortedDirectories = directories.sort().reverse();
-        const flightPlanFile = path.join(outputDirectory, sortedDirectories[0], 'results.json');
-        const content = fs.readFileSync(flightPlanFile).toString();
+        const resultsFile = path.join(outputDirectory, sortedDirectories[0], 'results.json');
+        const content = fs.readFileSync(resultsFile).toString();
         return JSON.parse(content);
     }
 }

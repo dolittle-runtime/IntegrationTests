@@ -10,7 +10,7 @@ import { IMicroserviceFactory } from '../microservices';
 import { Scenario, ScenarioContextDefinition } from '../gherkin';
 
 import { IFlightPlanner } from './IFlightPlanner';
-import { FlightPlan } from './FlightPlan';
+import { PreflightChecklist } from './PreflightChecklist';
 import { IFlightPaths } from './IFlightPaths';
 
 const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
@@ -20,7 +20,7 @@ export class FlightPlanner implements IFlightPlanner {
     constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory) {
     }
 
-    planFor(platform: string, ...scenarios: Constructor<Scenario>[]): FlightPlan {
+    planFor(platform: string, ...scenarios: Constructor<Scenario>[]): PreflightChecklist {
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
         const scenarioContexts: Map<Constructor<IGiven>, ScenarioContextDefinition> = new Map();
         const scenariosByContexts: Map<ScenarioContextDefinition, Scenario[]> = new Map();
@@ -53,6 +53,6 @@ export class FlightPlanner implements IFlightPlanner {
             scenariosByContexts.get(scenarioContext)?.push(scenario);
         }
 
-        return new FlightPlan(this._flightPaths, scenariosByContexts);
+        return new PreflightChecklist(this._flightPaths, scenariosByContexts);
     }
 }

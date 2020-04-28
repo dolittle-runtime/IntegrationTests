@@ -150,7 +150,7 @@ export class TeamsConversationBot extends TeamsActivityHandler {
             type: 'mention'
         };
 
-        const replyActivity = MessageFactory.text(`Roger ${mention.text} - we're taking off with the flight.`);
+        const replyActivity = MessageFactory.text(`Roger ${mention.text} - we're going to perform the preflight checklist.`);
         replyActivity.entities = [mention];
         await context.sendActivity(replyActivity);
         AvailableFlights.main();

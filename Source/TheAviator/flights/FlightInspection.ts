@@ -6,7 +6,7 @@ import path from 'path';
 import { retry } from 'async';
 
 import { Flight } from './Flight';
-import { IFlightControl } from './IFlightControl';
+import { IFlightInspection } from './IFlightInspection';
 
 import { Microservice, IMicroserviceFactory, MicroserviceConfiguration } from '../microservices';
 
@@ -14,12 +14,12 @@ import { ScenarioContext, ScenarioContextDefinition, Scenario } from '../gherkin
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
-export class FlightControl implements IFlightControl {
+export class FlightInspection implements IFlightInspection {
     constructor(private _flight: Flight, private _microserviceFactory: IMicroserviceFactory) {
     }
 
-    async takeOff(): Promise<void> {
-        for (const [contextDefinition, scenarios] of this._flight.plan.scenariosByContexts) {
+    async runPreflightCheck(): Promise<void> {
+        for (const [contextDefinition, scenarios] of this._flight.preflightChecklist.scenariosByContexts) {
             const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
             const microservices = Object.values(microservicesByName);
             const context = new ScenarioContext(contextDefinition, microservicesByName);

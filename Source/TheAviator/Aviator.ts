@@ -12,7 +12,7 @@ import { ContainerEnvironment } from './containers/docker';
 
 import {
     FlightRecorder,
-    FlightControl,
+    FlightInspection,
     Flight,
     FlightPlanner,
     FlightPaths
@@ -41,14 +41,14 @@ export class Aviator {
         return new Aviator(platform);
     }
 
-    async performFlightWith(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
+    async performPreflightChecklist(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
         const flightPlanner = new FlightPlanner(flightPaths, this.microserviceFactory);
-        const flightPlan = flightPlanner.planFor(this.platform, ...scenarios);
-        const flight = new Flight(this.platform, flightPlan);
+        const checklist = flightPlanner.planFor(this.platform, ...scenarios);
+        const flight = new Flight(this.platform, checklist);
         flight.setRecorder(new FlightRecorder(flight, this.serializer));
-        const flightControl = new FlightControl(flight, this.microserviceFactory);
-        await flightControl.takeOff();
+        const flightControl = new FlightInspection(flight, this.microserviceFactory);
+        await flightControl.runPreflightCheck();
         return flight;
     }
 }
