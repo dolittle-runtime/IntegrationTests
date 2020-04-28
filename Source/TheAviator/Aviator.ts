@@ -14,7 +14,7 @@ import {
     FlightRecorder,
     FlightInspection,
     Flight,
-    FlightPlanner,
+    PreflightPlanner,
     FlightPaths
 } from './flights';
 
@@ -43,8 +43,8 @@ export class Aviator {
 
     async performPreflightChecklist(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
-        const flightPlanner = new FlightPlanner(flightPaths, this.microserviceFactory);
-        const checklist = flightPlanner.planFor(this.platform, ...scenarios);
+        const flightPlanner = new PreflightPlanner(flightPaths, this.microserviceFactory);
+        const checklist = flightPlanner.createChecklistFor(this.platform, ...scenarios);
         const flight = new Flight(this.platform, checklist);
         flight.setRecorder(new FlightRecorder(flight, this.serializer));
         const flightControl = new FlightInspection(flight, this.microserviceFactory);

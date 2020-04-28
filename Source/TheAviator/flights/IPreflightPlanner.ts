@@ -5,6 +5,6 @@ import { Constructor } from '../Constructor';
 import { Scenario } from '../gherkin';
 import { PreflightChecklist } from './PreflightChecklist';
 
-export interface IFlightPlanner {
-    planFor(target: string, ...scenarios: Constructor<Scenario>[]): PreflightChecklist
+export interface IPreflightPlanner {
+    createChecklistFor(target: string, ...scenarios: Constructor<Scenario>[]): PreflightChecklist
 }
