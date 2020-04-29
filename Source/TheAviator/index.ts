@@ -19,7 +19,27 @@ const getOutputsDirectory = () => {
     return path.join(process.cwd(), 'resultOutput');
 };
 
+
+class SuperClass {
+
+}
+
+class Inheritor extends SuperClass {
+
+}
+
+let i = 0;
+i++;
+
+
+(async () => {
+    await AvailableFlights.main();
+    //await AvailableFlights.simulate();
+})();
+
+
 // https://unicode-table.com/en/
+/*
 Banner.present();
 
 app.get('/api/flight/start', async (request, response) => {
@@ -38,12 +58,12 @@ app.get('/api/flights', (request, response) => {
 });
 
 app.get('/api/flights/:flight', (request, response) => {
-    const flightPlanFile = path.join(getOutputsDirectory(), request.params.flight, 'flightplan.json');
-    if (!fs.existsSync(flightPlanFile)) {
+    const checklistFile = path.join(getOutputsDirectory(), request.params.flight, 'preflight-checklist.json');
+    if (!fs.existsSync(checklistFile)) {
         response.json({});
     } else {
-        const flightPlan = fs.readFileSync(flightPlanFile).toString();
-        response.json(JSON.parse(flightPlan));
+        const checklist = fs.readFileSync(checklistFile).toString();
+        response.json(JSON.parse(checklist));
     }
 });
 
@@ -54,3 +74,4 @@ app.listen(port, () => {
     console.log(Banner.separator);
     console.log('\n');
 });
+*/

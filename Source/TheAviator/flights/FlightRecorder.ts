@@ -9,7 +9,7 @@ import { ISerializer } from '../ISerializer';
 import { IContainer } from '../containers';
 import { Microservice } from '../microservices';
 
-import { Scenario, ScenarioResult, ScenarioContextDefinition, NoScenario } from '../gherkin';
+import { Scenario, ScenarioResult, ScenarioEnvironmentDefinition } from '../gherkin';
 
 import { FailedRule } from './FailedRule';
 
@@ -20,7 +20,7 @@ import { FailedRuleCause } from './FailedRuleCause';
 export class FlightRecorder implements IFlightRecorder {
     private _currentScenario: Scenario;
     private _colorRemoverRegEx: RegExp;
-    private _scenarioResultsPerContext: Map<ScenarioContextDefinition, ScenarioResult[]> = new Map();
+    private _scenarioResultsPerContext: Map<ScenarioEnvironmentDefinition, ScenarioResult[]> = new Map();
 
     constructor(private _flight: Flight, private _serializer: ISerializer) {
         this._colorRemoverRegEx = /#[0-9a-f]{6}|#[0-9a-f]{3}/gi;
@@ -44,6 +44,7 @@ export class FlightRecorder implements IFlightRecorder {
     }
 
     async reportResultFor(scenario: Scenario) {
+        /*
         const thens: any = {};
         for (const then of scenario.thens) {
             thens[then.name] = then.brokenRules.map(brokenRule => {
@@ -74,7 +75,7 @@ export class FlightRecorder implements IFlightRecorder {
                     console.log(`      \x1b[31m${cause.title}\x1b[0m`);
                 }
             }
-        }
+        }*/
     }
 
     writeConfigurationFilesFor(microservices: Microservice[]) {
@@ -135,7 +136,7 @@ export class FlightRecorder implements IFlightRecorder {
             checklist[context.name] = this._flight.preflightChecklist.scenariosByContexts.get(context)?.map((scenario: Scenario) => {
                 return {
                     name: scenario.name,
-                    thens: scenario.thens.map(_ => _.name)
+                    //thens: scenario.thens.map(_ => _.name)
                 };
             });
         }

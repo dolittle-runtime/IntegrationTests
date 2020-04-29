@@ -10,7 +10,7 @@ import { IFlightInspection } from './IFlightInspection';
 
 import { Microservice, IMicroserviceFactory, MicroserviceConfiguration } from '../microservices';
 
-import { ScenarioContext, ScenarioContextDefinition, Scenario } from '../gherkin';
+import { ScenarioEnvironment, ScenarioEnvironmentDefinition, Scenario } from '../gherkin';
 
 type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
@@ -22,7 +22,7 @@ export class FlightInspection implements IFlightInspection {
         for (const [contextDefinition, scenarios] of this._flight.preflightChecklist.scenariosByContexts) {
             const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
             const microservices = Object.values(microservicesByName);
-            const context = new ScenarioContext(contextDefinition, microservicesByName);
+            const context = new ScenarioEnvironment(contextDefinition, microservicesByName);
 
             this._flight.recorder.writeConfigurationFilesFor(microservices);
             this._flight.recorder.collectLogsFor(microservices);
@@ -33,19 +33,19 @@ export class FlightInspection implements IFlightInspection {
             await this.connectConsumersToProducers(microservices, contextDefinition);
 
             for (const scenario of scenarios) {
-                scenario.setContext(context);
-
-                await this.performOnMicroservice(microservices, async (microservice) => await microservice.beginEvaluation());
+                //scenario.setContext(context);
 
                 this._flight.scenario.next(scenario);
 
+                /*
                 await scenario.establish();
                 await scenario.when();
                 await scenario.then();
+                */
 
                 await this.performOnMicroservice(microservices, async (microservice) => {
-                    const brokenRules = await microservice.endEvaluation();
-                    scenario.handleBrokenRules(brokenRules);
+                    //const brokenRules = await microservice.endEvaluation();
+                    //scenario.handleBrokenRules(brokenRules);
                 });
                 await this._flight.recorder.reportResultFor(scenario);
 
@@ -98,7 +98,7 @@ export class FlightInspection implements IFlightInspection {
         }
     }
 
-    private async prepareMicroservicesFor(context: ScenarioContextDefinition): Promise<{ [key: string]: Microservice }> {
+    private async prepareMicroservicesFor(context: ScenarioEnvironmentDefinition): Promise<{ [key: string]: Microservice }> {
         const microservicesByName: { [key: string]: Microservice } = {};
         const microserviceConfigurations = this.prepareMicroserviceConfigurations(context);
 
@@ -113,7 +113,7 @@ export class FlightInspection implements IFlightInspection {
         return microservicesByName;
     }
 
-    private prepareMicroserviceConfigurations(context: ScenarioContextDefinition): MicroserviceConfiguration[] {
+    private prepareMicroserviceConfigurations(context: ScenarioEnvironmentDefinition): MicroserviceConfiguration[] {
         const microserviceConfigurations: MicroserviceConfiguration[] = [];
         for (const microserviceDefinition of context.microservices) {
             microserviceConfigurations.push(MicroserviceConfiguration.from(this._flight.platform, microserviceDefinition));
@@ -134,7 +134,7 @@ export class FlightInspection implements IFlightInspection {
         return microserviceConfigurations;
     }
 
-    private async connectConsumersToProducers(microservices: Microservice[], contextDefinition: ScenarioContextDefinition) {
+    private async connectConsumersToProducers(microservices: Microservice[], contextDefinition: ScenarioEnvironmentDefinition) {
         for (const consumerName of Object.keys(contextDefinition.consumerToProducerMap)) {
             const consumer = microservices.find(_ => _.configuration.name === consumerName);
             if (consumer) {
@@ -148,7 +148,7 @@ export class FlightInspection implements IFlightInspection {
         }
     }
 
-    private async disconnectConsumersFromProducers(microservices: Microservice[], contextDefinition: ScenarioContextDefinition) {
+    private async disconnectConsumersFromProducers(microservices: Microservice[], contextDefinition: ScenarioEnvironmentDefinition) {
         for (const consumerName of Object.keys(contextDefinition.consumerToProducerMap)) {
             const consumer = microservices.find(_ => _.configuration.name === consumerName);
             if (consumer) {
@@ -161,7 +161,6 @@ export class FlightInspection implements IFlightInspection {
             }
         }
     }
-
 
     private async performOnMicroservice(microservices: Microservice[], method: MicroserviceMethod) {
         for (const microservice of microservices.values()) {

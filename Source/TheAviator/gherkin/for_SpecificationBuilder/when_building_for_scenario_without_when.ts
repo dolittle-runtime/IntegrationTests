@@ -1,14 +1,10 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Context } from '../Context';
-
 import { ScenarioFor } from '../ScenarioFor';
 import { SpecificationBuilder } from '../SpecificationBuilder';
 import { MissingWhenMethod } from '../MissingWhenMethod';
-
-class MyContext extends Context {
-}
+import { MyContext } from './MyContext';
 
 class ScenarioWithoutFeature extends ScenarioFor<MyContext> {
     for = MyContext;

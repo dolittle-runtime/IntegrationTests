@@ -4,7 +4,7 @@
 import { Guid } from '@dolittle/rudiments';
 import { MicroserviceDefinition } from '../microservices';
 
-export class ScenarioContextDefinition {
+export class ScenarioEnvironmentDefinition {
     private _tenants: Guid[] | undefined;
     private _microservicesToPrepare: MicroserviceDefinition[] = [];
 
@@ -19,12 +19,12 @@ export class ScenarioContextDefinition {
         return this._microservicesToPrepare.slice();
     }
 
-    withTenants(tenants: Guid[]): ScenarioContextDefinition {
+    withTenants(tenants: Guid[]): ScenarioEnvironmentDefinition {
         this._tenants = tenants;
         return this;
     }
 
-    withMicroservice(name: string, tenants: Guid[] | undefined): ScenarioContextDefinition {
+    withMicroservice(name: string, tenants: Guid[] | undefined): ScenarioEnvironmentDefinition {
         this._microservicesToPrepare.push(new MicroserviceDefinition(name, (tenants ?? this._tenants) ?? []));
         return this;
     }

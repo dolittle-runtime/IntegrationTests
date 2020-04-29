@@ -3,8 +3,8 @@
 
 import { Constructor } from '../Constructor';
 import { IGiven } from './IGiven';
-import { ScenarioContextDefinition } from './ScenarioContextDefinition';
+import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 
 export interface IScenarioContextManager {
-    getFor(givenStatement: Constructor<IGiven>): ScenarioContextDefinition;
+    getFor(givenStatement: Constructor<IGiven>): ScenarioEnvironmentDefinition;
 }

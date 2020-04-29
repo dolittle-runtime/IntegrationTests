@@ -1,18 +1,24 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+export * from './BecauseOf';
 export * from './BehaviorFor';
 export * from './Feature';
+export * from './FeatureDefinition';
+export * from './IContextDescriptorFor';
 export * from './Given';
 export * from './IGiven';
-export * from './ISpecificationBuilder';
 export * from './IScenarioContextManager';
-export * from './NoContext';
-export * from './NoScenario';
+export * from './ISpecificationBuilder';
+export * from './MissingWhenMethod';
+export * from './MultipleWhenMethods';
 export * from './Scenario';
-export * from './SpecificationBuilder';
 export * from './ScenarioContext';
-export * from './ScenarioContextDefinition';
-export * from './ScenarioResult';
+export * from './ScenarioEnvironment';
+export * from './ScenarioEnvironmentDefinition';
 export * from './ScenarioFor';
-export * from './When';
+export * from './ScenarioResult';
+export * from './Specification';
+export * from './SpecificationBuilder';
+export * from './Then';
+export * from './ThenIsNotAMethod';

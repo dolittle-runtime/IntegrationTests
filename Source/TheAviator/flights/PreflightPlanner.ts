@@ -3,11 +3,11 @@
 
 import { Constructor } from '../Constructor';
 
-import { IGiven, NoContext, Given } from '../gherkin';
+import { IGiven } from '../gherkin';
 
 import { IMicroserviceFactory } from '../microservices';
 
-import { Scenario, ScenarioContextDefinition } from '../gherkin';
+import { Scenario, ScenarioEnvironmentDefinition } from '../gherkin';
 
 import { IPreflightPlanner } from './IPreflightPlanner';
 import { PreflightChecklist } from './PreflightChecklist';
@@ -22,8 +22,8 @@ export class PreflightPlanner implements IPreflightPlanner {
 
     createChecklistFor(platform: string, ...givenStatements: Constructor<any>[]): PreflightChecklist {
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
-        const scenarioContexts: Map<Constructor<IGiven>, ScenarioContextDefinition> = new Map();
-        const scenariosByContexts: Map<ScenarioContextDefinition, Scenario[]> = new Map();
+        const scenarioContexts: Map<Constructor<IGiven>, ScenarioEnvironmentDefinition> = new Map();
+        const scenariosByContexts: Map<ScenarioEnvironmentDefinition, Scenario[]> = new Map();
 
         for (const givenConstructor of givenStatements) {
             const scenario = new givenConstructor();

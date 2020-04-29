@@ -3,22 +3,25 @@
 
 import { Guid } from '@dolittle/rudiments';
 import { EventHandlers } from '../shared/EventHandlers';
-import { Given } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
+import { Feature, ScenarioFor } from '../../gherkin';
 
-export class twenty_aggregate_events_committed {
-    context: a_single_microservice | undefined;
-
+@Feature('Private aggregate events')
+export class twenty_aggregate_events_committed extends ScenarioFor<a_single_microservice> {
     readonly eventSource = Guid.create();
     readonly _events: any[] = [];
 
     constructor() {
+        super();
+
         for (let i = 0; i < 20; i += 1) {
             this._events.push({ 'uniqueIdentifier': Guid.create().toString() });
         }
     }
 
-    async becauseOf() {
+    for = a_single_microservice;
+
+    async when_all_events_are_committed() {
         let version = 0;
         for (const event of this._events) {
             await this.context?.commitAggregateEvent(this.eventSource, version, event);

@@ -7,22 +7,22 @@ import { PreflightChecklist } from './PreflightChecklist';
 import { IFlightRecorder } from './IFlightRecorder';
 import { IFlightPaths } from './IFlightPaths';
 
-import { Scenario, NoScenario, ScenarioContext, ScenarioContextDefinition } from '../gherkin';
+import { Scenario, ScenarioEnvironment, ScenarioEnvironmentDefinition } from '../gherkin';
 
 export class Flight {
     private _recorder: IFlightRecorder | undefined;
     readonly preflightChecklist: PreflightChecklist;
     readonly platform: string;
 
-    readonly scenarioContext: BehaviorSubject<ScenarioContext>;
+    readonly scenarioContext: BehaviorSubject<ScenarioEnvironment>;
     readonly scenario: BehaviorSubject<Scenario>;
 
     constructor(platform: string, preflightChecklist: PreflightChecklist) {
         this.platform = platform;
         this.preflightChecklist = preflightChecklist;
 
-        this.scenarioContext = new BehaviorSubject<ScenarioContext>(new ScenarioContext(new ScenarioContextDefinition('NoScenarioContext'), {}));
-        this.scenario = new BehaviorSubject<Scenario>(new NoScenario());
+        this.scenarioContext = new BehaviorSubject<ScenarioEnvironment>(new ScenarioEnvironment(new ScenarioEnvironmentDefinition('NoScenarioContext'), {}));
+        this.scenario = new BehaviorSubject<Scenario>(Scenario.none);
     }
 
     get paths(): IFlightPaths {

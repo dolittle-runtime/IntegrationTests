@@ -6,16 +6,13 @@ import { Streams } from '../shared/Streams';
 import { Scopes } from '../shared/Scopes';
 import { EventHandlers } from '../shared/EventHandlers';
 import { a_producer_and_a_consumer } from '../given/a_producer_and_a_consumer';
-import { Given } from '../../gherkin';
 
 export class single_public_event_committed {
     context: a_producer_and_a_consumer | undefined;
 
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
-    becauseOf = async () => {
-        await this.context?.producer?.commitPublicEvent(this.event_committed);
-    }
+    when_event_is_committed = async () => await this.context?.producer?.commitPublicEvent(this.event_committed);
 
     then_event_should_be_in_event_log_of_producer_microservice = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, this.event_committed);
     then_event_should_be_in_public_stream_of_producer_microservice = () => this.context?.producer?.streams?.should_be_in_public_stream(this.context?.tenant, Streams.publicStream, this.event_committed);

@@ -4,18 +4,15 @@
 import { Guid } from '@dolittle/rudiments';
 
 import { EventHandlers } from '../shared/EventHandlers';
-import { Given, ScenarioFor } from '../../gherkin';
+import { ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
 import { Feature } from 'gherkin/Feature';
 
 @Feature('Private events')
 export class committing_a_single_event extends ScenarioFor<a_single_microservice> {
-    context: a_single_microservice | undefined;
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
     for = a_single_microservice;
-
-    given = () => [];
 
     when_event_is_committed = async () => await this.context?.commitEvent(this.event_committed);
 

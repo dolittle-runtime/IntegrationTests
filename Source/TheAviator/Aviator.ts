@@ -19,7 +19,7 @@ import {
 } from './flights';
 
 import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
-import { Scenario, IGiven, Given } from 'gherkin';
+import { ScenarioContext } from './gherkin';
 import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
 
 export class Aviator {
@@ -53,7 +53,7 @@ export class Aviator {
         return flight;
     }
 
-    async startSimulation<T extends IGiven>(options: FlightSimulationOptions, procedure: IFlightSimulationProcedure<T>): Promise<FlightSimulation> {
+    async startSimulation<T extends ScenarioContext>(options: FlightSimulationOptions, procedure: IFlightSimulationProcedure<T>): Promise<FlightSimulation> {
         const simulator = new FlightSimulator();
         const simulation = simulator.startFor(options, procedure);
         return simulation;

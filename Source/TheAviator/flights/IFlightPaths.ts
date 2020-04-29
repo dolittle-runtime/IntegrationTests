@@ -1,7 +1,7 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Scenario, ScenarioContextDefinition } from '../gherkin';
+import { Scenario, ScenarioEnvironmentDefinition } from '../gherkin';
 
 import { Microservice } from '../microservices';
 
@@ -14,9 +14,9 @@ export interface IFlightPaths {
 
     /**
      * Get Path for a {ScenarioContext}
-     * @param {ScenarioContextDefinition} context ScenarioContext to get for.
+     * @param {ScenarioEnvironmentDefinition} context ScenarioContext to get for.
      */
-    forScenarioContext(context: ScenarioContextDefinition): string;
+    forScenarioContext(context: ScenarioEnvironmentDefinition): string;
 
     /**
      * Get Path for a {Scenario}
@@ -33,8 +33,8 @@ export interface IFlightPaths {
 
     /**
      * Get Path for a {Microservice} used in a {ScenarioContext}
-     * @param {ScenarioContextDefinition} context ScenarioContext to get for.
+     * @param {ScenarioEnvironmentDefinition} context ScenarioContext to get for.
      * @param {Microservice} microservice Microservice to get for.
      */
-    forMicroserviceInContext(context: ScenarioContextDefinition, microservice: Microservice): string;
+    forMicroserviceInContext(context: ScenarioEnvironmentDefinition, microservice: Microservice): string;
 }

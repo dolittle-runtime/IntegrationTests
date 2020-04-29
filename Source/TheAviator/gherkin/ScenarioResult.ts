@@ -1,16 +1,18 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { FailedRule } from '../flights/FailedRule';
+import { Scenario } from './Scenario';
+import { ScenarioContext } from './ScenarioContext';
+import { ThenResult } from './ThenResult';
 
 export class ScenarioResult {
-    readonly name: string;
-    readonly context: string;
-    readonly thens: { [key: string]: FailedRule[] };
+    readonly scenario: Scenario;
+    readonly context: ScenarioContext;
+    readonly results: ThenResult[];
 
-    constructor(name: string, context: string, thens: { [key: string]: FailedRule[] }) {
-        this.name = name;
+    constructor(scenario: Scenario, context: ScenarioContext, results: ThenResult[]) {
+        this.scenario = scenario;
         this.context = context;
-        this.thens = thens;
+        this.results = results;
     }
 }

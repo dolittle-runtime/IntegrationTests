@@ -70,12 +70,4 @@ export class Microservice {
         await this.runtime.disconnectFromNetwork(producer.configuration.networkName);
         await this.eventStoreStorage.disconnectFromNetwork(producer.configuration.networkName);
     }
-
-    async beginEvaluation() {
-        this.eventStore.beginEvaluation();
-    }
-
-    async endEvaluation(): Promise<BrokenRule[]> {
-        return await this.eventStore.endEvaluation();
-    }
 }

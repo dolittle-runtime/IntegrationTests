@@ -4,21 +4,19 @@
 import { ISpecificationBuilder } from './ISpecificationBuilder';
 import { Specification } from './Specification';
 import { FeatureDefinition } from './FeatureDefinition';
-import { When } from './When';
 import { BecauseOf } from './BecauseOf';
 import { Then } from './Then';
 import { MissingWhenMethod } from './MissingWhenMethod';
 import { MultipleWhenMethods } from './MultipleWhenMethods';
 import { ThenIsNotAMethod } from './ThenIsNotAMethod';
 import { IContextDescriptorFor } from './IContextDescriptorFor';
+import humanReadable from '../humanReadable';
 
 export class SpecificationBuilder implements ISpecificationBuilder {
-    static UndefinedFeature: FeatureDefinition = { name: 'Feature not specified', description: '' };
-
     buildFrom(description: IContextDescriptorFor<any>): Specification {
         const keys = this.getKeysFor(description);
         const specification: Specification = {
-            feature: SpecificationBuilder.UndefinedFeature,
+            feature: FeatureDefinition.unspecified,
             givens: [],
             when: this.getWhenFrom(description, keys),
             ands: this.getAndsFrom(description, keys),
@@ -50,12 +48,12 @@ export class SpecificationBuilder implements ISpecificationBuilder {
                 }
             }
 
-            ands.push({ name: this.humanReadable(andName), method: and });
+            ands.push({ name: humanReadable(andName), method: and });
         }
         return ands;
     }
 
-    private getWhenFrom(description: IContextDescriptorFor<any>, keys: string[]) {
+    private getWhenFrom(description: IContextDescriptorFor<any>, keys: string[]): BecauseOf {
         const whenMethods = keys.filter(_ => _.indexOf('when_') === 0);
         this.throwIfMultipleWhenMethods(whenMethods, description);
         let whenMethod: any;
@@ -65,8 +63,8 @@ export class SpecificationBuilder implements ISpecificationBuilder {
         }
 
         this.throwIfMissingWhenMethod(whenMethod, description);
-        const whenMethodName = this.humanReadable(whenMethods[0]);
-        return new When({ name: whenMethodName, method: whenMethod });
+        const whenMethodName = humanReadable(whenMethods[0]);
+        return { name: whenMethodName, method: whenMethod };
     }
 
     private getThensFrom(description: any, keys: string[]) {
@@ -77,16 +75,12 @@ export class SpecificationBuilder implements ISpecificationBuilder {
                 const method = (description as any)[key];
                 this.throwIfThenIsNotMethod(method, key, description);
 
-                const thenName = this.humanReadable(key);
+                const thenName = humanReadable(key);
                 thens.push(new Then(thenName, method));
             }
         }
 
         return thens;
-    }
-
-    private humanReadable(input: string): string {
-        return input.split('_').join(' ');
     }
 
     private throwIfMissingWhenMethod(whenMethod: Function, description: any) {

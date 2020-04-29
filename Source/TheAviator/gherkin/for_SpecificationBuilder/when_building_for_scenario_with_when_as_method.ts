@@ -1,13 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Context } from '../Context';
-
 import { ScenarioFor } from '../ScenarioFor';
 import { SpecificationBuilder } from '../SpecificationBuilder';
-
-class MyContext extends Context {
-}
+import { MyContext } from './MyContext';
 
 class ScenarioWithoutFeature extends ScenarioFor<MyContext> {
     for = MyContext;
@@ -20,5 +16,5 @@ describe('when building for scenario with when as method', () => {
 
     const specification = builder.buildFrom(new ScenarioWithoutFeature());
 
-    it('should have the when method', () => specification.when.becauseOf.name.should.equal('when doing things'));
+    it('should have the when method', () => specification.when.name.should.equal('when doing things'));
 });

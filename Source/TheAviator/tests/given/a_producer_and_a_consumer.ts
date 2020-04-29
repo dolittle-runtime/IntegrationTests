@@ -2,24 +2,25 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
-import { IGiven, ScenarioContextDefinition, ScenarioContext } from '../../gherkin';
-import { MicroserviceRepresentation } from 'tests/given/MicroserviceRepresentation';
+import { ScenarioEnvironmentDefinition, ScenarioEnvironment, ScenarioContext } from '../../gherkin';
+import { MicroserviceInContext } from '../../gherkin/MicroserviceInContext';
 import { Tenants } from '../shared/Tenants';
 
-export class a_producer_and_a_consumer implements IGiven {
+export class a_producer_and_a_consumer extends ScenarioContext {
     tenant: Guid = Tenants.tenant;
 
-    producer: MicroserviceRepresentation | undefined;
-    consumer: MicroserviceRepresentation | undefined;
+    producer: MicroserviceInContext | undefined;
+    consumer: MicroserviceInContext | undefined;
 
-    async describe(context: ScenarioContextDefinition) {
-        context.withMicroservice('producer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
-        context.withMicroservice('consumer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
-        context.connectProducerToConsumer('producer', 'consumer');
+    async describe(environment: ScenarioEnvironmentDefinition) {
+        environment.withMicroservice('producer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
+        environment.withMicroservice('consumer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
+        environment.connectProducerToConsumer('producer', 'consumer');
     }
 
-    async establish(scenarioContext: ScenarioContext) {
-        this.producer = new MicroserviceRepresentation(scenarioContext.microservices.producer);
-        this.consumer = new MicroserviceRepresentation(scenarioContext.microservices.consumer);
+    async establish(environment: ScenarioEnvironment) {
+        await super.establish(environment);
+        this.producer = this.microservices.producer;
+        this.consumer = this.microservices.consumer;
     }
 }
