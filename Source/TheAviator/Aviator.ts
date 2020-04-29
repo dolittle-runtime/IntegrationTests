@@ -19,7 +19,7 @@ import {
 } from './flights';
 
 import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
-import { ScenarioContext } from './gherkin';
+import { ScenarioContext, ScenarioFor, ISpecificationBuilder, SpecificationBuilder } from './gherkin';
 import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
 
 export class Aviator {
@@ -28,12 +28,14 @@ export class Aviator {
     readonly containerFactory: IContainerEnvironment;
     readonly microserviceFactory: IMicroserviceFactory;
     readonly configurationManager: IConfigurationManager;
+    readonly specificationBuilder: ISpecificationBuilder;
 
     private constructor(platform: string) {
         this.platform = platform;
         this.serializer = new Serializer();
         this.containerFactory = new ContainerEnvironment();
         this.configurationManager = new ConfigurationManager();
+        this.specificationBuilder = new SpecificationBuilder();
 
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.configurationManager);
     }
@@ -42,9 +44,9 @@ export class Aviator {
         return new Aviator(platform);
     }
 
-    async performPreflightChecklist(...scenarios: Constructor<any>[]): Promise<Flight> {
+    async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<any>>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
-        const flightPlanner = new PreflightPlanner(flightPaths, this.microserviceFactory);
+        const flightPlanner = new PreflightPlanner(flightPaths, this.microserviceFactory, this.specificationBuilder);
         const checklist = flightPlanner.createChecklistFor(this.platform, ...scenarios);
         const flight = new Flight(this.platform, checklist);
         flight.setRecorder(new FlightRecorder(flight, this.serializer));

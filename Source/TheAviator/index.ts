@@ -19,19 +19,6 @@ const getOutputsDirectory = () => {
     return path.join(process.cwd(), 'resultOutput');
 };
 
-
-class SuperClass {
-
-}
-
-class Inheritor extends SuperClass {
-
-}
-
-let i = 0;
-i++;
-
-
 (async () => {
     await AvailableFlights.main();
     //await AvailableFlights.simulate();

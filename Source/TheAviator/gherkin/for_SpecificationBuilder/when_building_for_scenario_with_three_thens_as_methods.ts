@@ -11,9 +11,9 @@ class ScenarioWithoutFeature extends ScenarioFor<MyContext> {
 
     when_doing_things = () => { };
 
-    then_first() {}
-    then_second() {}
-    then_third() {}
+    then_first_rule() {}
+    then_second_rule() {}
+    then_third_rule() {}
 }
 
 describe('when building for scenario with three thens', () => {
@@ -22,7 +22,7 @@ describe('when building for scenario with three thens', () => {
     const specification = builder.buildFrom(new ScenarioWithoutFeature());
 
     it('should have three thens', () => specification.thens.length.should.equal(3));
-    it('should have first then', () => specification.thens.some(_ => _.name === 'then first').should.be.true);
-    it('should have second then', () => specification.thens.some(_ => _.name === 'then second').should.be.true);
-    it('should have third then', () => specification.thens.some(_ => _.name === 'then third').should.be.true);
+    it('should have first then', () => specification.thens.some(_ => _.name === 'first rule').should.be.true);
+    it('should have second then', () => specification.thens.some(_ => _.name === 'second rule').should.be.true);
+    it('should have third then', () => specification.thens.some(_ => _.name === 'third rule').should.be.true);
 });

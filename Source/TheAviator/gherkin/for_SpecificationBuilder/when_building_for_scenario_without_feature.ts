@@ -19,5 +19,5 @@ describe('when building for scenario without feature', () => {
 
     it('should return a specification', () => specification.should.not.be.undefined);
     it('should have an undefined feature', () => specification.feature.should.equal(FeatureDefinition.unspecified));
-    it('should have the when method', () => specification.when.name.should.equal('when doing things'));
+    it('should have the when method', () => specification.when.name.should.equal('doing things'));
 });

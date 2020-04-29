@@ -3,7 +3,7 @@
 
 import { Constructor } from '../Constructor';
 
-import { IGiven } from '../gherkin';
+import { IGiven, ScenarioFor, ISpecificationBuilder } from '../gherkin';
 
 import { IMicroserviceFactory } from '../microservices';
 
@@ -17,17 +17,19 @@ const zeroPad = (num: number, places: number) => String(num).padStart(places, '0
 
 export class PreflightPlanner implements IPreflightPlanner {
 
-    constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory) {
+    constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory, private _specificationBuilder: ISpecificationBuilder) {
     }
 
-    createChecklistFor(platform: string, ...givenStatements: Constructor<any>[]): PreflightChecklist {
+    createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<any>>[]): PreflightChecklist {
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
         const scenarioContexts: Map<Constructor<IGiven>, ScenarioEnvironmentDefinition> = new Map();
         const scenariosByContexts: Map<ScenarioEnvironmentDefinition, Scenario[]> = new Map();
 
-        for (const givenConstructor of givenStatements) {
-            const scenario = new givenConstructor();
+        for (const scenarioForConstructor of scenarios) {
+            const scenarioFor = new scenarioForConstructor() as ScenarioFor<any>;
+            const specification = this._specificationBuilder.buildFrom(scenarioFor);
             let i = 0;
+
             i++;
         }
 

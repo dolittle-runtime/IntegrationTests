@@ -12,11 +12,18 @@ import { ThenIsNotAMethod } from './ThenIsNotAMethod';
 import { IContextDescriptorFor } from './IContextDescriptorFor';
 import humanReadable from '../humanReadable';
 
+const when_prefix = 'when_';
+const then_prefix = 'then_';
+
 export class SpecificationBuilder implements ISpecificationBuilder {
     buildFrom(description: IContextDescriptorFor<any>): Specification {
+        let feature = FeatureDefinition.unspecified;
+        if ((description.constructor as any)._feature) {
+            feature = (description.constructor as any)._feature;
+        }
         const keys = this.getKeysFor(description);
         const specification: Specification = {
-            feature: FeatureDefinition.unspecified,
+            feature: feature,
             givens: [],
             when: this.getWhenFrom(description, keys),
             ands: this.getAndsFrom(description, keys),
@@ -63,7 +70,7 @@ export class SpecificationBuilder implements ISpecificationBuilder {
         }
 
         this.throwIfMissingWhenMethod(whenMethod, description);
-        const whenMethodName = humanReadable(whenMethods[0]);
+        const whenMethodName = humanReadable(whenMethods[0].substr(when_prefix.length));
         return { name: whenMethodName, method: whenMethod };
     }
 
@@ -71,11 +78,11 @@ export class SpecificationBuilder implements ISpecificationBuilder {
         const thens: Then[] = [];
 
         for (const key of keys) {
-            if (key.toString().indexOf('then_') === 0) {
+            if (key.toString().indexOf(then_prefix) === 0) {
                 const method = (description as any)[key];
                 this.throwIfThenIsNotMethod(method, key, description);
 
-                const thenName = humanReadable(key);
+                const thenName = humanReadable(key.substr(then_prefix.length));
                 thens.push(new Then(thenName, method));
             }
         }

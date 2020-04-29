@@ -14,14 +14,14 @@ export class Scenario {
     readonly context: ScenarioEnvironment;
     readonly specification: Specification;
 
-    constructor(owner: Constructor<any>, context: ScenarioEnvironment, specification: Specification) {
+    constructor(owner: Constructor<any>, environment: ScenarioEnvironment, specification: Specification) {
         if (owner === Scenario) {
             this.name = 'no scenario';
         } else {
             this.name = humanReadable(owner.name);
         }
         this.owner = owner;
-        this.context = context;
+        this.context = environment;
         this.specification = specification;
     }
 }

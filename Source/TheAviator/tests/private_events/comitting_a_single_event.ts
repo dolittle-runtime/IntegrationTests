@@ -4,9 +4,8 @@
 import { Guid } from '@dolittle/rudiments';
 
 import { EventHandlers } from '../shared/EventHandlers';
-import { ScenarioFor } from '../../gherkin';
+import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
-import { Feature } from 'gherkin/Feature';
 
 @Feature('Private events')
 export class committing_a_single_event extends ScenarioFor<a_single_microservice> {

@@ -16,5 +16,5 @@ describe('when building for scenario with when as property', () => {
 
     const specification = builder.buildFrom(new ScenarioWithoutFeature());
 
-    it('should have the when method', () => specification.when.name.should.equal('when doing things'));
+    it('should have the when method', () => specification.when.name.should.equal('doing things'));
 });
