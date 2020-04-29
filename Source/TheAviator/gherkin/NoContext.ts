@@ -3,8 +3,12 @@
 
 import { IGiven } from './IGiven';
 import { ScenarioContextDefinition } from './ScenarioContextDefinition';
+import { ScenarioContext } from './ScenarioContext';
 
 export class NoContext implements IGiven {
     describe(context: ScenarioContextDefinition): void {
+    }
+
+    async establish(scenarioContext: ScenarioContext): Promise<void> {
     }
 }

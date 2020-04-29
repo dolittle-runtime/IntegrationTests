@@ -1,0 +1,21 @@
+// Copyright (c) Dolittle. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Guid } from '@dolittle/rudiments';
+import { EventHandlers } from '../shared/EventHandlers';
+import { a_single_microservice } from 'tests/given/a_single_microservice';
+import { Given } from '../../gherkin';
+
+export class single_aggregate_event_committed {
+    context: a_single_microservice | undefined;
+
+    readonly eventSource = Guid.create();
+    readonly version = 0;
+    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+
+    becauseOf = async () => await this.context?.commitAggregateEvent(this.eventSource, this.version, this.event_committed);
+
+    then_event_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
+    then_event_should_be_in_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, this.event_committed);
+    then_event_handler_should_have_been_handled = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.aggregateEventHandlerId, 1);
+}

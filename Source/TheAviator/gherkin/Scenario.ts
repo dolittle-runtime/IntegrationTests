@@ -62,7 +62,7 @@ export class Scenario {
 
         console.log(`given ${this.given?.name}`);
 
-        console.log(` ${this._whenDescription?.name}`);
+        console.log(` ${this._whenDescription?.becauseOf}`);
         let result: any = null;
         try {
             result = await (this._whenMethod as Function).apply(this);
@@ -85,7 +85,7 @@ export class Scenario {
                 }
 
                 item.actualName = andName;
-                this._whenDescription?.addAnds(andName);
+                this._whenDescription?.addAnd(andName);
             }
 
             for (const item of resultAsArray) {

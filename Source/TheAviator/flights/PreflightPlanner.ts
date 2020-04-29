@@ -3,7 +3,7 @@
 
 import { Constructor } from '../Constructor';
 
-import { IGiven, NoContext } from '../gherkin';
+import { IGiven, NoContext, Given } from '../gherkin';
 
 import { IMicroserviceFactory } from '../microservices';
 
@@ -20,38 +20,43 @@ export class PreflightPlanner implements IPreflightPlanner {
     constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory) {
     }
 
-    createChecklistFor(platform: string, ...scenarios: Constructor<Scenario>[]): PreflightChecklist {
+    createChecklistFor(platform: string, ...givenStatements: Constructor<any>[]): PreflightChecklist {
         const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
         const scenarioContexts: Map<Constructor<IGiven>, ScenarioContextDefinition> = new Map();
         const scenariosByContexts: Map<ScenarioContextDefinition, Scenario[]> = new Map();
 
-        for (const scenarioConstructor of scenarios) {
-            const scenario = new scenarioConstructor() as Scenario;
-            scenario.prepare();
-
-            let givenConstructor = scenario.given;
-            if (!givenConstructor) {
-                givenConstructor = NoContext;
-            }
-
-            let scenarioContext: ScenarioContextDefinition;
-            if (!scenariosByGiven.has(givenConstructor)) {
-                const given = new givenConstructor();
-                scenariosByGiven.set(givenConstructor, []);
-                scenarioContext = new ScenarioContextDefinition(givenConstructor.name);
-                given.describe(scenarioContext);
-                scenarioContexts.set(givenConstructor, scenarioContext);
-            } else {
-                scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContextDefinition(givenConstructor.name);
-            }
-
-            scenariosByGiven.get(givenConstructor)?.push(scenario);
-            if (!scenariosByContexts.has(scenarioContext)) {
-                scenariosByContexts.set(scenarioContext, []);
-            }
-
-            scenariosByContexts.get(scenarioContext)?.push(scenario);
+        for (const givenConstructor of givenStatements) {
+            const scenario = new givenConstructor();
+            let i = 0;
+            i++;
         }
+
+        /*
+        scenario.prepare();
+
+        let givenConstructor = scenario.given;
+        if (!givenConstructor) {
+            givenConstructor = NoContext;
+        }
+
+        let scenarioContext: ScenarioContextDefinition;
+        if (!scenariosByGiven.has(givenConstructor)) {
+            const given = new givenConstructor();
+            scenariosByGiven.set(givenConstructor, []);
+            scenarioContext = new ScenarioContextDefinition(givenConstructor.name);
+            given.describe(scenarioContext);
+            scenarioContexts.set(givenConstructor, scenarioContext);
+        } else {
+            scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContextDefinition(givenConstructor.name);
+        }
+
+        scenariosByGiven.get(givenConstructor)?.push(scenario);
+        if (!scenariosByContexts.has(scenarioContext)) {
+            scenariosByContexts.set(scenarioContext, []);
+        }
+
+        scenariosByContexts.get(scenarioContext)?.push(scenario);
+        */
 
         return new PreflightChecklist(this._flightPaths, scenariosByContexts);
     }

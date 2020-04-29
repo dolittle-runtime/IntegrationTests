@@ -18,8 +18,9 @@ import {
     FlightPaths
 } from './flights';
 
-import { Scenario } from './gherkin/Scenario';
 import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
+import { Scenario, IGiven, Given } from 'gherkin';
+import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
 
 export class Aviator {
     readonly platform: string;
@@ -41,7 +42,7 @@ export class Aviator {
         return new Aviator(platform);
     }
 
-    async performPreflightChecklist(...scenarios: Constructor<Scenario>[]): Promise<Flight> {
+    async performPreflightChecklist(...scenarios: Constructor<any>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
         const flightPlanner = new PreflightPlanner(flightPaths, this.microserviceFactory);
         const checklist = flightPlanner.createChecklistFor(this.platform, ...scenarios);
@@ -50,5 +51,11 @@ export class Aviator {
         const flightControl = new FlightInspection(flight, this.microserviceFactory);
         await flightControl.runPreflightCheck();
         return flight;
+    }
+
+    async startSimulation<T extends IGiven>(options: FlightSimulationOptions, procedure: IFlightSimulationProcedure<T>): Promise<FlightSimulation> {
+        const simulator = new FlightSimulator();
+        const simulation = simulator.startFor(options, procedure);
+        return simulation;
     }
 }

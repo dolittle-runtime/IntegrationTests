@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Microservice } from 'microservices';
-import { Tenants } from './shared/Tenants';
-import { Artifacts } from './shared/Artifacts';
+import { Tenants } from '../shared/Tenants';
+import { Artifacts } from '../shared/Artifacts';
 import { Guid } from '@dolittle/rudiments';
 import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from 'rules';
 

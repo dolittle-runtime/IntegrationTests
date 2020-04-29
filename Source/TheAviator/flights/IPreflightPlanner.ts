@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Constructor } from '../Constructor';
-import { Scenario } from '../gherkin';
+import { Given } from '../gherkin';
 import { PreflightChecklist } from './PreflightChecklist';
 
 export interface IPreflightPlanner {
-    createChecklistFor(target: string, ...scenarios: Constructor<Scenario>[]): PreflightChecklist
+    createChecklistFor(target: string, ...scenarios: Constructor<any>[]): PreflightChecklist
 }

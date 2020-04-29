@@ -2,17 +2,18 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { BehaviorSubject } from 'rxjs';
+import { BecauseOf } from './BecauseOf';
 
 export class When {
-    readonly name: string;
-    readonly ands: BehaviorSubject<string[]>;
+    readonly becauseOf: BecauseOf;
+    readonly ands: BehaviorSubject<BecauseOf[]>;
 
-    constructor(name: string) {
-        this.name = name;
-        this.ands = new BehaviorSubject<string[]>([]);
+    constructor(becauseOf: BecauseOf) {
+        this.becauseOf = becauseOf;
+        this.ands = new BehaviorSubject<BecauseOf[]>([]);
     }
 
-    addAnds(name: string) {
+    addAnd(becauseOf: BecauseOf) {
         this.ands.value.push(name);
     }
 }
