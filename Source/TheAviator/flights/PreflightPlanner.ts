@@ -3,63 +3,49 @@
 
 import { Constructor } from '../Constructor';
 
-import { IGiven, ScenarioFor, ISpecificationBuilder } from '../gherkin';
-
-import { IMicroserviceFactory } from '../microservices';
+import { ScenarioFor, ISpecificationBuilder, ScenarioContext, ScenarioEnvironment } from '../gherkin';
 
 import { Scenario, ScenarioEnvironmentDefinition } from '../gherkin';
 
 import { IPreflightPlanner } from './IPreflightPlanner';
 import { PreflightChecklist } from './PreflightChecklist';
 import { IFlightPaths } from './IFlightPaths';
-
-const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
+import { IScenarioEnvironmentBuilder } from '../gherkin';
 
 export class PreflightPlanner implements IPreflightPlanner {
 
-    constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory, private _specificationBuilder: ISpecificationBuilder) {
+    constructor(private _flightPaths: IFlightPaths, private _scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder, private _specificationBuilder: ISpecificationBuilder) {
     }
 
-    createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<any>>[]): PreflightChecklist {
-        const scenariosByGiven: Map<Constructor<IGiven>, Scenario[]> = new Map();
-        const scenarioContexts: Map<Constructor<IGiven>, ScenarioEnvironmentDefinition> = new Map();
-        const scenariosByContexts: Map<ScenarioEnvironmentDefinition, Scenario[]> = new Map();
+    createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): PreflightChecklist {
+        const scenarioEnvironmentsByContextType: Map<Constructor<ScenarioContext>, ScenarioEnvironment> = new Map();
+        const scenariosByEnvironments: Map<ScenarioEnvironment, Scenario[]> = new Map();
 
         for (const scenarioForConstructor of scenarios) {
-            const scenarioFor = new scenarioForConstructor() as ScenarioFor<any>;
-            const specification = this._specificationBuilder.buildFrom(scenarioFor);
-            let i = 0;
+            const instance = new scenarioForConstructor() as ScenarioFor<ScenarioContext>;
+            const scenarioContextType = instance.for;
 
-            i++;
+            let scenarioEnvironment: ScenarioEnvironment | undefined;
+
+            if (scenarioEnvironmentsByContextType.has(scenarioContextType)) {
+                scenarioEnvironment = scenarioEnvironmentsByContextType.get(scenarioContextType);
+            } else {
+                const scenarioContext = new scenarioContextType();
+
+                const scenarioEnvironmentDefinition = new ScenarioEnvironmentDefinition();
+                scenarioContext.describe(scenarioEnvironmentDefinition);
+
+                scenarioEnvironment = this._scenarioEnvironmentBuilder.buildFrom(scenarioEnvironmentDefinition);
+                scenarioEnvironmentsByContextType.set(scenarioContextType, scenarioEnvironment);
+            }
+
+            if (scenarioEnvironment) {
+                const specification = this._specificationBuilder.buildFrom(instance);
+                const scenario = new Scenario(instance, scenarioEnvironment, specification);
+                scenariosByEnvironments.get(scenarioEnvironment)?.push(scenario);
+            }
         }
 
-        /*
-        scenario.prepare();
-
-        let givenConstructor = scenario.given;
-        if (!givenConstructor) {
-            givenConstructor = NoContext;
-        }
-
-        let scenarioContext: ScenarioContextDefinition;
-        if (!scenariosByGiven.has(givenConstructor)) {
-            const given = new givenConstructor();
-            scenariosByGiven.set(givenConstructor, []);
-            scenarioContext = new ScenarioContextDefinition(givenConstructor.name);
-            given.describe(scenarioContext);
-            scenarioContexts.set(givenConstructor, scenarioContext);
-        } else {
-            scenarioContext = scenarioContexts.get(givenConstructor) ?? new ScenarioContextDefinition(givenConstructor.name);
-        }
-
-        scenariosByGiven.get(givenConstructor)?.push(scenario);
-        if (!scenariosByContexts.has(scenarioContext)) {
-            scenariosByContexts.set(scenarioContext, []);
-        }
-
-        scenariosByContexts.get(scenarioContext)?.push(scenario);
-        */
-
-        return new PreflightChecklist(this._flightPaths, scenariosByContexts);
+        return new PreflightChecklist(this._flightPaths, scenariosByEnvironments);
     }
 }

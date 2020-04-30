@@ -19,56 +19,56 @@ export class FlightInspection implements IFlightInspection {
     }
 
     async runPreflightCheck(): Promise<void> {
-        for (const [contextDefinition, scenarios] of this._flight.preflightChecklist.scenariosByContexts) {
-            const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
-            const microservices = Object.values(microservicesByName);
-            const context = new ScenarioEnvironment(contextDefinition, microservicesByName);
+        for (const [contextDefinition, scenarios] of this._flight.preflightChecklist.scenariosByEnvironment) {
+            // const microservicesByName = await this.prepareMicroservicesFor(contextDefinition);
+            // const microservices = Object.values(microservicesByName);
+            // const context = new ScenarioEnvironment(contextDefinition, microservicesByName);
 
-            this._flight.recorder.writeConfigurationFilesFor(microservices);
-            this._flight.recorder.collectLogsFor(microservices);
+            // this._flight.recorder.writeConfigurationFilesFor(microservices);
+            // this._flight.recorder.collectLogsFor(microservices);
 
-            this._flight.scenarioContext.next(context);
+            // this._flight.scenarioContext.next(context);
 
-            await this.performOnMicroservice(microservices, async (microservice) => await microservice.start());
-            await this.connectConsumersToProducers(microservices, contextDefinition);
+            // await this.performOnMicroservice(microservices, async (microservice) => await microservice.start());
+            // await this.connectConsumersToProducers(microservices, contextDefinition);
 
-            for (const scenario of scenarios) {
-                //scenario.setContext(context);
+            // for (const scenario of scenarios) {
+            //     //scenario.setContext(context);
 
-                this._flight.scenario.next(scenario);
+            //     this._flight.scenario.next(scenario);
 
-                /*
-                await scenario.establish();
-                await scenario.when();
-                await scenario.then();
-                */
+            //     /*
+            //     await scenario.establish();
+            //     await scenario.when();
+            //     await scenario.then();
+            //     */
 
-                await this.performOnMicroservice(microservices, async (microservice) => {
-                    //const brokenRules = await microservice.endEvaluation();
-                    //scenario.handleBrokenRules(brokenRules);
-                });
-                await this._flight.recorder.reportResultFor(scenario);
+            //     await this.performOnMicroservice(microservices, async (microservice) => {
+            //         //const brokenRules = await microservice.endEvaluation();
+            //         //scenario.handleBrokenRules(brokenRules);
+            //     });
+            //     await this._flight.recorder.reportResultFor(scenario);
 
-                await this.performOnMicroservice(microservices, async (microservice) => {
-                    await this._flight.recorder.captureMetricsFor(scenario, microservice);
-                    await this.dumpEventStore(microservice, scenario);
-                    await microservice.eventStore.clear();
-                    await microservice.head.restart();
-                });
-            }
+            //     await this.performOnMicroservice(microservices, async (microservice) => {
+            //         await this._flight.recorder.captureMetricsFor(scenario, microservice);
+            //         await this.dumpEventStore(microservice, scenario);
+            //         await microservice.eventStore.clear();
+            //         await microservice.head.restart();
+            //     });
+            // }
 
-            await this.disconnectConsumersFromProducers(microservices, contextDefinition);
+            // await this.disconnectConsumersFromProducers(microservices, contextDefinition);
 
-            await this.performOnMicroservice(microservices, async (microservice) => { await microservice.kill(); });
+            // await this.performOnMicroservice(microservices, async (microservice) => { await microservice.kill(); });
         }
 
         this._flight.recorder.conclude();
     }
 
     private async dumpEventStore(microservice: Microservice, scenario: Scenario) {
-        if (scenario.context) {
+        if (scenario.environment) {
             const backups = await microservice.eventStore.dump();
-            const sourceDirectory = this._flight.paths.forMicroserviceInContext(scenario.context.definition, microservice);
+            const sourceDirectory = this._flight.paths.forMicroserviceInContext(scenario.environment.definition, microservice);
             const backupDirectory = path.join(sourceDirectory, 'backup');
             for (const backup of backups) {
                 const tenantId = backup.split(' ')[1];
@@ -103,11 +103,11 @@ export class FlightInspection implements IFlightInspection {
         const microserviceConfigurations = this.prepareMicroserviceConfigurations(context);
 
         for (const microserviceConfiguration of microserviceConfigurations) {
-            const workingDirectory = this._flight.paths.forScenarioContext(context);
-            const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, workingDirectory, microserviceConfiguration);
-            if (microserviceInstance) {
-                microservicesByName[microserviceConfiguration.name] = microserviceInstance;
-            }
+            // const workingDirectory = this._flight.paths.forScenarioContext(context);
+            // const microserviceInstance = await this._microserviceFactory?.create(this._flight.platform, workingDirectory, microserviceConfiguration);
+            // if (microserviceInstance) {
+            //     microservicesByName[microserviceConfiguration.name] = microserviceInstance;
+            // }
         }
 
         return microservicesByName;

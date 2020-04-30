@@ -34,9 +34,9 @@ export class FlightRecorder implements IFlightRecorder {
     conclude() {
         const result: any = {};
 
-        for (const [context, results] of this._scenarioResultsPerContext) {
-            result[context.name] = results;
-        }
+        // for (const [context, results] of this._scenarioResultsPerContext) {
+        //     result[context.name] = results;
+        // }
 
         const json = this._serializer.toJSON(result);
         const resultFilePath = path.join(this._flight.paths.base, 'results.json');
@@ -79,30 +79,30 @@ export class FlightRecorder implements IFlightRecorder {
     }
 
     writeConfigurationFilesFor(microservices: Microservice[]) {
-        for (const [context, scenarios] of this._flight.preflightChecklist.scenariosByContexts) {
-            microservices.forEach(microservice => {
-                const microservicePath = this._flight.paths.forMicroserviceInContext(context, microservice);
+        for (const [context, scenarios] of this._flight.preflightChecklist.scenariosByEnvironment) {
+            // microservices.forEach(microservice => {
+            //     const microservicePath = this._flight.paths.forMicroserviceInContext(context, microservice);
 
-                const writeOptionsFile = (container: IContainer) => {
-                    const containerOptionsFile = path.join(microservicePath, `${container.options.friendlyName}.json`);
-                    const configOutput = JSON.parse(JSON.stringify(container.options));
+            //     const writeOptionsFile = (container: IContainer) => {
+            //         const containerOptionsFile = path.join(microservicePath, `${container.options.friendlyName}.json`);
+            //         const configOutput = JSON.parse(JSON.stringify(container.options));
 
-                    configOutput.boundPorts = {};
-                    for (const [k, v] of container.boundPorts) {
-                        configOutput.boundPorts[k] = v;
-                    }
-                    fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
-                };
+            //         configOutput.boundPorts = {};
+            //         for (const [k, v] of container.boundPorts) {
+            //             configOutput.boundPorts[k] = v;
+            //         }
+            //         fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
+            //     };
 
-                writeOptionsFile(microservice.head);
-                writeOptionsFile(microservice.runtime);
-                writeOptionsFile(microservice.eventStoreStorage);
-            });
+            //     writeOptionsFile(microservice.head);
+            //     writeOptionsFile(microservice.runtime);
+            //     writeOptionsFile(microservice.eventStoreStorage);
+            // });
         }
     }
 
     collectLogsFor(microservices: Microservice[]) {
-        for (const [context, scenarios] of this._flight.preflightChecklist.scenariosByContexts) {
+        for (const [context, scenarios] of this._flight.preflightChecklist.scenariosByEnvironment) {
             microservices.forEach(microservice => {
                 microservice.head.outputStream.subscribe(stream => stream.on('data', this.getOutputStreamWriterFor(microservice, microservice.head)));
                 microservice.runtime.outputStream.subscribe(stream => stream.on('data', this.getOutputStreamWriterFor(microservice, microservice.runtime)));
@@ -132,14 +132,14 @@ export class FlightRecorder implements IFlightRecorder {
     private writePreflightChecklist() {
         const checklist: any = {};
 
-        for (const context of this._flight.preflightChecklist.scenariosByContexts.keys()) {
-            checklist[context.name] = this._flight.preflightChecklist.scenariosByContexts.get(context)?.map((scenario: Scenario) => {
-                return {
-                    name: scenario.name,
-                    //thens: scenario.thens.map(_ => _.name)
-                };
-            });
-        }
+        // for (const context of this._flight.preflightChecklist.scenariosByEnvironment.keys()) {
+        //     checklist[context.name] = this._flight.preflightChecklist.scenariosByEnvironment.get(context)?.map((scenario: Scenario) => {
+        //         return {
+        //             name: scenario.name,
+        //             thens: scenario.thens.map(_ => _.name)
+        //         };
+        //     });
+        // }
 
         const serialized = this._serializer.toJSON(checklist);
         const outputFile = path.join(this._flight.paths.base, 'preflight-checklist.json');

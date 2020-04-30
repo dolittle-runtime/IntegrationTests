@@ -19,7 +19,16 @@ import {
 } from './flights';
 
 import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
-import { ScenarioContext, ScenarioFor, ISpecificationBuilder, SpecificationBuilder } from './gherkin';
+
+import {
+    ScenarioContext,
+    ScenarioFor,
+    ISpecificationBuilder,
+    SpecificationBuilder,
+    IScenarioEnvironmentBuilder,
+    ScenarioEnvironmentBuilder
+} from './gherkin';
+
 import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
 
 export class Aviator {
@@ -29,6 +38,7 @@ export class Aviator {
     readonly microserviceFactory: IMicroserviceFactory;
     readonly configurationManager: IConfigurationManager;
     readonly specificationBuilder: ISpecificationBuilder;
+    readonly scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder;
 
     private constructor(platform: string) {
         this.platform = platform;
@@ -36,8 +46,8 @@ export class Aviator {
         this.containerFactory = new ContainerEnvironment();
         this.configurationManager = new ConfigurationManager();
         this.specificationBuilder = new SpecificationBuilder();
-
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.configurationManager);
+        this.scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(this.microserviceFactory);
     }
 
     static getFor(platform: string) {
@@ -46,7 +56,7 @@ export class Aviator {
 
     async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<any>>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
-        const flightPlanner = new PreflightPlanner(flightPaths, this.microserviceFactory, this.specificationBuilder);
+        const flightPlanner = new PreflightPlanner(flightPaths, this.scenarioEnvironmentBuilder, this.specificationBuilder);
         const checklist = flightPlanner.createChecklistFor(this.platform, ...scenarios);
         const flight = new Flight(this.platform, checklist);
         flight.setRecorder(new FlightRecorder(flight, this.serializer));

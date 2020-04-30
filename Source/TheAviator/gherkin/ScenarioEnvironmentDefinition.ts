@@ -8,12 +8,7 @@ export class ScenarioEnvironmentDefinition {
     private _tenants: Guid[] | undefined;
     private _microservicesToPrepare: MicroserviceDefinition[] = [];
 
-    readonly name: string;
     readonly consumerToProducerMap: { [key: string]: MicroserviceDefinition[]} = {};
-
-    constructor(name: string) {
-        this.name = name;
-    }
 
     get microservices(): MicroserviceDefinition[] {
         return this._microservicesToPrepare.slice();

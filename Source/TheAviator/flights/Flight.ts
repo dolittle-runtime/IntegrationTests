@@ -21,7 +21,7 @@ export class Flight {
         this.platform = platform;
         this.preflightChecklist = preflightChecklist;
 
-        this.scenarioContext = new BehaviorSubject<ScenarioEnvironment>(new ScenarioEnvironment(new ScenarioEnvironmentDefinition('NoScenarioContext'), {}));
+        this.scenarioContext = new BehaviorSubject<ScenarioEnvironment>(new ScenarioEnvironment(new ScenarioEnvironmentDefinition(), {}));
         this.scenario = new BehaviorSubject<Scenario>(Scenario.none);
     }
 

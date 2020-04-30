@@ -4,16 +4,30 @@
 import { Microservice } from '../microservices';
 import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 
+export type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
+
 export class ScenarioEnvironment {
-    static empty: ScenarioEnvironment = new ScenarioEnvironment(new ScenarioEnvironmentDefinition('empty'),{});
+    static empty: ScenarioEnvironment = new ScenarioEnvironment(new ScenarioEnvironmentDefinition(), {});
 
-    readonly name: string;
     readonly definition: ScenarioEnvironmentDefinition;
-    readonly microservices: {[key: string]: Microservice};
+    readonly microservices: { [key: string]: Microservice };
 
-    constructor(definition: ScenarioEnvironmentDefinition, microservices: {[key: string]: Microservice}) {
-        this.name = definition.name;
+    constructor(definition: ScenarioEnvironmentDefinition, microservices: { [key: string]: Microservice }) {
         this.definition = definition;
         this.microservices = microservices;
+    }
+
+    async start(): Promise<void> {
+        await this.performOnEachMicroservice(_ => _.start());
+    }
+
+    async stop(): Promise<void> {
+        await this.performOnEachMicroservice(_ => _.stop());
+    }
+
+    async performOnEachMicroservice(method: MicroserviceMethod) {
+        for (const microservice of Object.values(this.microservices)) {
+            await method(microservice);
+        }
     }
 }

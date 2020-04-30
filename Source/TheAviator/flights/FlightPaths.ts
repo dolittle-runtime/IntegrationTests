@@ -9,7 +9,7 @@ import { Microservice } from '../microservices';
 
 import { IFlightPaths } from './IFlightPaths';
 
-const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
+import zeroPad from '../zeroPad';
 
 /**
  * Represents an implementation of {IFlightPaths}
@@ -31,15 +31,15 @@ export class FlightPaths implements IFlightPaths {
     }
 
     /** @inheritdoc */
-    forScenarioContext(context: ScenarioEnvironmentDefinition): string {
-        const directory = path.join(this.base, context.name);
+    forScenarioContext(scenario: Scenario): string {
+        const directory = path.join(this.base, scenario.contextName);
         this.ensureDirectory(directory);
         return directory;
     }
 
     /** @inheritdoc */
     forScenario(scenario: Scenario): string {
-        const directory = path.join(this.base, scenario.context.name, scenario.name);
+        const directory = path.join(this.base, scenario.contextName, scenario.name);
         this.ensureDirectory(directory);
         return directory;
     }
@@ -54,7 +54,7 @@ export class FlightPaths implements IFlightPaths {
 
     /** @inheritdoc */
     forMicroserviceInContext(context: ScenarioEnvironmentDefinition, microservice: Microservice): string {
-        const scenarioDirectory = this.forScenarioContext(context);
+        const scenarioDirectory = ''; //this.forScenarioContext(context);
         const directory = path.join(scenarioDirectory, '_microservices', microservice.configuration.name);
         this.ensureDirectory(directory);
         return directory;

@@ -14,9 +14,9 @@ export interface IFlightPaths {
 
     /**
      * Get Path for a {ScenarioContext}
-     * @param {ScenarioEnvironmentDefinition} context ScenarioContext to get for.
+     * @param {Scenario} scenario Scenario with context to get for.
      */
-    forScenarioContext(context: ScenarioEnvironmentDefinition): string;
+    forScenarioContext(scenario: Scenario): string;
 
     /**
      * Get Path for a {Scenario}
