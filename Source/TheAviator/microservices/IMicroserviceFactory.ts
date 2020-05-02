@@ -5,5 +5,5 @@ import { Microservice } from './Microservice';
 import { MicroserviceConfiguration } from './configuration/MicroserviceConfiguration';
 
 export interface IMicroserviceFactory {
-    create(platform: string, workingDirectory: string, configuration: MicroserviceConfiguration): Promise<Microservice>
+    create(workingDirectory: string, configuration: MicroserviceConfiguration): Promise<Microservice>
 }

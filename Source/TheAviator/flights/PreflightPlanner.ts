@@ -17,7 +17,7 @@ export class PreflightPlanner implements IPreflightPlanner {
     constructor(private _flightPaths: IFlightPaths, private _scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder, private _specificationBuilder: ISpecificationBuilder) {
     }
 
-    createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): PreflightChecklist {
+    async createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): Promise<PreflightChecklist> {
         const scenarioEnvironmentsByContextType: Map<Constructor<ScenarioContext>, ScenarioEnvironment> = new Map();
         const scenariosByEnvironments: Map<ScenarioEnvironment, Scenario[]> = new Map();
 
@@ -35,8 +35,9 @@ export class PreflightPlanner implements IPreflightPlanner {
                 const scenarioEnvironmentDefinition = new ScenarioEnvironmentDefinition();
                 scenarioContext.describe(scenarioEnvironmentDefinition);
 
-                scenarioEnvironment = this._scenarioEnvironmentBuilder.buildFrom(scenarioEnvironmentDefinition);
+                scenarioEnvironment = await this._scenarioEnvironmentBuilder.buildFrom(platform, this._flightPaths.base, scenarioEnvironmentDefinition);
                 scenarioEnvironmentsByContextType.set(scenarioContextType, scenarioEnvironment);
+                scenariosByEnvironments.set(scenarioEnvironment, []);
             }
 
             if (scenarioEnvironment) {

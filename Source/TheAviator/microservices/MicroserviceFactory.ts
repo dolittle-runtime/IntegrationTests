@@ -18,7 +18,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         private _configurationManager: IConfigurationManager) {
     }
 
-    async create(platform: string, workingDirectory: string, configuration: MicroserviceConfiguration): Promise<Microservice> {
+    async create(workingDirectory: string, configuration: MicroserviceConfiguration): Promise<Microservice> {
         await this._containerEnvironment.createNetwork(configuration.networkName);
 
         const eventStoreStorage = await this.configureContainer(
@@ -37,7 +37,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
         const head = await this.configureContainer(
             'head',
             configuration.head.host,
-            `dolittle/integrationtests-head-${platform}`,
+            `dolittle/integrationtests-head-${configuration.platform}`,
             'latest',
             [5000],
             configuration.networkName,

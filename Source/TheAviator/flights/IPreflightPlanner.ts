@@ -6,5 +6,5 @@ import { ScenarioFor, ScenarioContext } from '../gherkin';
 import { PreflightChecklist } from './PreflightChecklist';
 
 export interface IPreflightPlanner {
-    createChecklistFor(target: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): PreflightChecklist
+    createChecklistFor(target: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): Promise<PreflightChecklist>
 }
