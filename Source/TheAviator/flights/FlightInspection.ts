@@ -24,7 +24,7 @@ export class FlightInspection implements IFlightInspection {
                 const specificationResult = await this._specificationRunner.run(scenario.instance, scenario.specification);
                 const scenarioResult = new ScenarioResult(scenario, specificationResult);
 
-                await this._flight.recorder.reportResultFor(scenarioResult);
+                await this._flight.recorder.resultsFor(scenarioResult);
                 await this._flight.recorder.captureMetricsFor(scenario);
                 await environment.dumpEventStore(scenario);
             }

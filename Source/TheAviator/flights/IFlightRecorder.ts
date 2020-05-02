@@ -7,7 +7,7 @@ import { Microservice } from '../microservices';
 export interface IFlightRecorder {
     conclude(): void;
     captureMetricsFor(scenario: Scenario): Promise<void>;
-    reportResultFor(scenarioResult: ScenarioResult): Promise<void>;
+    resultsFor(scenarioResult: ScenarioResult): Promise<void>;
 
     writeConfigurationFilesFor(microservices: Microservice[]): void;
     collectLogsFor(microservices: Microservice[]): void;

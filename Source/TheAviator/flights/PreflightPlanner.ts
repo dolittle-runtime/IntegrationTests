@@ -9,12 +9,11 @@ import { Scenario, ScenarioEnvironmentDefinition } from '../gherkin';
 
 import { IPreflightPlanner } from './IPreflightPlanner';
 import { PreflightChecklist } from './PreflightChecklist';
-import { IFlightPaths } from './IFlightPaths';
 import { IScenarioEnvironmentBuilder } from '../gherkin';
 
 export class PreflightPlanner implements IPreflightPlanner {
 
-    constructor(private _flightPaths: IFlightPaths, private _scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder, private _specificationBuilder: ISpecificationBuilder) {
+    constructor(private _scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder, private _specificationBuilder: ISpecificationBuilder) {
     }
 
     async createChecklistFor(platform: string, ...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): Promise<PreflightChecklist> {
@@ -48,6 +47,6 @@ export class PreflightPlanner implements IPreflightPlanner {
             }
         }
 
-        return new PreflightChecklist(this._flightPaths, scenariosByEnvironments);
+        return new PreflightChecklist(scenariosByEnvironments);
     }
 }

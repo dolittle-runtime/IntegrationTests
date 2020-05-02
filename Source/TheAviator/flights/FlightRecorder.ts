@@ -43,7 +43,7 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
-    async reportResultFor(result: ScenarioResult) {
+    async resultsFor(result: ScenarioResult) {
         /*
         const thens: any = {};
         for (const then of scenario.thens) {

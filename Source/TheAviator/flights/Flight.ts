@@ -11,14 +11,17 @@ import { Scenario, ScenarioEnvironment, ScenarioEnvironmentDefinition } from '..
 
 export class Flight {
     private _recorder: IFlightRecorder | undefined;
+    private _flightPaths: IFlightPaths;
+
     readonly preflightChecklist: PreflightChecklist;
     readonly platform: string;
 
     readonly environment: BehaviorSubject<ScenarioEnvironment>;
     readonly scenario: BehaviorSubject<Scenario>;
 
-    constructor(platform: string, preflightChecklist: PreflightChecklist) {
+    constructor(platform: string, flightPaths: IFlightPaths, preflightChecklist: PreflightChecklist) {
         this.platform = platform;
+        this._flightPaths = flightPaths;
         this.preflightChecklist = preflightChecklist;
 
         this.environment = new BehaviorSubject<ScenarioEnvironment>(ScenarioEnvironment.empty);
@@ -26,7 +29,7 @@ export class Flight {
     }
 
     get paths(): IFlightPaths {
-        return this.preflightChecklist.paths;
+        return this._flightPaths;
     }
 
     get recorder(): IFlightRecorder {

@@ -26,11 +26,17 @@ export class SpecificationRunner implements ISpecificationRunner {
             await then.invoke(scenarioFor);
         }
 
+        const thenResults: ThenResult[] = await this.collectResultsFor(scenarioFor, specification);
+
+        return new SpecificationResult(specification, thenResults);
+    }
+
+    private async collectResultsFor(scenarioFor: ScenarioFor<ScenarioContext>, specification: Specification) {
         const thenResults: ThenResult[] = [];
-
         if (scenarioFor.context) {
-            const brokenRulesByThens: { [key: string]: BrokenRule[] } = {};
-
+            const brokenRulesByThens: {
+                [key: string]: BrokenRule[];
+            } = {};
             const microservices = Object.values(scenarioFor.context.microservices);
             for (const microservice of microservices) {
                 const brokenRules = await microservice.evaluate();
@@ -39,15 +45,14 @@ export class SpecificationRunner implements ISpecificationRunner {
                     let brokenRulesForThen: BrokenRule[];
                     if (brokenRulesByThens.hasOwnProperty(subject.then)) {
                         brokenRulesForThen = brokenRulesByThens[subject.then];
-                    } else {
+                    }
+                    else {
                         brokenRulesForThen = [];
                         brokenRulesByThens[subject.then] = brokenRulesForThen;
                     }
-
                     brokenRulesForThen.push(brokenRule);
                 }
             }
-
             for (const thenName of Object.keys(brokenRulesByThens)) {
                 const then = specification.thens.find(_ => _.name === thenName);
                 if (then) {
@@ -56,7 +61,6 @@ export class SpecificationRunner implements ISpecificationRunner {
                 }
             }
         }
-
-        return new SpecificationResult(specification, thenResults);
+        return thenResults;
     }
 }
