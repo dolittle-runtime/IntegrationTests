@@ -4,6 +4,7 @@
 import { RuleBuilder, RuleWithSubjectProvider, IRule } from '@dolittle/rules';
 import { ScenarioWithThenSubjectProvider } from './ScenarioWithThenSubjectProvider';
 import { Microservice } from '../microservices/Microservice';
+import { SpecificationBuilder } from '../gherkin';
 
 const stackTrace = require('stack-trace');
 
@@ -20,7 +21,7 @@ export class ScenarioRuleBuilder extends RuleBuilder {
         for (const callSite of callSites) {
             const functionName = callSite.getFunctionName();
             if (functionName.indexOf('then_') === 0) {
-                this._then = functionName;
+                this._then = SpecificationBuilder.getThenNameFor(functionName);
                 this._scenario = callSite.getTypeName();
                 break;
             }

@@ -16,6 +16,20 @@ const when_prefix = 'when_';
 const then_prefix = 'then_';
 
 export class SpecificationBuilder implements ISpecificationBuilder {
+    static getWhenNameFor(name: string) {
+        if (name.indexOf(when_prefix)) {
+            name = name.substr(when_prefix.length);
+        }
+        return humanReadable(name);
+    }
+
+    static getThenNameFor(name: string) {
+        if (name.indexOf(when_prefix)) {
+            name = name.substr(when_prefix.length);
+        }
+        return humanReadable(name);
+    }
+
     buildFrom(description: IContextDescriptorFor<any>): Specification {
         let feature = FeatureDefinition.unspecified;
         if ((description.constructor as any)._feature) {
@@ -70,7 +84,7 @@ export class SpecificationBuilder implements ISpecificationBuilder {
         }
 
         this.throwIfMissingWhenMethod(whenMethod, description);
-        const whenMethodName = humanReadable(whenMethods[0].substr(when_prefix.length));
+        const whenMethodName = SpecificationBuilder.getWhenNameFor(whenMethods[0]);
         return new BecauseOf(whenMethodName, whenMethod);
     }
 
@@ -82,7 +96,7 @@ export class SpecificationBuilder implements ISpecificationBuilder {
                 const method = (description as any)[key];
                 this.throwIfThenIsNotMethod(method, key, description);
 
-                const thenName = humanReadable(key.substr(then_prefix.length));
+                const thenName = SpecificationBuilder.getThenNameFor(key);
                 thens.push(new Then(thenName, method));
             }
         }
