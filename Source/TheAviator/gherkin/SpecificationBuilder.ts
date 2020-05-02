@@ -17,15 +17,15 @@ const then_prefix = 'then_';
 
 export class SpecificationBuilder implements ISpecificationBuilder {
     static getWhenNameFor(name: string) {
-        if (name.indexOf(when_prefix)) {
+        if (name.indexOf(when_prefix) === 0) {
             name = name.substr(when_prefix.length);
         }
         return humanReadable(name);
     }
 
     static getThenNameFor(name: string) {
-        if (name.indexOf(when_prefix)) {
-            name = name.substr(when_prefix.length);
+        if (name.indexOf(then_prefix) === 0) {
+            name = name.substr(then_prefix.length);
         }
         return humanReadable(name);
     }

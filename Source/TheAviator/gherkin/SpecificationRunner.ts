@@ -53,12 +53,14 @@ export class SpecificationRunner implements ISpecificationRunner {
                     brokenRulesForThen.push(brokenRule);
                 }
             }
-            for (const thenName of Object.keys(brokenRulesByThens)) {
-                const then = specification.thens.find(_ => _.name === thenName);
-                if (then) {
-                    const result = new ThenResult(then, brokenRulesByThens[thenName]);
-                    thenResults.push(result);
+
+            for (const then of specification.thens) {
+                let brokenRules: BrokenRule[] = [];
+                if (brokenRulesByThens.hasOwnProperty(then.name)) {
+                    brokenRules = brokenRulesByThens[then.name];
                 }
+                const result = new ThenResult(then, brokenRules);
+                thenResults.push(result);
             }
         }
         return thenResults;

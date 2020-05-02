@@ -6,9 +6,13 @@ import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 import { ScenarioEnvironment } from './ScenarioEnvironment';
 import { IMicroserviceFactory, MicroserviceConfiguration, Microservice } from '../microservices';
 import { IFlightPaths } from '../flights';
+import { ISerializer } from '../ISerializer';
 
 export class ScenarioEnvironmentBuilder implements IScenarioEnvironmentBuilder {
-    constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory) {
+    constructor(
+        private _flightPaths: IFlightPaths,
+        private _microserviceFactory: IMicroserviceFactory,
+        private _serializer: ISerializer) {
 
     }
 
@@ -22,7 +26,7 @@ export class ScenarioEnvironmentBuilder implements IScenarioEnvironmentBuilder {
             microservices[configuration.name] = microservice;
         }
 
-        return new ScenarioEnvironment(this._flightPaths, definition, microservices);
+        return new ScenarioEnvironment(this._flightPaths, definition, microservices, this._serializer);
     }
 
 

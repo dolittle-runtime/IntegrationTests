@@ -26,15 +26,21 @@ export interface IFlightPaths {
 
     /**
      * Get Path for a {Microservice} used in a {Scenario}
+     * @param {Microservice} microservice Microservice to get for.
+     */
+    forMicroservice(microservice: Microservice): string;
+
+    /**
+     * Get Path for a {Microservice} used in a {Scenario}
      * @param {Scenario} scenario Scenario to get for.
      * @param {Microservice} microservice Microservice to get for.
      */
-    forMicroservice(scenario: Scenario, microservice: Microservice): string;
+    forMicroserviceInScenario(scenario: Scenario, microservice: Microservice): string;
 
     /**
      * Get Path for a {Microservice} used in a {ScenarioContext}
-     * @param {ScenarioEnvironmentDefinition} context ScenarioContext to get for.
+     * @param {Scenario} scenario Scenario to get for.
      * @param {Microservice} microservice Microservice to get for.
      */
-    forMicroserviceInContext(context: ScenarioEnvironmentDefinition, microservice: Microservice): string;
+    forMicroserviceInContext(scenario: Scenario, microservice: Microservice): string;
 }

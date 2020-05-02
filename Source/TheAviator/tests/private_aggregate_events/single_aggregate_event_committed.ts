@@ -3,7 +3,7 @@
 
 import { Guid } from '@dolittle/rudiments';
 import { EventHandlers } from '../shared/EventHandlers';
-import { a_single_microservice } from 'tests/given/a_single_microservice';
+import { a_single_microservice } from '../given/a_single_microservice';
 import { Feature, ScenarioFor } from '../../gherkin';
 
 @Feature('Private aggregate events')

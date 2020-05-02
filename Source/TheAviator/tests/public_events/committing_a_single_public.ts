@@ -2,13 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
+
 import { Streams } from '../shared/Streams';
 import { Scopes } from '../shared/Scopes';
 import { EventHandlers } from '../shared/EventHandlers';
 import { a_producer_and_a_consumer } from '../given/a_producer_and_a_consumer';
+import { ScenarioFor, Feature } from '../../gherkin';
 
-export class single_public_event_committed {
-    context: a_producer_and_a_consumer | undefined;
+@Feature('Private events')
+export class committing_a_single_public extends ScenarioFor<a_producer_and_a_consumer> {
+    for = a_producer_and_a_consumer;
 
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 

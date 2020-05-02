@@ -9,18 +9,25 @@ import { Microservice } from '../microservices';
 import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 import { IFlightPaths } from '../flights';
 import { Scenario } from './Scenario';
+import { IContainer } from '../containers';
+import { ISerializer } from '../ISerializer';
 
 export type MicroserviceMethod = (microservice: Microservice) => Promise<void>;
 
 export class ScenarioEnvironment {
-    static empty: ScenarioEnvironment = new ScenarioEnvironment({} as IFlightPaths, new ScenarioEnvironmentDefinition(), {});
+    static empty: ScenarioEnvironment = new ScenarioEnvironment({} as IFlightPaths, new ScenarioEnvironmentDefinition(), {}, {} as ISerializer);
 
     readonly definition: ScenarioEnvironmentDefinition;
     readonly microservices: { [key: string]: Microservice };
 
-    constructor(private _flightPaths: IFlightPaths, definition: ScenarioEnvironmentDefinition, microservices: { [key: string]: Microservice }) {
+    constructor(
+        private _flightPaths: IFlightPaths,
+        definition: ScenarioEnvironmentDefinition,
+        microservices: { [key: string]: Microservice },
+        readonly _serializer: ISerializer) {
         this.definition = definition;
         this.microservices = microservices;
+        this.writeConfigurationFiles();
     }
 
     async start(): Promise<void> {
@@ -40,11 +47,11 @@ export class ScenarioEnvironment {
     async dumpEventStore(scenario: Scenario) {
         this.forEachMicroservice(async (microservice) => {
             const backups = await microservice.eventStore.dump();
-            const sourceDirectory = this._flightPaths.forMicroserviceInContext(this.definition, microservice);
+            const sourceDirectory = this._flightPaths.forMicroservice(microservice);
             const backupDirectory = path.join(sourceDirectory, 'backup');
             for (const backup of backups) {
                 const tenantId = backup.split(' ')[1];
-                const microserviceDestinationDirectory = this._flightPaths.forMicroservice(scenario, microservice);
+                const microserviceDestinationDirectory = this._flightPaths.forMicroserviceInScenario(scenario, microservice);
                 const destinationDirectory = path.join(microserviceDestinationDirectory, 'eventStore');
 
                 if (!fs.existsSync(destinationDirectory)) {
@@ -97,4 +104,26 @@ export class ScenarioEnvironment {
             }
         }
     }
+
+    private writeConfigurationFiles() {
+        for (const microservice of Object.values(this.microservices)) {
+            const microservicePath = this._flightPaths.forMicroservice(microservice);
+
+            const writeOptionsFile = (container: IContainer) => {
+                const containerOptionsFile = path.join(microservicePath, `${container.options.friendlyName}.json`);
+                const configOutput = JSON.parse(JSON.stringify(container.options));
+
+                configOutput.boundPorts = {};
+                for (const [k, v] of container.boundPorts) {
+                    configOutput.boundPorts[k] = v;
+                }
+                fs.writeFileSync(containerOptionsFile, this._serializer.toJSON(configOutput));
+            };
+
+            writeOptionsFile(microservice.head);
+            writeOptionsFile(microservice.runtime);
+            writeOptionsFile(microservice.eventStoreStorage);
+        }
+    }
+
 }

@@ -15,7 +15,8 @@ import {
     FlightInspection,
     Flight,
     PreflightPlanner,
-    FlightPaths
+    FlightPaths,
+    FlightReporter
 } from './flights';
 
 import { IConfigurationManager, ConfigurationManager } from './microservices/configuration';
@@ -32,6 +33,17 @@ import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, 
 import { ISpecificationRunner } from './gherkin/ISpecificationRunner';
 import { SpecificationRunner } from './gherkin/SpecificationRunner';
 
+import {
+    IScenarioConverter,
+    IScenarioResultConverter,
+    ScenarioConverter,
+    ISpecificationConverter,
+    SpecificationConverter,
+    ScenarioResultConverter,
+    SpecificationResultConverter,
+    ISpecificationResultConverter
+} from './flights/reporting';
+
 export class Aviator {
     readonly platform: string;
     readonly serializer: ISerializer;
@@ -40,6 +52,10 @@ export class Aviator {
     readonly configurationManager: IConfigurationManager;
     readonly specificationBuilder: ISpecificationBuilder;
     readonly specificationRunner: ISpecificationRunner;
+    readonly scenarioConverter: IScenarioConverter;
+    readonly scenarioResultConverter: IScenarioResultConverter;
+    readonly specificationConverter: ISpecificationConverter;
+    readonly specificationResultConverter: ISpecificationResultConverter;
 
     private constructor(platform: string) {
         this.platform = platform;
@@ -49,6 +65,10 @@ export class Aviator {
         this.specificationBuilder = new SpecificationBuilder();
         this.specificationRunner = new SpecificationRunner();
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.configurationManager);
+        this.specificationConverter = new SpecificationConverter();
+        this.scenarioConverter = new ScenarioConverter(this.specificationConverter);
+        this.specificationResultConverter = new SpecificationResultConverter(this.specificationConverter);
+        this.scenarioResultConverter = new ScenarioResultConverter(this.specificationResultConverter);
     }
 
     static getFor(platform: string) {
@@ -57,11 +77,13 @@ export class Aviator {
 
     async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
-        const scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(flightPaths, this.microserviceFactory);
+        const scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(flightPaths, this.microserviceFactory, this.serializer);
         const flightPlanner = new PreflightPlanner(scenarioEnvironmentBuilder, this.specificationBuilder);
         const checklist = await flightPlanner.createChecklistFor(this.platform, ...scenarios);
         const flight = new Flight(this.platform, flightPaths, checklist);
-        flight.setRecorder(new FlightRecorder(flight, this.serializer));
+        const reporter = new FlightReporter();
+        flight.setRecorder(new FlightRecorder(flight, this.scenarioConverter, this.scenarioResultConverter, this.serializer));
+        reporter.observe(flight);
         const flightControl = new FlightInspection(flight, this.specificationRunner);
         await flightControl.runPreflightCheck();
         return flight;
