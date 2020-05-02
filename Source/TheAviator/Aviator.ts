@@ -55,7 +55,7 @@ export class Aviator {
         return new Aviator(platform);
     }
 
-    async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<any>>[]): Promise<Flight> {
+    async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<ScenarioContext>>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
         const scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(flightPaths, this.microserviceFactory);
         const flightPlanner = new PreflightPlanner(scenarioEnvironmentBuilder, this.specificationBuilder);
