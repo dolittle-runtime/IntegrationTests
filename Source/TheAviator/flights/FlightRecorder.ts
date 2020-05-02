@@ -43,7 +43,7 @@ export class FlightRecorder implements IFlightRecorder {
         fs.writeFileSync(resultFilePath, json);
     }
 
-    async reportResultFor(scenario: Scenario) {
+    async reportResultFor(result: ScenarioResult) {
         /*
         const thens: any = {};
         for (const then of scenario.thens) {
@@ -111,11 +111,13 @@ export class FlightRecorder implements IFlightRecorder {
         }
     }
 
-    async captureMetricsFor(scenario: Scenario, microservice: Microservice) {
-        const currentScenarioPath = this._flight.paths.forMicroservice(scenario, microservice);
-        const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
-        const metrics = await microservice.actions.getRuntimeMetrics();
-        fs.writeFileSync(metricsFilePath, metrics);
+    async captureMetricsFor(scenario: Scenario) {
+        scenario.environment.forEachMicroservice(async microservice => {
+            const currentScenarioPath = this._flight.paths.forMicroservice(scenario, microservice);
+            const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
+            const metrics = await microservice.actions.getRuntimeMetrics();
+            fs.writeFileSync(metricsFilePath, metrics);
+        });
     }
 
     private getOutputStreamWriterFor(microservice: Microservice, container: IContainer) {

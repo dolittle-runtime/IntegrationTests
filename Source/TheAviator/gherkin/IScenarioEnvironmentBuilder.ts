@@ -5,5 +5,5 @@ import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 import { ScenarioEnvironment } from './ScenarioEnvironment';
 
 export interface IScenarioEnvironmentBuilder {
-    buildFrom(platform: string, workingDirectory: string, definition: ScenarioEnvironmentDefinition): Promise<ScenarioEnvironment>;
+    buildFrom(platform: string, definition: ScenarioEnvironmentDefinition): Promise<ScenarioEnvironment>;
 }

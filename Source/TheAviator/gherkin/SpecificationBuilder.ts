@@ -55,7 +55,7 @@ export class SpecificationBuilder implements ISpecificationBuilder {
                 }
             }
 
-            ands.push({ name: humanReadable(andName), method: and });
+            ands.push(new BecauseOf(humanReadable(andName), and));
         }
         return ands;
     }
@@ -71,7 +71,7 @@ export class SpecificationBuilder implements ISpecificationBuilder {
 
         this.throwIfMissingWhenMethod(whenMethod, description);
         const whenMethodName = humanReadable(whenMethods[0].substr(when_prefix.length));
-        return { name: whenMethodName, method: whenMethod };
+        return new BecauseOf(whenMethodName, whenMethod);
     }
 
     private getThensFrom(description: any, keys: string[]) {

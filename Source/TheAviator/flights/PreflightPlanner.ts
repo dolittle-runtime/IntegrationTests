@@ -34,8 +34,9 @@ export class PreflightPlanner implements IPreflightPlanner {
 
                 const scenarioEnvironmentDefinition = new ScenarioEnvironmentDefinition();
                 scenarioContext.describe(scenarioEnvironmentDefinition);
+                instance.context = scenarioContext;
 
-                scenarioEnvironment = await this._scenarioEnvironmentBuilder.buildFrom(platform, this._flightPaths.base, scenarioEnvironmentDefinition);
+                scenarioEnvironment = await this._scenarioEnvironmentBuilder.buildFrom(platform, scenarioEnvironmentDefinition);
                 scenarioEnvironmentsByContextType.set(scenarioContextType, scenarioEnvironment);
                 scenariosByEnvironments.set(scenarioEnvironment, []);
             }

@@ -5,22 +5,45 @@ import { IScenarioEnvironmentBuilder } from './IScenarioEnvironmentBuilder';
 import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 import { ScenarioEnvironment } from './ScenarioEnvironment';
 import { IMicroserviceFactory, MicroserviceConfiguration, Microservice } from '../microservices';
+import { IFlightPaths } from '../flights';
 
 export class ScenarioEnvironmentBuilder implements IScenarioEnvironmentBuilder {
-    constructor(private _microserviceFactory: IMicroserviceFactory) {
+    constructor(private _flightPaths: IFlightPaths, private _microserviceFactory: IMicroserviceFactory) {
 
     }
 
-    async buildFrom(platform: string, workingDirectory: string, definition: ScenarioEnvironmentDefinition): Promise<ScenarioEnvironment> {
+    async buildFrom(platform: string, definition: ScenarioEnvironmentDefinition): Promise<ScenarioEnvironment> {
         const microservices: { [key: string]: Microservice } = {};
 
-        for (const microserviceDefinition of definition.microservices) {
-            const configuration = MicroserviceConfiguration.from(platform, microserviceDefinition);
-
+        const configurations = this.prepareMicroserviceConfigurations(platform, definition);
+        for (const configuration of configurations) {
+            const workingDirectory = this._flightPaths.base;
             const microservice = await this._microserviceFactory.create(workingDirectory, configuration);
-            microservices[microserviceDefinition.name] = microservice;
+            microservices[configuration.name] = microservice;
         }
 
-        return new ScenarioEnvironment(definition, microservices);
+        return new ScenarioEnvironment(this._flightPaths, definition, microservices);
+    }
+
+
+    private prepareMicroserviceConfigurations(platform: string, definition: ScenarioEnvironmentDefinition): MicroserviceConfiguration[] {
+        const microserviceConfigurations: MicroserviceConfiguration[] = [];
+        for (const microserviceDefinition of definition.microservices) {
+            microserviceConfigurations.push(MicroserviceConfiguration.from(platform, microserviceDefinition));
+        }
+
+        for (const consumerDefinition of definition.microservices) {
+            const consumer = microserviceConfigurations.find(_ => _.name === consumerDefinition.name);
+            if (consumer) {
+                for (const producerDefinition of consumerDefinition.producers) {
+                    const producer = microserviceConfigurations.find(_ => _.name === producerDefinition.name);
+                    if (producer) {
+                        consumer.addProducer(producer);
+                    }
+                }
+            }
+        }
+
+        return microserviceConfigurations;
     }
 }

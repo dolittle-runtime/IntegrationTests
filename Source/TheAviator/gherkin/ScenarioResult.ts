@@ -2,17 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Scenario } from './Scenario';
-import { ScenarioContext } from './ScenarioContext';
-import { ThenResult } from './ThenResult';
+import { SpecificationResult } from './SpecificationResult';
 
 export class ScenarioResult {
     readonly scenario: Scenario;
-    readonly context: ScenarioContext;
-    readonly results: ThenResult[];
+    readonly result: SpecificationResult;
 
-    constructor(scenario: Scenario, context: ScenarioContext, results: ThenResult[]) {
+    constructor(scenario: Scenario, result: SpecificationResult) {
         this.scenario = scenario;
-        this.context = context;
-        this.results = results;
+        this.result = result;
     }
 }

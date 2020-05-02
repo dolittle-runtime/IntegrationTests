@@ -25,11 +25,12 @@ import {
     ScenarioFor,
     ISpecificationBuilder,
     SpecificationBuilder,
-    IScenarioEnvironmentBuilder,
     ScenarioEnvironmentBuilder
 } from './gherkin';
 
 import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
+import { ISpecificationRunner } from './gherkin/ISpecificationRunner';
+import { SpecificationRunner } from './gherkin/SpecificationRunner';
 
 export class Aviator {
     readonly platform: string;
@@ -38,7 +39,7 @@ export class Aviator {
     readonly microserviceFactory: IMicroserviceFactory;
     readonly configurationManager: IConfigurationManager;
     readonly specificationBuilder: ISpecificationBuilder;
-    readonly scenarioEnvironmentBuilder: IScenarioEnvironmentBuilder;
+    readonly specificationRunner: ISpecificationRunner;
 
     private constructor(platform: string) {
         this.platform = platform;
@@ -46,8 +47,8 @@ export class Aviator {
         this.containerFactory = new ContainerEnvironment();
         this.configurationManager = new ConfigurationManager();
         this.specificationBuilder = new SpecificationBuilder();
+        this.specificationRunner = new SpecificationRunner();
         this.microserviceFactory = new MicroserviceFactory(this.containerFactory, this.configurationManager);
-        this.scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(this.microserviceFactory);
     }
 
     static getFor(platform: string) {
@@ -56,11 +57,12 @@ export class Aviator {
 
     async performPreflightChecklist(...scenarios: Constructor<ScenarioFor<any>>[]): Promise<Flight> {
         const flightPaths = new FlightPaths();
-        const flightPlanner = new PreflightPlanner(flightPaths, this.scenarioEnvironmentBuilder, this.specificationBuilder);
+        const scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(flightPaths, this.microserviceFactory);
+        const flightPlanner = new PreflightPlanner(flightPaths, scenarioEnvironmentBuilder, this.specificationBuilder);
         const checklist = await flightPlanner.createChecklistFor(this.platform, ...scenarios);
         const flight = new Flight(this.platform, checklist);
         flight.setRecorder(new FlightRecorder(flight, this.serializer));
-        const flightControl = new FlightInspection(flight, this.microserviceFactory);
+        const flightControl = new FlightInspection(flight, this.specificationRunner);
         await flightControl.runPreflightCheck();
         return flight;
     }

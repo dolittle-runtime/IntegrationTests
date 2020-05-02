@@ -14,14 +14,14 @@ export class Flight {
     readonly preflightChecklist: PreflightChecklist;
     readonly platform: string;
 
-    readonly scenarioContext: BehaviorSubject<ScenarioEnvironment>;
+    readonly environment: BehaviorSubject<ScenarioEnvironment>;
     readonly scenario: BehaviorSubject<Scenario>;
 
     constructor(platform: string, preflightChecklist: PreflightChecklist) {
         this.platform = platform;
         this.preflightChecklist = preflightChecklist;
 
-        this.scenarioContext = new BehaviorSubject<ScenarioEnvironment>(new ScenarioEnvironment(new ScenarioEnvironmentDefinition(), {}));
+        this.environment = new BehaviorSubject<ScenarioEnvironment>(ScenarioEnvironment.empty);
         this.scenario = new BehaviorSubject<Scenario>(Scenario.none);
     }
 
