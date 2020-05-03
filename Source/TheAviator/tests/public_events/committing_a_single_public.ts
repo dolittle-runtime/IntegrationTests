@@ -9,7 +9,7 @@ import { EventHandlers } from '../shared/EventHandlers';
 import { a_producer_and_a_consumer } from '../given/a_producer_and_a_consumer';
 import { ScenarioFor, Feature } from '../../gherkin';
 
-@Feature('Private events')
+@Feature('Public events')
 export class committing_a_single_public extends ScenarioFor<a_producer_and_a_consumer> {
     for = a_producer_and_a_consumer;
 
