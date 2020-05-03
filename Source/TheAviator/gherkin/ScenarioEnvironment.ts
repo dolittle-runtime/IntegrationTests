@@ -31,13 +31,13 @@ export class ScenarioEnvironment {
     }
 
     async start(): Promise<void> {
-        await this.forEachMicroservice(_ => _.start());
+        await this.forEachMicroservice(async _ => await _.start());
         await this.connectConsumersToProducers();
     }
 
     async stop(): Promise<void> {
         await this.disconnectConsumersFromProducers();
-        await this.forEachMicroservice(_ => _.kill());
+        await this.forEachMicroservice(async _ => await _.kill());
     }
 
     async forEachMicroservice(method: MicroserviceMethod) {
