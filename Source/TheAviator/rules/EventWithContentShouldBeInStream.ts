@@ -8,6 +8,7 @@ import { IRule, IRuleContext, Reason } from '@dolittle/rules';
 import { ScenarioWithThenSubject } from './ScenarioWithThenSubject';
 
 const EventIsMissing: Reason = Reason.create('ffa82a7b-4dd3-49df-8ab0-08970f7508cc', 'Event is missing');
+const EventsAreMissing: Reason = Reason.create('7198d144-f90c-4089-9035-53558f9d0479', 'Events are missing - looked for {desired}, found {actual}');
 
 export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenSubject> {
     private _stream: string;
@@ -23,9 +24,12 @@ export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenS
             return { 'Content.uniqueIdentifier': _.uniqueIdentifier };
         });
 
+        let eventsFound = 0;
+
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 const result = await subject.microservice.eventStore.findEvents(this._tenantId, this._stream, { $or: eventsToLookFor });
+                eventsFound = result.length;
                 if (result.length !== this._events.length) {
                     callback(new Error('No event found'));
                 } else {
@@ -33,7 +37,11 @@ export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenS
                 }
             });
         } catch (ex) {
-            context.fail(this, subject, EventIsMissing.noArguments());
+            if (eventsToLookFor.length === 1) {
+                context.fail(this, subject, EventIsMissing.noArguments());
+            } else {
+                context.fail(this, subject, EventsAreMissing.withArguments({ desired: eventsToLookFor.length, actual: eventsFound }));
+            }
         }
     }
 }
