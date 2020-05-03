@@ -25,13 +25,13 @@ import {
     ScenarioContext,
     ScenarioFor,
     ISpecificationBuilder,
+    ISpecificationRunner,
     SpecificationBuilder,
+    SpecificationRunner,
     ScenarioEnvironmentBuilder
 } from './gherkin';
 
 import { FlightSimulationOptions, IFlightSimulationProcedure, FlightSimulation, FlightSimulator } from './flights/simulation';
-import { ISpecificationRunner } from './gherkin/ISpecificationRunner';
-import { SpecificationRunner } from './gherkin/SpecificationRunner';
 
 import {
     IScenarioConverter,
@@ -43,6 +43,7 @@ import {
     SpecificationResultConverter,
     ISpecificationResultConverter
 } from './flights/reporting';
+import { FlightSimulationPlanner } from './flights/simulation/FlightSimulationPlanner';
 
 export class Aviator {
     readonly platform: string;
@@ -90,8 +91,12 @@ export class Aviator {
     }
 
     async startSimulation<T extends ScenarioContext>(options: FlightSimulationOptions, procedure: IFlightSimulationProcedure<T>): Promise<FlightSimulation> {
-        const simulator = new FlightSimulator();
-        const simulation = simulator.startFor(options, procedure);
+        const flightPaths = new FlightPaths();
+        const scenarioEnvironmentBuilder = new ScenarioEnvironmentBuilder(flightPaths, this.microserviceFactory, this.serializer);
+        const planner = new FlightSimulationPlanner(scenarioEnvironmentBuilder, this.specificationBuilder);
+        const plan = await planner.createPlanFor(this.platform, options, procedure);
+        const simulator = new FlightSimulator(this.specificationRunner);
+        const simulation = simulator.run(plan);
         return simulation;
     }
 }

@@ -19,15 +19,11 @@ const getOutputsDirectory = () => {
     return path.join(process.cwd(), 'resultOutput');
 };
 
-(async () => {
-    await AvailableFlights.main();
-    //await AvailableFlights.simulate();
-})();
 
 
 // https://unicode-table.com/en/
-/*
-Banner.present();
+
+//Banner.present();
 
 app.get('/api/flight/start', async (request, response) => {
     response.send('Taking off');
@@ -56,9 +52,13 @@ app.get('/api/flights/:flight', (request, response) => {
 
 app.listen(port, () => {
     console.log(`Running on port '::${port}' - awaiting your command.\n`);
-    teamsIntegration();
+    //teamsIntegration();
     console.log('ctrl + c to exit.\n');
     console.log(Banner.separator);
     console.log('\n');
 });
-*/
+
+(async () => {
+    //await AvailableFlights.main();
+    await AvailableFlights.simulate();
+})();

@@ -52,7 +52,9 @@ export class AvailableFlights {
                 duration: moment.duration(1, 'hours'),
                 coolOffPeriod: moment.duration(15, 'seconds'),
                 warmUpPeriod: moment.duration(5, 'seconds'),
-                maximumSimultaneousUsers: 5
+                maximumSimultaneousActors: 5,
+                minimumIntervalForBehaviors: 1000,
+                maximumIntervalForBehaviors: 10000
             }, new MainProcedure());
         } catch (ex) {
 

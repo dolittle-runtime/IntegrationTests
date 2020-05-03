@@ -32,9 +32,11 @@ export class ScenarioEnvironment {
 
     async start(): Promise<void> {
         await this.forEachMicroservice(_ => _.start());
+        await this.connectConsumersToProducers();
     }
 
     async stop(): Promise<void> {
+        await this.disconnectConsumersFromProducers();
         await this.forEachMicroservice(_ => _.kill());
     }
 
@@ -77,7 +79,7 @@ export class ScenarioEnvironment {
         });
     }
 
-    async connectConsumersToProducers() {
+    private async connectConsumersToProducers() {
         for (const consumerName of Object.keys(this.definition.consumerToProducerMap)) {
             const consumer = this.microservices[consumerName];
             if (consumer) {
@@ -91,7 +93,7 @@ export class ScenarioEnvironment {
         }
     }
 
-    async disconnectConsumersFromProducers() {
+    private async disconnectConsumersFromProducers() {
         for (const consumerName of Object.keys(this.definition.consumerToProducerMap)) {
             const consumer = this.microservices[consumerName];
             if (consumer) {

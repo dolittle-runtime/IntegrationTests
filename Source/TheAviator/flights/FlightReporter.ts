@@ -4,7 +4,7 @@
 import { IFlightReporter } from './IFlightReporter';
 import { ScenarioResult } from './reporting';
 import { Flight } from './Flight';
-import { Scenario } from 'gherkin';
+import { Scenario } from '../gherkin';
 
 import chalk from 'chalk';
 

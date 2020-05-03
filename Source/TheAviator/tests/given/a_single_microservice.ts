@@ -6,7 +6,7 @@ import { ScenarioEnvironmentDefinition, ScenarioContext } from '../../gherkin';
 import { Tenants } from '../shared/Tenants';
 import { Artifacts } from '../shared/Artifacts';
 import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../../rules';
-import { MicroserviceInContext } from 'gherkin/MicroserviceInContext';
+import { MicroserviceInContext } from '../../gherkin/MicroserviceInContext';
 
 export class a_single_microservice extends ScenarioContext {
     tenant = Tenants.tenant;

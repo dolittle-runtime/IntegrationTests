@@ -13,9 +13,8 @@ export class FlightInspection implements IFlightInspection {
     async runPreflightCheck(): Promise<void> {
         for (const [environment, scenarios] of this._flight.preflightChecklist.scenariosByEnvironment) {
             this._flight.environment.next(environment);
-            await environment.start();
 
-            await environment.connectConsumersToProducers();
+            await environment.start();
 
             for (const scenario of scenarios) {
                 this._flight.scenario.next(scenario);
@@ -28,8 +27,6 @@ export class FlightInspection implements IFlightInspection {
                 await this._flight.recorder.captureMetricsFor(scenario);
                 await environment.dumpEventStore(scenario);
             }
-
-            await environment.disconnectConsumersFromProducers();
 
             environment.stop();
         }
