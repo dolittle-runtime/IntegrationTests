@@ -21,6 +21,7 @@ export class Container implements IContainer {
     _startWaitStrategies: IWaitStrategy[] = [];
     _container: Docker.Container | undefined;
     _containerInspectInfo: Docker.ContainerInspectInfo | undefined;
+    _connectedNetworks: string[] = [];
 
     /**
      * Creates an instance of container.
@@ -73,7 +74,17 @@ export class Container implements IContainer {
         const state = await this._container.inspect();
         if (state.State.Running) {
             await this._container.stop();
+            await this._container.remove();
             await this.waitForStrategies(waitStrategies);
+            this._container = undefined;
+        }
+    }
+
+    /** @inheritdoc */
+    async continue() {
+        await this.start(...this._startWaitStrategies);
+        for (const networkName of this._connectedNetworks) {
+            await this.connectToNetwork(networkName);
         }
     }
 
@@ -142,7 +153,6 @@ export class Container implements IContainer {
         await this.waitForStrategies(this._startWaitStrategies);
     }
 
-
     /** @inheritdoc */
     async exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void> {
         if (!this._container) {
@@ -180,6 +190,7 @@ export class Container implements IContainer {
         try {
             const network = await this._dockerClient.getNetwork(networkName);
             await network.connect({ Container: this.id });
+            this._connectedNetworks.push(networkName);
         } catch (ex) { }
     }
 
@@ -200,6 +211,11 @@ export class Container implements IContainer {
                     }
                 }
             });
+
+            const index = this._connectedNetworks.indexOf(networkName);
+            if (index > -1) {
+                this._connectedNetworks = this._connectedNetworks.splice(index, 1);
+            }
         } catch (ex) { }
     }
 
@@ -217,7 +233,8 @@ export class Container implements IContainer {
         return this._containerInspectInfo?.NetworkSettings.Networks[networkName].IPAddress || '';
     }
 
-    private async waitForContainerToBeReady() {
+    /** @inheritdoc */
+    async waitForContainerToBeReady() {
         try {
             await retry({ times: 5, interval: 100 }, async (callback, results) => {
                 const result = await this._container?.inspect();
@@ -231,6 +248,23 @@ export class Container implements IContainer {
             console.log(`Container ${this.id} is unresponsive - not getting ready`);
         }
     }
+
+    /** @inheritdoc */
+    async waitForContainerToBeStopped() {
+        try {
+            await retry({ times: 5, interval: 100 }, async (callback, results) => {
+                const result = await this._container?.inspect();
+                if (result?.State.Dead) {
+                    callback(null);
+                } else {
+                    callback(new Error('Not Stopped'));
+                }
+            });
+        } catch (ex) {
+            console.log(`Container ${this.id} is unresponsive - not stopping`);
+        }
+    }
+
 
     private async captureOutputFromContainer() {
         if (this._container) {

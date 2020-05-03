@@ -34,6 +34,14 @@ export interface IContainer {
     stop(...waitStrategies: IWaitStrategy[]): Promise<any>;
 
     /**
+     * Continue the instance after a stop.
+     *
+     * When continuing it assumes the container is already in a stopped state.
+     * @returns {Promise<void>}
+     */
+    continue(): Promise<any>;
+
+    /**
      * Pauses the instance.
      * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
      * @returns {Promise<void>}
@@ -84,4 +92,16 @@ export interface IContainer {
      * @param {string} networkName Name of network - default to undefined, which means the first network.
      */
     getIPAddressForNetwork(networkName: string | undefined): string;
+
+    /**
+     * Wait for a a container to be stopped
+     * @returns {Promise<void>}
+     */
+    waitForContainerToBeReady(): Promise<void>
+
+    /**
+     * Wait for a a container to be stopped
+     * @returns {Promise<void>}
+     */
+    waitForContainerToBeStopped(): Promise<void>
 }
