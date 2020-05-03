@@ -4,6 +4,8 @@
 import { FlightSimulationPlan } from './FlightSimulationPlan';
 import { ISpecificationRunner } from '../../gherkin';
 
+import chalk from 'chalk';
+
 export class FlightSimulationActor {
     private _running: boolean = false;
 
@@ -32,7 +34,15 @@ export class FlightSimulationActor {
             const scenario = this._plan.getRandomScenario();
             console.log(`Run ${scenario.name}`);
             this._specificationRunner.run(scenario.instance, scenario.specification).then(result => {
-
+                for (const thenResult of result.results) {
+                    const prefix = thenResult.brokenRules.length === 0 ? chalk.green('✔') : chalk.red('✗');
+                    console.log(`  ${prefix} ${chalk.reset('then')} ${thenResult.then.name}`);
+                    for (const brokenRule of thenResult.brokenRules) {
+                        for (const cause of brokenRule.causes) {
+                            console.log(`      ${chalk.red(cause.title)}`);
+                        }
+                    }
+                }
             });
 
             if (this._running) {
