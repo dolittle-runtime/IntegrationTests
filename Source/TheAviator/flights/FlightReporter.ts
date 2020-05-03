@@ -4,14 +4,27 @@
 import { IFlightReporter } from './IFlightReporter';
 import { ScenarioResult } from './reporting';
 import { Flight } from './Flight';
-import { Scenario } from '../gherkin';
+import { Scenario, ScenarioEnvironment } from '../gherkin';
 
 import chalk from 'chalk';
 
 export class FlightReporter implements IFlightReporter {
     observe(flight: Flight): void {
         flight.scenario.subscribe(this.outputScenario);
+        flight.environment.subscribe(this.outputEnvironment);
         flight.recorder.scenarioResult.subscribe(this.outputScenarioResult);
+    }
+
+    private outputEnvironment(environment: ScenarioEnvironment) {
+        if (environment === ScenarioEnvironment.empty) {
+            return;
+        }
+
+        console.log('\n');
+        console.log('With Microservices:');
+        for (const microserviceName of Object.keys(environment.microservices)) {
+            console.log(`  ${chalk.bold(microserviceName)}`);
+        }
     }
 
     private outputScenario(scenario: Scenario) {
@@ -20,9 +33,14 @@ export class FlightReporter implements IFlightReporter {
         }
 
         console.log('\n');
+        console.log(`Given: ${chalk.bold(scenario.contextName)}\n`);
         console.log(`Feature: ${chalk.bold(scenario.specification.feature.name)}\n`);
         console.log(`Scenario: ${chalk.bold(scenario.name)}`);
         console.log(`  when ${scenario.specification.when.name}`);
+
+        for (const and of scenario.specification.ands) {
+            console.log(`   ${chalk.italic('and')} ${and.name}`);
+        }
     }
 
     private outputScenarioResult(scenarioResult: ScenarioResult) {
