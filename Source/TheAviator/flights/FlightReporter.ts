@@ -15,6 +15,10 @@ export class FlightReporter implements IFlightReporter {
     }
 
     private outputScenario(scenario: Scenario) {
+        if (scenario === Scenario.none) {
+            return;
+        }
+
         console.log('\n');
         console.log(`Feature: ${chalk.bold(scenario.specification.feature.name)}\n`);
         console.log(`Scenario: ${chalk.bold(scenario.name)}`);
