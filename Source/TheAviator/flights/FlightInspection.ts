@@ -28,7 +28,7 @@ export class FlightInspection implements IFlightInspection {
                 await environment.dumpEventStore(scenario);
             }
 
-            environment.stop();
+            await environment.stop();
         }
 
         this._flight.recorder.conclude();
