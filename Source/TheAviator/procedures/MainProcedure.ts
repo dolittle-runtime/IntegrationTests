@@ -4,13 +4,16 @@
 import { IFlightSimulationProcedure, ScenarioInProcedure, UnexpectedBehaviorInProcedure } from '../flights/simulation';
 import { a_producer_and_a_consumer } from '../tests/given/a_producer_and_a_consumer';
 import { ScenarioFor } from '../gherkin';
+import { Guid } from '@dolittle/rudiments';
 
 export class committing_single_event extends ScenarioFor<a_producer_and_a_consumer> {
+    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+
     for = a_producer_and_a_consumer;
 
-    when_event_is_committed = () => { };
+    when_event_is_committed = async () => await this.context?.producer?.commitEvent(this.event_committed);
 
-    then_event_should_be_in_event_log = () => { };
+    then_the_event_should_appear_in_the_event_log = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, this.event_committed);
 }
 
 
