@@ -59,6 +59,6 @@ app.listen(port, () => {
 });
 
 (async () => {
-    //await AvailableFlights.main();
-    await AvailableFlights.simulate();
+    await AvailableFlights.main();
+    //await AvailableFlights.simulate();
 })();

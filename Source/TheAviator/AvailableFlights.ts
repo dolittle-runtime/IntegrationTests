@@ -14,6 +14,7 @@ import { single_aggregate_event_committed } from './tests/private_aggregate_even
 import { twenty_aggregate_events_committed } from './tests/private_aggregate_events/twenty_aggregate_events_committed';
 import { committing_a_single_public } from './tests/public_events/committing_a_single_public';
 import { MainProcedure } from './procedures/MainProcedure';
+import { committing_public_events_with_unstable_consumer } from './tests/public_events/committing_public_events_with_unstable_consumer';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -30,12 +31,13 @@ export class AvailableFlights {
 
             const aviator = Aviator.getFor('dotnet');
             const flight = await aviator.performPreflightChecklist(
-                committing_a_single_event,
+                /*committing_a_single_event,
                 single_aggregate_event_committed,
                 two_events_with_pause_inbetween_committed,
                 twenty_events_committed,
                 twenty_aggregate_events_committed,
-                committing_a_single_public
+                committing_a_single_public,*/
+                committing_public_events_with_unstable_consumer
             );
 
             console.log('\n');
