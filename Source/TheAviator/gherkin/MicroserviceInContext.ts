@@ -46,7 +46,7 @@ export class MicroserviceInContext {
         return this.microservice.actions;
     }
 
-    async commitEventInFirst(event: any) {
+    async commitEvent(event: any) {
         await this.microservice.actions.commitEvent(Tenants.tenant, Artifacts.event, event);
     }
 
