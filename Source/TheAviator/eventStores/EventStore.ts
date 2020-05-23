@@ -32,8 +32,8 @@ export class EventStore implements IEventStore {
             const collection = client.db(eventStoresForTenants[0].database).collection('stream-processor-states');
 
             const query = {
-                '_id.EventProcessorId': MUUID.from(eventProcessorId.toString()),
-                '_id.SourceStreamId': MUUID.from(sourceStreamId.toString())
+                'EventProcessor': MUUID.from(eventProcessorId.toString()),
+                'SourceStream': MUUID.from(sourceStreamId.toString())
             };
 
             const result = await collection.findOne(query);
@@ -45,8 +45,7 @@ export class EventStore implements IEventStore {
                 eventProcessorId,
                 sourceStreamId,
                 Guid.empty,
-                parseInt(result.Position.toString(), 10),
-                result.FailingPartitions);
+                parseInt(result.Position.toString(), 10));
         } catch (ex) {
             return null;
         }
