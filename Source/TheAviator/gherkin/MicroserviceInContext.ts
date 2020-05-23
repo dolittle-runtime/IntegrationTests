@@ -46,16 +46,16 @@ export class MicroserviceInContext {
         return this.microservice.actions;
     }
 
-    async commitEvent(event: any) {
-        await this.microservice.actions.commitEvent(Tenants.tenant, Artifacts.event, event);
+    async commitEvent(eventSource: Guid, event: any) {
+        await this.microservice.actions.commitEvent(Tenants.tenant, eventSource, Artifacts.event, event);
     }
 
     async commitAggregateEventInFirst(eventSource: Guid, version: number, event: any) {
         await this.microservice.actions.commitAggregateEvent(Tenants.tenant, eventSource, version, Artifacts.aggregateEvent, event);
     }
 
-    async commitPublicEvent(event: any) {
-        await this.microservice.actions.commitPublicEvent(Tenants.tenant, Artifacts.event, event);
+    async commitPublicEvent(eventSource: Guid, event: any) {
+        await this.microservice.actions.commitPublicEvent(Tenants.tenant, eventSource, Artifacts.event, event);
     }
 
     async evaluate(): Promise<BrokenRule[]> {

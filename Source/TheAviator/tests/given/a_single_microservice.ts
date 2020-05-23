@@ -19,8 +19,8 @@ export class a_single_microservice extends ScenarioContext {
         return this.microservices.main;
     }
 
-    async commitEvent(event: any) {
-        await this.microservice?.actions.commitEvent(Tenants.tenant, Artifacts.event, event);
+    async commitEvent(eventSource: Guid, event: any) {
+        await this.microservice?.actions.commitEvent(Tenants.tenant, eventSource, Artifacts.event, event);
     }
 
     async commitAggregateEvent(eventSource: Guid, version: number, event: any) {

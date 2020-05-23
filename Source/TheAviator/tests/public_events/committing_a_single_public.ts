@@ -13,9 +13,10 @@ import { ScenarioFor, Feature } from '../../gherkin';
 export class committing_a_single_public extends ScenarioFor<a_producer_and_a_consumer> {
     for = a_producer_and_a_consumer;
 
+    readonly event_source = Guid.parse('1b97a705-7956-4f40-956a-e0044035f33d');
     readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
-    when_event_is_committed = async () => await this.context?.producer?.commitPublicEvent(this.event_committed);
+    when_event_is_committed = async () => await this.context?.producer?.commitPublicEvent(this.event_source, this.event_committed);
 
     then_event_should_be_in_event_log_of_producer_microservice = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, this.event_committed);
     then_event_should_be_in_public_stream_of_producer_microservice = () => this.context?.producer?.streams?.should_be_in_public_stream(this.context?.tenant, Streams.publicStream, this.event_committed);
