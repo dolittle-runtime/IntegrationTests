@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { ScenarioContext } from './ScenarioContext';
-import { Constructor } from '../Constructor';
+import { Constructor } from '@dolittle/rudiments';
 import { IContextDescriptorFor } from './IContextDescriptorFor';
 
 export abstract class BehaviorFor<T extends ScenarioContext> implements IContextDescriptorFor<T> {

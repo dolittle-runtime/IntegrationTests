@@ -4,7 +4,7 @@
 import { ScenarioContext } from '../../gherkin';
 import { ScenarioInProcedure } from './ScenarioInProcedure';
 import { UnexpectedBehaviorInProcedure } from './UnexpectedBehaviorInProcedure';
-import { Constructor } from 'Constructor';
+import { Constructor } from '@dolittle/rudiments';
 
 export interface IFlightSimulationProcedure<T extends ScenarioContext> {
     readonly context: Constructor<T>;

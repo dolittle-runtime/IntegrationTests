@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { ScenarioFor, ScenarioContext, Specification, ScenarioEnvironment, Scenario } from '../../gherkin';
-import { Constructor } from '../../Constructor';
+import { Constructor } from '@dolittle/rudiments';
 
 export class ScenarioForSimulation {
     readonly type: Constructor<ScenarioFor<ScenarioContext>>;
