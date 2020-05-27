@@ -10,12 +10,13 @@ import { a_single_microservice } from '../given/a_single_microservice';
 
 @Feature('Private events')
 export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_single_microservice> {
+    readonly event_source = Guid.parse('a380c617-3f30-4f05-9572-10c8e68c18c7');
     readonly first_event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
     readonly second_event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
 
     for = a_single_microservice;
 
-    when_events_are_committed = async () => await this.context?.commitEvent(this.first_event_committed);
+    when_events_are_committed = async () => await this.context?.commitEvent(this.event_source, this.first_event_committed);
 
     and = () => [
         this.pausing_the_head,
@@ -26,7 +27,7 @@ export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_sin
     ]
 
     pausing_the_head = async () => await this.context?.microservice?.head.pause();
-    commit_another_event = async () => await this.context?.commitEvent(this.second_event_committed);
+    commit_another_event = async () => await this.context?.commitEvent(this.event_source, this.second_event_committed);
     resuming_the_head = async () => await this.context?.microservice?.head.resume();
     waiting_for_two_seconds = async () => await asyncTimeout(2000);
 

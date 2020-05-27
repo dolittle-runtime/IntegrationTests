@@ -21,7 +21,7 @@ namespace Head
         public EventsController(
             IExecutionContextManager executionContextManager,
             FactoryFor<IEventStore> eventStore,
-            ILogger logger)
+            ILogger<EventsController> logger)
         {
             _executionContextManager = executionContextManager;
             _eventStore = eventStore;
@@ -35,16 +35,16 @@ namespace Head
         }
 
         [HttpPost]
-        [Route("Single/{tenantId}")]
-        public IActionResult Single(string tenantId, [FromBody] MyEvent @event)
+        [Route("Single/{tenantId}/{eventSource}")]
+        public IActionResult Single(string tenantId, string eventSource, [FromBody] MyEvent @event)
         {
             try
             {
                 _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                _executionContextManager.CurrentFor(Guid.Parse(tenantId));
                 var eventStore = _eventStore();
                 var events = new UncommittedEvents();
-                events.Append(@event);
+                events.Append(new EventSourceId(Guid.Parse(eventSource)), @event);
                 eventStore.Commit(events);
 
                 return Ok();
@@ -57,16 +57,16 @@ namespace Head
         }
 
         [HttpPost]
-        [Route("SinglePublic/{tenantId}")]
-        public IActionResult SinglePublic(string tenantId, [FromBody] MyPublicEvent @event)
+        [Route("SinglePublic/{tenantId}/{eventSource}")]
+        public IActionResult SinglePublic(string tenantId, string eventSource, [FromBody] MyPublicEvent @event)
         {
             try
             {
                 _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                _executionContextManager.CurrentFor(Guid.Parse(tenantId));
                 var eventStore = _eventStore();
                 var events = new UncommittedEvents();
-                events.Append(@event);
+                events.Append(new EventSourceId(Guid.Parse(eventSource)), @event);
                 eventStore.Commit(events);
 
                 return Ok();
@@ -85,7 +85,7 @@ namespace Head
             try
             {
                 _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                _executionContextManager.CurrentFor((TenantId)Guid.Parse(tenantId));
+                _executionContextManager.CurrentFor(Guid.Parse(tenantId));
                 var eventStore = _eventStore();
                 var events = new UncommittedAggregateEvents(Guid.Parse(eventSource), typeof(MyAggregate), version);
                 events.Append(@event);

@@ -8,6 +8,7 @@ import { a_single_microservice } from '../given/a_single_microservice';
 
 @Feature('Private events')
 export class twenty_events_committed extends ScenarioFor<a_single_microservice> {
+    readonly event_source = Guid.parse('6de09f54-802e-4018-84f3-4375da8bfa8d');
     readonly _events: any[] = [];
 
     constructor() {
@@ -21,7 +22,7 @@ export class twenty_events_committed extends ScenarioFor<a_single_microservice> 
 
     async when_all_events_are_committed() {
         for (const event of this._events) {
-            await this.context?.commitEvent(event);
+            await this.context?.commitEvent(this.event_source, event);
         }
     }
 

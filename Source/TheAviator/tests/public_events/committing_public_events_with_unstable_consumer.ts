@@ -13,6 +13,7 @@ import { Scopes } from '../shared/Scopes';
 export class committing_public_events_with_unstable_consumer extends ScenarioFor<a_producer_and_a_consumer> {
     for = a_producer_and_a_consumer;
 
+    readonly event_source = Guid.parse('05712402-8f91-49f6-ad65-8c49b12c145c');
     readonly first_two_events: any[] = [
         { 'uniqueIdentifier': Guid.create().toString() },
         { 'uniqueIdentifier': Guid.create().toString() }
@@ -53,7 +54,7 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
 
     async commit_two_events(events: any[]) {
         for (const event of events) {
-            this.context?.producer?.commitPublicEvent(event);
+            this.context?.producer?.commitPublicEvent(this.event_source, event);
         }
     }
 

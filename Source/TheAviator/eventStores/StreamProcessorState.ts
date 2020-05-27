@@ -10,11 +10,10 @@ export class StreamProcessorState {
     readonly position: number;
     readonly failingPartitions: any;
 
-    constructor(eventProcessorId?: Guid, sourceStreamId?: Guid, scopeId?: Guid, position?: number, failingPartitions?: any) {
+    constructor(eventProcessorId?: Guid, sourceStreamId?: Guid, scopeId?: Guid, position?: number) {
         this.scopeId = scopeId || Guid.empty;
         this.eventProcessorId = eventProcessorId || Guid.empty;
         this.sourceStreamId = sourceStreamId || Guid.empty;
         this.position = position || 0;
-        this.failingPartitions = failingPartitions || {};
     }
 }
