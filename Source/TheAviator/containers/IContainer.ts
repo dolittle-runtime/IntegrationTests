@@ -70,10 +70,13 @@ export interface IContainer {
 
     /**
      * Execute a command within the container.
+     * @param {string[]} command Array representing command to run with arguments
+     * @param {ReadableStream} [inputStream] Optional input stream to pass to the exec
+     * @param {WriteableStream} [outputStream] Optional input stream to pass to
+     * @param {*} [options] Configuration options
      * @param waitStrategies {IWaitStrategy[]} Wait strategies, if any.
-     * @param {*} options? Configuration options
      */
-    exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
+    exec(command: string[], inputStream?: ReadableStream, outputStream?: WritableStream, options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void>;
 
     /**
      * Connect the container to a specific network.

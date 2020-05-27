@@ -10,6 +10,7 @@ import * as Docker from 'dockerode';
 
 import { ContainerOptions, IContainer, Mount, IWaitStrategy } from '../';
 
+
 /**
  * Represents an implementation of {IContainer} for Docker.
  */
@@ -154,21 +155,27 @@ export class Container implements IContainer {
     }
 
     /** @inheritdoc */
-    async exec(command: string[], options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void> {
+    async exec(command: string[], inputStream?: ReadableStream, outputStream?: WritableStream, options?: any, ...waitStrategies: IWaitStrategy[]): Promise<void> {
         if (!this._container) {
             return;
         }
 
         options = options || {};
         options.AttachStdout = true;
-        options.AttachStderr = true;
+        options.AttachStdin = true;
         options.Tty = false;
         options.Cmd = command;
 
         const exec = await this._container.exec(options);
-        const result = await exec.start({ 'Detach': false, 'Tty': false, stream: true, stdout: true, stderr: true });
-        result.output.setEncoding('utf8');
-        result.output.pipe(this.outputStream.value);
+        const result = await exec.start();
+
+        if (inputStream) {
+            inputStream.pipeTo(result);
+        }
+
+        if (outputStream) {
+            this._dockerClient.modem.demuxStream(result, outputStream);
+        }
 
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
