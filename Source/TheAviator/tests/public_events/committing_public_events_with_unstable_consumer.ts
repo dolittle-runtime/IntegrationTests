@@ -34,7 +34,7 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
         { 'uniqueIdentifier': Guid.create().toString() }
     ];
 
-    readonly all_events = this.first_set_of_events.concat(this.second_set_of_events).concat(this.third_set_of_events).concat(this.forth_set_of_events);
+    readonly all_events = this.first_two_events.concat(this.second_set_of_events).concat(this.third_set_of_events).concat(this.forth_set_of_events);
 
     when_events_are_committed = async () => await this.commit_two_events(this.first_two_events);
 
