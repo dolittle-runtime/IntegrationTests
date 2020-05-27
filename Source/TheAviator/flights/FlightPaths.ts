@@ -23,7 +23,7 @@ export class FlightPaths implements IFlightPaths {
      */
     constructor() {
         const currentDate = new Date();
-        const currentDateString = `${currentDate.getFullYear()}-${zeroPad(currentDate.getMonth(), 2)}-${zeroPad(currentDate.getDate(), 2)} ${zeroPad(currentDate.getHours(), 2)}_${zeroPad(currentDate.getMinutes(), 2)}_${zeroPad(currentDate.getSeconds(), 2)}`;
+        const currentDateString = `${currentDate.getFullYear()}-${zeroPad(currentDate.getMonth() + 1, 2)}-${zeroPad(currentDate.getDate(), 2)} ${zeroPad(currentDate.getHours(), 2)}_${zeroPad(currentDate.getMinutes(), 2)}_${zeroPad(currentDate.getSeconds(), 2)}`;
         this.base = path.join(process.cwd(), 'resultOutput', currentDateString);
         this.ensureDirectory(this.base);
         this.global = path.join(this.base, '_global');
