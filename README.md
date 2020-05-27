@@ -72,6 +72,26 @@ restify listening to http://[::]:3978
 You can trigger a build by navigating a browser or [Postman](https://www.postman.com) to the
 following URL: [http://localhost/api/flight/start](http://localhost/api/flight/start).
 
+## Restoring EventStore dumps/backups
+
+In the result output after running, you can find backups of the eventstore - snapshotted per scenario per microservice. This can be
+restored to a running MongoDB instance.
+
+For instance, run a MongoDB instance using Docker:
+
+```shell
+$ docker run -d -p 27017:27017 dolittle/mongodb
+13286b698a4abf6214f1c455fce645c3286007300e0ec11b9919f0798af1a225
+```
+
+Use the `monorestore` utility in the running instance to restore (for instance use the 4 digits of the Docker instance SHA - 1328)
+
+```shell
+$ docker exec -i 1328 mongorestore --archive < resultOutput/<date>/<name of context>/<name of>/_microservice/<name of microservice>
+```
+
+You should then be able to navigate using your favorite MongoDB tools into the database.
+
 ## Microsoft Teams Integration
 
 The [Microsoft Teams](http://teams.microsoft.com) is intended to be for fun and testing.
