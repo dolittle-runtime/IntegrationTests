@@ -38,7 +38,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'head',
             configuration.head.host,
             `dolittle/integrationtests-head-${configuration.platform}`,
-            'latest',
+            '5.0.0-rc.2',
             [5000],
             configuration.networkName,
             this._configurationManager.generateForHead(configuration, workingDirectory)
@@ -48,7 +48,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'runtime',
             configuration.runtime.host,
             'dolittle/runtime',
-            '5.0.0-alpha.16',
+            '5.0.0-rc.2',
             [81, 9700, 50052, 50053],
             configuration.networkName,
             this._configurationManager.generateForRuntime(configuration, workingDirectory)
