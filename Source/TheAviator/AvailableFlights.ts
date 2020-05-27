@@ -31,12 +31,12 @@ export class AvailableFlights {
 
             const aviator = Aviator.getFor('dotnet');
             const flight = await aviator.performPreflightChecklist(
-                /*committing_a_single_event,
+                committing_a_single_event,
                 single_aggregate_event_committed,
                 two_events_with_pause_inbetween_committed,
                 twenty_events_committed,
                 twenty_aggregate_events_committed,
-                committing_a_single_public,*/
+                committing_a_single_public,
                 committing_public_events_with_unstable_consumer
             );
 
