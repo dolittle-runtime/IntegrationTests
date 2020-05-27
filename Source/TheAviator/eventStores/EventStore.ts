@@ -1,6 +1,9 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import fs from 'fs';
+import path from 'path';
+
 import { MongoClient, FilterQuery, Decimal128 } from 'mongodb';
 import MUUID from 'uuid-mongodb';
 
@@ -52,18 +55,21 @@ export class EventStore implements IEventStore {
         }
     }
 
-    async dump(): Promise<string[]> {
+    async dump(destination: string): Promise<string[]> {
         const backups: string[] = [];
         for (const eventStoreForTenant of this.microservice.configuration.eventStoreForTenants) {
-            const backupName = `${Guid.create()} ${eventStoreForTenant.tenantId}`;
-            backups.push(backupName);
+            const destinationFile = path.join(destination, `backup-for-tenant-${eventStoreForTenant.tenantId}`);
+            backups.push(destinationFile);
+            const targetStream = fs.createWriteStream(destinationFile) as any as WritableStream;
 
             await this.microservice.eventStoreStorage.exec([
                 'mongodump',
-                `--archive="/backup/${backupName}"`,
+                '--quiet',
+                '--archive',
                 '-d',
                 eventStoreForTenant.database
-            ], {});
+            ], undefined, targetStream,
+            {});
         }
 
         return backups;
