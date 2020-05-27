@@ -23,10 +23,10 @@ export class MicroserviceActions implements IMicroserviceActions {
         }
     }
 
-    async commitEvent(tenantId: Guid, artifactId: Guid, content: any, publicEvent: boolean = false): Promise<void> {
+    async commitEvent(tenantId: Guid, eventSource: Guid, artifactId: Guid, content: any, publicEvent: boolean = false): Promise<void> {
         try {
             const action = publicEvent ? 'SinglePublic' : 'Single';
-            const url = `${this.getHeadBaseUrl()}/api/Events/${action}/${tenantId.toString()}`;
+            const url = `${this.getHeadBaseUrl()}/api/Events/${action}/${tenantId.toString()}/${eventSource.toString()}`;
             await fetch(url, {
                 method: 'post',
                 body: JSON.stringify(content),
@@ -37,8 +37,8 @@ export class MicroserviceActions implements IMicroserviceActions {
         }
     }
 
-    async commitPublicEvent(tenantId: Guid, artifactId: Guid, content: any): Promise<void> {
-        await this.commitEvent(tenantId, artifactId, content, true);
+    async commitPublicEvent(tenantId: Guid, eventSource: Guid, artifactId: Guid, content: any): Promise<void> {
+        await this.commitEvent(tenantId, eventSource, artifactId, content, true);
     }
 
     async commitAggregateEvent(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
