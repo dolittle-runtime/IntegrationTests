@@ -15,5 +15,5 @@ export class StreamsRuleSetContainerBuilder extends ScenarioRuleSetContainerBuil
 
     should_contain = (tenantId: Guid, streamId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, `stream-${streamId.toString()}`, events));
     should_be_in_public_stream = (tenantId: Guid, publicStreamId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, `public-stream-${publicStreamId.toString()}`, events));
-    should_be_in_external_event_log = (tenantId: Guid, externalScopeId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, `x-event-log-${externalScopeId.toString()}`, events));
+    should_be_in_external_event_log = (tenantId: Guid, externalScopeId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, `x-${externalScopeId.toString()}-event-log`, events));
 }

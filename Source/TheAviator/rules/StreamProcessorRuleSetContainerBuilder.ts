@@ -13,6 +13,6 @@ export class StreamProcessorRuleSetContainerBuilder extends ScenarioRuleSetConta
         super(microservice);
     }
 
-    should_have_event_handler_at_position = (tenantId: Guid, eventHandlerId: Guid, position: number) => this.addRuleBuilderFor(new StreamProcessorShouldBeAtPosition(tenantId, eventHandlerId, position));
+    should_have_event_handler_at_position = (tenantId: Guid, eventHandlerId: Guid, position: number, scopeId: Guid = Guid.empty) => this.addRuleBuilderFor(new StreamProcessorShouldBeAtPosition(tenantId, eventHandlerId, scopeId, position));
 }
 

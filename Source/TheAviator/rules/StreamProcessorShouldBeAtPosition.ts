@@ -12,7 +12,7 @@ const StreamProcessorPositionIsWrong: Reason = Reason.create('e0f79ec4-f059-4581
 const MissingStreamProcessorState: Reason = Reason.create('8b9ec965-77df-4be0-b173-0ec2976f2e95', 'No stream processor state for processor "{processor}"');
 
 export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThenSubject> {
-    constructor(private _tenantId: Guid, private _eventProcessorId: Guid, private _position: number) {
+    constructor(private _tenantId: Guid, private _eventProcessorId: Guid, private _scopeId: Guid, private _position: number) {
     }
 
     async evaluate(context: IRuleContext, subject: ScenarioWithThenSubject) {
@@ -20,7 +20,7 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
 
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
-                state = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._eventProcessorId);
+                state = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._scopeId, this._eventProcessorId);
                 if (!state || state.position !== this._position) {
                     callback(new Error('No state'));
                 } else {
