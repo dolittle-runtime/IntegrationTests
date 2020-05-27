@@ -21,7 +21,7 @@ export class EventStore implements IEventStore {
         return this.findDocumentsInCollection(tenantId, stream, filter);
     }
 
-    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null> {
+    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null> {
         try {
             const eventStoresForTenants = this.microservice.configuration.eventStoreForTenants.filter(_ => _.tenantId);
             if (eventStoresForTenants.length !== 1) {
@@ -29,7 +29,8 @@ export class EventStore implements IEventStore {
             }
 
             const client = await this.getMongoClient();
-            const collection = client.db(eventStoresForTenants[0].database).collection('stream-processor-states');
+            const collectionName = scopeId === Guid.empty ? 'stream-processor-states' : `x-${scopeId.toString()}-stream-processor-states`;
+            const collection = client.db(eventStoresForTenants[0].database).collection(collectionName);
 
             const query = {
                 'EventProcessor': MUUID.from(eventProcessorId.toString()),

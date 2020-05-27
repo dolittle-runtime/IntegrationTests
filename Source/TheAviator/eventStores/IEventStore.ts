@@ -7,7 +7,7 @@ import { StreamProcessorState } from './StreamProcessorState';
 
 export interface IEventStore {
     findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]>
-    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null>;
+    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null>;
     dump(): Promise<string[]>;
     clear(): Promise<void>;
 }
