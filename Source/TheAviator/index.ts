@@ -23,7 +23,7 @@ const getOutputsDirectory = () => {
 
 // https://unicode-table.com/en/
 
-//Banner.present();
+Banner.present();
 
 app.get('/api/flight/start', async (request, response) => {
     response.send('Taking off');
