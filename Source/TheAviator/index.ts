@@ -50,6 +50,7 @@ app.get('/api/flights/:flight', (request, response) => {
     }
 });
 
+/*
 app.listen(port, () => {
     console.log(`Running on port '::${port}' - awaiting your command.\n`);
     //teamsIntegration();
@@ -57,6 +58,7 @@ app.listen(port, () => {
     console.log(Banner.separator);
     console.log('\n');
 });
+*/
 
 (async () => {
     await AvailableFlights.main();
