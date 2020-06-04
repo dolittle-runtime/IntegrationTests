@@ -10,8 +10,12 @@ import { a_single_microservice } from '../given/a_single_microservice';
 @Feature('Private events')
 export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_single_microservice> {
     readonly event_source = Guid.parse('a380c617-3f30-4f05-9572-10c8e68c18c7');
-    readonly first_event_committed: EventObject = { uniqueIdentifier: Guid.create().toString() };
-    readonly second_event_committed: EventObject = { uniqueIdentifier: Guid.create().toString() };
+    readonly first_event_committed: EventObject = {
+        uniqueIdentifier: Guid.create().toString()
+    };
+    readonly second_event_committed: EventObject = {
+        uniqueIdentifier: Guid.create().toString()
+    };
 
     for = a_single_microservice;
 

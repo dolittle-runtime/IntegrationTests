@@ -16,7 +16,9 @@ export class twenty_aggregate_events_committed_one_after_another extends Scenari
         super();
 
         for (let i = 0; i < 20; i += 1) {
-            this._events.push({ uniqueIdentifier: Guid.create().toString() });
+            this._events.push({
+                uniqueIdentifier: Guid.create().toString()
+            });
         }
     }
 

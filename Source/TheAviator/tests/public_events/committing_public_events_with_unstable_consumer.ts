@@ -31,8 +31,12 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
     ];
 
     readonly forth_set_of_events: EventObject[] = [
-        { uniqueIdentifier: Guid.create().toString() },
-        { uniqueIdentifier: Guid.create().toString() }
+        {
+            uniqueIdentifier: Guid.create().toString()
+        },
+        {
+            uniqueIdentifier: Guid.create().toString()
+        }
     ];
 
     readonly all_events = this.first_two_events.concat(this.second_set_of_events).concat(this.third_set_of_events).concat(this.forth_set_of_events);

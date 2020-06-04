@@ -15,7 +15,9 @@ export class twenty_events_committed extends ScenarioFor<a_single_microservice> 
     constructor() {
         super();
         for (let i = 0; i < 20; i += 1) {
-            this._events.push({ uniqueIdentifier: Guid.create().toString() });
+            this._events.push({
+                uniqueIdentifier: Guid.create().toString()
+            });
         }
     }
 
