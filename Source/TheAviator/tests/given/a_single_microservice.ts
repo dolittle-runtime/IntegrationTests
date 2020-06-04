@@ -5,6 +5,7 @@ import { Guid } from '@dolittle/rudiments';
 import { ScenarioEnvironmentDefinition, ScenarioContext } from '../../gherkin';
 import { Tenants } from '../shared/Tenants';
 import { Artifacts } from '../shared/Artifacts';
+import { EventObject } from '../shared/EventObject';
 import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../../rules';
 import { MicroserviceInContext } from '../../gherkin/MicroserviceInContext';
 
@@ -19,12 +20,20 @@ export class a_single_microservice extends ScenarioContext {
         return this.microservices.main;
     }
 
-    async commitEvent(eventSource: Guid, event: any) {
+    async commitEvent(eventSource: Guid, event: EventObject) {
         await this.microservice?.actions.commitEvent(Tenants.tenant, eventSource, Artifacts.event, event);
     }
 
-    async commitAggregateEvent(eventSource: Guid, version: number, event: any) {
+    async commitAggregateEvent(eventSource: Guid, version: number, event: EventObject) {
         await this.microservice?.actions.commitAggregateEvent(Tenants.tenant, eventSource, version, Artifacts.aggregateEvent, event);
+    }
+
+    async commitEvents(eventSource: Guid, event: EventObject[]) {
+        await this.microservice?.actions.commitEvents(Tenants.tenant, eventSource, Artifacts.event, event);
+    }
+
+    async commitAggregateEvents(eventSource: Guid, version: number, event: EventObject[]) {
+        await this.microservice?.actions.commitAggregateEvents(Tenants.tenant, eventSource, version, Artifacts.aggregateEvent, event);
     }
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {
