@@ -43,13 +43,30 @@ export class MicroserviceActions implements IMicroserviceActions {
 
     async commitAggregateEvent(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
         try {
-            const url = `${this.getHeadBaseUrl()}/api/Events/SingleAggregate/${tenantId.toString()}/${eventSource.toString()}/${version}`;
-            await fetch(url, {
-                method: 'post',
-                body: JSON.stringify(content),
-                headers: { 'Content-Type': 'application/json' },
-                timeout: 10000
-            });
+            await this.postCommitRequest(
+                this.getUrlForCommittingAggregateEvents(tenantId, eventSource, version, false),
+                content);
+        } catch (ex) { }
+    }
+
+    async commitEvents(tenantId: Guid, eventSource: Guid, artifactId: Guid, content: any, publicEvent: boolean = false): Promise<void> {
+        try {
+            await this.postCommitRequest(
+                this.getUrlForCommittingEvents(tenantId, eventSource, true, publicEvent),
+                content);
+        } catch (ex) {
+        }
+    }
+
+    async commitPublicEvents(tenantId: Guid, eventSource: Guid, artifactId: Guid, content: any): Promise<void> {
+        await this.commitEvents(tenantId, eventSource, artifactId, content, true);
+    }
+
+    async commitAggregateEvents(tenantId: Guid, eventSource: Guid, version: number, artifactId: Guid, content: any): Promise<void> {
+        try {
+            await this.postCommitRequest(
+                this.getUrlForCommittingAggregateEvents(tenantId, eventSource, version, true),
+                content);
         } catch (ex) { }
     }
 
@@ -63,6 +80,27 @@ export class MicroserviceActions implements IMicroserviceActions {
         } catch (ex) {
             return '';
         }
+    }
+
+    private getUrlForCommittingEvents(tenantId: Guid, eventSource: Guid, multiple: boolean, publicEvent: boolean): string {
+        const action = multiple ? 'Multiple' : 'Single' + publicEvent ? 'Public' : '';
+
+        return `${this.getHeadBaseUrl()}/api/Events/${action}/${tenantId.toString()}/${eventSource.toString()}`;
+    }
+
+    private getUrlForCommittingAggregateEvents(tenantId: Guid, eventSource: Guid, version: number, multiple: boolean): string {
+        const action = multiple ? 'Multiple' : 'Single';
+
+        return `${this.getHeadBaseUrl()}/api/Events/${action}Aggregate/${tenantId.toString()}/${eventSource.toString()}/${version}`;
+    }
+
+    private postCommitRequest(url: string, content: any) {
+        return fetch(url, {
+            method: 'post',
+            body: JSON.stringify(content),
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 10000
+        });
     }
 
     private getHeadBaseUrl() {
