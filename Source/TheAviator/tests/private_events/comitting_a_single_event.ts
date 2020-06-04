@@ -4,13 +4,14 @@
 import { Guid } from '@dolittle/rudiments';
 
 import { EventHandlers } from '../shared/EventHandlers';
+import { EventObject } from '../shared/EventObject';
 import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
 
 @Feature('Private events')
 export class committing_a_single_event extends ScenarioFor<a_single_microservice> {
     readonly event_source = Guid.parse('a722e17a-6314-4745-990c-e292325b0afb');
-    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+    readonly event_committed: EventObject = { uniqueIdentifier: Guid.create().toString() };
 
     for = a_single_microservice;
 

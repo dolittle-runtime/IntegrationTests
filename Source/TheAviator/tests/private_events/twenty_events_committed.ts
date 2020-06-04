@@ -3,27 +3,26 @@
 
 import { Guid } from '@dolittle/rudiments';
 import { EventHandlers } from '../shared/EventHandlers';
+import { EventObject } from '../shared/EventObject';
 import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
 
 @Feature('Private events')
 export class twenty_events_committed extends ScenarioFor<a_single_microservice> {
-    readonly event_source = Guid.parse('6de09f54-802e-4018-84f3-4375da8bfa8d');
-    readonly _events: any[] = [];
+    readonly event_source = Guid.parse('acb6be0d-d035-43d9-b5c2-452fa2afa84b');
+    readonly _events: EventObject[] = [];
 
     constructor() {
         super();
         for (let i = 0; i < 20; i += 1) {
-            this._events.push({ 'uniqueIdentifier': Guid.create().toString() });
+            this._events.push({ uniqueIdentifier: Guid.create().toString() });
         }
     }
 
     for = a_single_microservice;
 
     async when_all_events_are_committed() {
-        for (const event of this._events) {
-            await this.context?.commitEvent(this.event_source, event);
-        }
+        await this.context?.commitEvents(this.event_source, this._events);
     }
 
     then_all_events_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, ...this._events);

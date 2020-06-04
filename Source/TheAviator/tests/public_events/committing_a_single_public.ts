@@ -5,6 +5,7 @@ import { Guid } from '@dolittle/rudiments';
 
 import { Streams } from '../shared/Streams';
 import { Scopes } from '../shared/Scopes';
+import { EventObject } from '../shared/EventObject';
 import { EventHandlers } from '../shared/EventHandlers';
 import { a_producer_and_a_consumer } from '../given/a_producer_and_a_consumer';
 import { ScenarioFor, Feature } from '../../gherkin';
@@ -14,7 +15,7 @@ export class committing_a_single_public extends ScenarioFor<a_producer_and_a_con
     for = a_producer_and_a_consumer;
 
     readonly event_source = Guid.parse('1b97a705-7956-4f40-956a-e0044035f33d');
-    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+    readonly event_committed: EventObject = { uniqueIdentifier: Guid.create().toString() };
 
     when_event_is_committed = async () => await this.context?.producer?.commitPublicEvent(this.event_source, this.event_committed);
 

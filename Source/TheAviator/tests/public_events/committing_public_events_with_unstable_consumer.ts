@@ -6,6 +6,7 @@ import asyncTimeout from '../../asyncTimeout';
 import { a_producer_and_a_consumer } from '../given/a_producer_and_a_consumer';
 import { ScenarioFor, Feature } from '../../gherkin';
 import { EventHandlers } from '../shared/EventHandlers';
+import { EventObject } from '../shared/EventObject';
 import { Streams } from '../shared/Streams';
 import { Scopes } from '../shared/Scopes';
 
@@ -14,24 +15,24 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
     for = a_producer_and_a_consumer;
 
     readonly event_source = Guid.parse('05712402-8f91-49f6-ad65-8c49b12c145c');
-    readonly first_two_events: any[] = [
-        { 'uniqueIdentifier': Guid.create().toString() },
-        { 'uniqueIdentifier': Guid.create().toString() }
+    readonly first_two_events: EventObject[] = [
+        { uniqueIdentifier: Guid.create().toString() },
+        { uniqueIdentifier: Guid.create().toString() }
     ];
 
-    readonly second_set_of_events: any[] = [
-        { 'uniqueIdentifier': Guid.create().toString() },
-        { 'uniqueIdentifier': Guid.create().toString() }
+    readonly second_set_of_events: EventObject[] = [
+        { uniqueIdentifier: Guid.create().toString() },
+        { uniqueIdentifier: Guid.create().toString() }
     ];
 
-    readonly third_set_of_events: any[] = [
-        { 'uniqueIdentifier': Guid.create().toString() },
-        { 'uniqueIdentifier': Guid.create().toString() }
+    readonly third_set_of_events: EventObject[] = [
+        { uniqueIdentifier: Guid.create().toString() },
+        { uniqueIdentifier: Guid.create().toString() }
     ];
 
-    readonly forth_set_of_events: any[] = [
-        { 'uniqueIdentifier': Guid.create().toString() },
-        { 'uniqueIdentifier': Guid.create().toString() }
+    readonly forth_set_of_events: EventObject[] = [
+        { uniqueIdentifier: Guid.create().toString() },
+        { uniqueIdentifier: Guid.create().toString() }
     ];
 
     readonly all_events = this.first_two_events.concat(this.second_set_of_events).concat(this.third_set_of_events).concat(this.forth_set_of_events);

@@ -3,6 +3,7 @@
 
 import { Guid } from '@dolittle/rudiments';
 import { EventHandlers } from '../shared/EventHandlers';
+import { EventObject } from '../shared/EventObject';
 import { a_single_microservice } from '../given/a_single_microservice';
 import { Feature, ScenarioFor } from '../../gherkin';
 
@@ -10,7 +11,7 @@ import { Feature, ScenarioFor } from '../../gherkin';
 export class single_aggregate_event_committed extends ScenarioFor<a_single_microservice> {
     readonly eventSource = Guid.create();
     readonly version = 0;
-    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+    readonly event_committed: EventObject = { uniqueIdentifier: Guid.create().toString() };
 
     for = a_single_microservice;
 
