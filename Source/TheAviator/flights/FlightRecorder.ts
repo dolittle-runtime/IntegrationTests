@@ -82,7 +82,7 @@ export class FlightRecorder implements IFlightRecorder {
 
     private getOutputStreamWriterFor(microservice: Microservice, container: IContainer) {
         return (data: Buffer) => {
-            const filtered = data.filter(_ => (_ === 0xa || _ === 0xd) || _ >= 0x20 && (_ < 0x80 || _ >= 0xa0));
+            const filtered = data.filter(_ => (_ === 0xA || _ === 0xD) || _ >= 0x20 && (_ < 0x80 || _ >= 0xA0));
 
             const currentScenarioPath = this._flight.paths.forMicroserviceInScenario(this._currentScenario, microservice);
             const currentContainerPath = path.join(currentScenarioPath, `${container.options.friendlyName}.log`);
