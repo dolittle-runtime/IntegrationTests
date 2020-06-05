@@ -7,11 +7,12 @@ import { EventWithContentShouldBeInStream } from './EventWithContentShouldBeInSt
 import { Microservice } from '../microservices/Microservice';
 
 import { ScenarioRuleSetContainerBuilder } from './ScenarioRuleSetContainerBuilder';
+import { EventObject } from '../tests/shared/EventObject';
 
 export class EventLogRuleSetContainerBuilder extends ScenarioRuleSetContainerBuilder {
     constructor(microservice: Microservice) {
         super(microservice);
     }
 
-    should_contain = (tenantId: Guid, ...events: any[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, 'event-log', events));
+    should_contain = (tenantId: Guid, ...events: EventObject[]) => this.addRuleBuilderFor(new EventWithContentShouldBeInStream(tenantId, 'event-log', ...events));
 }
