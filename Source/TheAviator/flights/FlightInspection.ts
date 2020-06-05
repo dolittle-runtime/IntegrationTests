@@ -4,7 +4,7 @@
 
 import { Flight } from './Flight';
 import { IFlightInspection } from './IFlightInspection';
-import { ISpecificationRunner, ScenarioResult } from '../gherkin';
+import { ISpecificationRunner, ScenarioResult, Scenario, ScenarioEnvironment } from '../gherkin';
 
 export class FlightInspection implements IFlightInspection {
     constructor(private _flight: Flight, private _specificationRunner: ISpecificationRunner) {
@@ -17,20 +17,40 @@ export class FlightInspection implements IFlightInspection {
             await environment.start();
 
             for (const scenario of scenarios) {
-                this._flight.scenario.next(scenario);
-                await scenario.instance.context?.establish(environment);
-
-                const specificationResult = await this._specificationRunner.run(scenario.instance, scenario.specification);
-                const scenarioResult = new ScenarioResult(scenario, specificationResult);
-
-                await this._flight.recorder.resultsFor(scenarioResult);
-                await this._flight.recorder.captureMetricsFor(scenario);
-                await environment.dumpEventStore(scenario);
+                await this.recordScenario(
+                    await this.runScenario(scenario, environment),
+                    scenario,
+                    environment);
+                await this.cleanupAfterScenario(scenario, environment);
             }
 
             await environment.stop();
         }
 
         this._flight.recorder.conclude();
+    }
+
+    private async runScenario(scenario: Scenario, environment: ScenarioEnvironment): Promise<ScenarioResult> {
+        this._flight.scenario.next(scenario);
+        await scenario.instance.context?.establish(environment);
+
+        const specificationResult = await this._specificationRunner.run(scenario.instance, scenario.specification);
+        return new ScenarioResult(scenario, specificationResult);
+    }
+
+    private async recordScenario(scenarioResult: ScenarioResult, scenario: Scenario, environment: ScenarioEnvironment) {
+        await this._flight.recorder.resultsFor(scenarioResult);
+        await this._flight.recorder.captureMetricsFor(scenario);
+        await environment.dumpEventStore(scenario);
+    }
+
+    private async cleanupAfterScenario(scenario: Scenario, environment: ScenarioEnvironment) {
+        await environment.forEachMicroservice(async (microservice) => {
+            await microservice.eventStore.clear();
+        });
+
+        for (const microservice of Object.values(scenario.instance.context?.microservices!)) {
+            await microservice.head.restart();
+        }
     }
 }
