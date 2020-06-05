@@ -15,8 +15,8 @@ import { single_aggregate_event_committed } from './tests/private_aggregate_even
 import { twenty_aggregate_events_committed } from './tests/private_aggregate_events/twenty_aggregate_events_committed';
 import { twenty_aggregate_events_committed_one_after_another } from './tests/private_aggregate_events/twenty_aggregate_events_committed_one_after_another';
 import { committing_a_single_public } from './tests/public_events/committing_a_single_public';
-import { MainProcedure } from './procedures/MainProcedure';
 import { committing_public_events_with_unstable_consumer } from './tests/public_events/committing_public_events_with_unstable_consumer';
+import { MainProcedure } from './procedures/MainProcedure';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
