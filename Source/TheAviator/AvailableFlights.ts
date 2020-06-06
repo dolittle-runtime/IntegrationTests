@@ -10,10 +10,8 @@ import { Aviator } from './Aviator';
 import { committing_a_single_event } from './tests/private_events/comitting_a_single_event';
 import { two_events_with_pause_inbetween_committed } from './tests/private_events/two_events_with_pause_inbetween_committed';
 import { twenty_events_committed } from './tests/private_events/twenty_events_committed';
-import { twenty_events_committed_one_after_another } from './tests/private_events/twenty_events_committed_one_after_another';
 import { single_aggregate_event_committed } from './tests/private_aggregate_events/single_aggregate_event_committed';
 import { twenty_aggregate_events_committed } from './tests/private_aggregate_events/twenty_aggregate_events_committed';
-import { twenty_aggregate_events_committed_one_after_another } from './tests/private_aggregate_events/twenty_aggregate_events_committed_one_after_another';
 import { committing_a_single_public } from './tests/public_events/committing_a_single_public';
 import { committing_public_events_with_unstable_consumer } from './tests/public_events/committing_public_events_with_unstable_consumer';
 import { MainProcedure } from './procedures/MainProcedure';
@@ -37,9 +35,7 @@ export class AvailableFlights {
                 single_aggregate_event_committed,
                 two_events_with_pause_inbetween_committed,
                 twenty_events_committed,
-                twenty_events_committed_one_after_another,
                 twenty_aggregate_events_committed,
-                twenty_aggregate_events_committed_one_after_another,
                 committing_a_single_public,
                 committing_public_events_with_unstable_consumer
             );
