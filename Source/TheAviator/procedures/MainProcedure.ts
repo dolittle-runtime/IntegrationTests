@@ -5,14 +5,15 @@ import { IFlightSimulationProcedure, ScenarioInProcedure, UnexpectedBehaviorInPr
 import { a_producer_and_a_consumer } from '../tests/given/a_producer_and_a_consumer';
 import { ScenarioFor } from '../gherkin';
 import { Guid } from '@dolittle/rudiments';
+import { EventObject } from '../tests/shared/EventObject';
 
 export class committing_single_event extends ScenarioFor<a_producer_and_a_consumer> {
     readonly event_source = Guid.parse('a3a31d32-3526-4742-8e10-ec121ffe2c15');
-    readonly event_committed: any = { 'uniqueIdentifier': Guid.create().toString() };
+    readonly event_committed: EventObject = { uniqueIdentifier: Guid.parse('acdeb008-878a-4d30-b2de-8f0cf7da12e4').toString() };
 
     for = a_producer_and_a_consumer;
 
-    when_event_is_committed = async () => await this.context?.producer?.commitEvent(this.event_source, this.event_committed);
+    when_event_is_committed = async () => await this.context?.producer?.microservice.actions.commitEvents(this.context.tenant, this.event_source, this.event_committed);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, this.event_committed);
 }
