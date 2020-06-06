@@ -11,6 +11,8 @@ import { ScenarioEnvironmentDefinition } from './ScenarioEnvironmentDefinition';
 class no_context extends ScenarioContext {
     async describe(environment: ScenarioEnvironmentDefinition): Promise<void> {
     }
+    async cleanup(): Promise<void> {
+    }
 }
 class no_scenario extends ScenarioFor<no_context> {
     for = no_context;

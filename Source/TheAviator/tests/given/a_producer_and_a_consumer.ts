@@ -19,6 +19,14 @@ export class a_producer_and_a_consumer extends ScenarioContext {
         environment.connectProducerToConsumer('producer', 'consumer');
     }
 
+    async cleanup(): Promise<void> {
+        const restartPromises: Promise<void>[] = [];
+        for (const microservice of Object.values(this.microservices!)) {
+            restartPromises.push(microservice.head.restart(), microservice.runtime.restart());
+        }
+        await Promise.all(restartPromises);
+    }
+
     async establish(environment: ScenarioEnvironment) {
         await super.establish(environment);
         this.producer = this.microservices.producer;

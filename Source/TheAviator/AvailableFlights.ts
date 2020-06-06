@@ -37,7 +37,7 @@ export class AvailableFlights {
                 twenty_events_committed,
                 twenty_aggregate_events_committed,
                 committing_a_single_public,
-                committing_public_events_with_unstable_consumer
+                committing_public_events_with_unstable_consumer,
             );
 
             console.log('\n');

@@ -7,4 +7,6 @@ import { ScenarioEnvironmentDefinition } from '../ScenarioEnvironmentDefinition'
 export class MyContext extends ScenarioContext {
     async describe(environment: ScenarioEnvironmentDefinition): Promise<void> {
     }
+    async cleanup(): Promise<void> {
+    }
 }

@@ -14,6 +14,13 @@ export class a_single_microservice extends ScenarioContext {
     async describe(environment: ScenarioEnvironmentDefinition) {
         environment.withMicroservice('main', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
     }
+    async cleanup(): Promise<void> {
+        const restartPromises: Promise<void>[] = [];
+        for (const microservice of Object.values(this.microservices!)) {
+            restartPromises.push(microservice.head.restart());
+        }
+        await Promise.all(restartPromises);
+    }
 
     get microservice(): MicroserviceInContext | undefined {
         return this.microservices.main;

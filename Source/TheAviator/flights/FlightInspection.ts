@@ -46,11 +46,6 @@ export class FlightInspection implements IFlightInspection {
     private async cleanupAfterScenario(scenario: Scenario, environment: ScenarioEnvironment) {
         this._flight.scenario.next(Scenario.none);
         await environment.forEachMicroservice(microservice => microservice.eventStore.clear());
-
-        const restartPromises: Promise<void>[] = [];
-        for (const microservice of Object.values(scenario.instance.context?.microservices!)) {
-            restartPromises.push(microservice.head.restart());
-        }
-        await Promise.all(restartPromises);
+        await scenario.instance.context?.cleanup();
     }
 }
