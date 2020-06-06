@@ -19,7 +19,7 @@ export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_sin
 
     for = a_single_microservice;
 
-    when_events_are_committed = async () => await this.context?.commitEvent(this.event_source, this.first_event_committed);
+    when_events_are_committed = async () => await this.context?.commitEvents(this.event_source, this.first_event_committed);
 
     and = () => [
         this.pausing_the_head,
@@ -30,7 +30,7 @@ export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_sin
     ]
 
     pausing_the_head = async () => await this.context?.microservice?.head.pause();
-    commit_another_event = async () => await this.context?.commitEvent(this.event_source, this.second_event_committed);
+    commit_another_event = async () => await this.context?.commitEvents(this.event_source, this.second_event_committed);
     resuming_the_head = async () => await this.context?.microservice?.head.resume();
     waiting_for_two_seconds = async () => await asyncTimeout(2000);
 

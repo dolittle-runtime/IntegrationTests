@@ -5,6 +5,7 @@ import { Guid } from '@dolittle/rudiments';
 import { ScenarioEnvironmentDefinition, ScenarioEnvironment, ScenarioContext } from '../../gherkin';
 import { MicroserviceInContext } from '../../gherkin/MicroserviceInContext';
 import { Tenants } from '../shared/Tenants';
+import { EventObject } from '../shared/EventObject';
 
 export class a_producer_and_a_consumer extends ScenarioContext {
     tenant: Guid = Tenants.tenant;
@@ -22,5 +23,9 @@ export class a_producer_and_a_consumer extends ScenarioContext {
         await super.establish(environment);
         this.producer = this.microservices.producer;
         this.consumer = this.microservices.consumer;
+    }
+
+    async commitPublicEvents(eventSource: Guid, ...events: EventObject[]) {
+        await this.producer?.actions.commitPublicEvents(Tenants.tenant, eventSource, ...events);
     }
 }

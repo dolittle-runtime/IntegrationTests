@@ -17,7 +17,7 @@ export class committing_a_single_event extends ScenarioFor<a_single_microservice
 
     for = a_single_microservice;
 
-    when_event_is_committed = async () => await this.context?.commitEvent(this.event_source, this.event_committed);
+    when_event_is_committed = async () => await this.context?.commitEvents(this.event_source, this.event_committed);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
     then_the_event_should_appear_in_the_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, this.event_committed);

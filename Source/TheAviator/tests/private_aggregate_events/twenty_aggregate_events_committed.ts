@@ -25,7 +25,7 @@ export class twenty_aggregate_events_committed extends ScenarioFor<a_single_micr
     for = a_single_microservice;
 
     async when_all_events_are_committed() {
-        await this.context?.commitAggregateEvents(this.eventSource, 0, this._events);
+        await this.context?.commitAggregateEvents(this.eventSource, 0, ...this._events);
     }
 
     then_all_events_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, ...this._events);

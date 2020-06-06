@@ -17,7 +17,7 @@ export class single_aggregate_event_committed extends ScenarioFor<a_single_micro
 
     for = a_single_microservice;
 
-    when_event_is_committed = async () => await this.context?.commitAggregateEvent(this.eventSource, this.version, this.event_committed);
+    when_event_is_committed = async () => await this.context?.commitAggregateEvents(this.eventSource, this.version, this.event_committed);
 
     then_event_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
     then_event_should_be_in_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, this.event_committed);
