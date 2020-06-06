@@ -38,112 +38,74 @@ namespace Head
         }
 
         [HttpPost]
-        [Route("Single/{tenantId}/{eventSource}")]
-        public async Task<IActionResult> Single(string tenantId, string eventSource, [FromBody] MyEvent @event)
+        [Route("{tenantId}/{eventSource}")]
+        public async Task<IActionResult> Event(string tenantId, string eventSource, [FromBody] IEnumerable<MyEvent> events)
         {
             try
             {
                 _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), @event).ConfigureAwait(false);
+                await CommitEvents(
+                    Guid.Parse(tenantId),
+                    Guid.Parse(eventSource),
+                    events).ConfigureAwait(false);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Problem committing event");
+                _logger.Warning(ex, "Problem committing event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
         [HttpPost]
-        [Route("Multiple/{tenantId}/{eventSource}")]
-        public async Task<IActionResult> Multiple(string tenantId, string eventSource, [FromBody] IEnumerable<MyEvent> events)
+        [Route("Public/{tenantId}/{eventSource}")]
+        public async Task<IActionResult> Public(string tenantId, string eventSource, [FromBody] IEnumerable<MyPublicEvent> events)
         {
             try
             {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), events.ToArray()).ConfigureAwait(false);
+                _logger.Information($"Committing public event for tenant with Id '{tenantId}'");
+                await CommitEvents(
+                    Guid.Parse(tenantId),
+                    Guid.Parse(eventSource),
+                    events).ConfigureAwait(false);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Problem committing event");
+                _logger.Warning(ex, "Problem committing public event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
         [HttpPost]
-        [Route("SinglePublic/{tenantId}/{eventSource}")]
-        public async Task<IActionResult> SinglePublic(string tenantId, string eventSource, [FromBody] MyPublicEvent @event)
+        [Route("Aggregate/{tenantId}/{eventSource}/{version}")]
+        public async Task<IActionResult> Aggregate(
+            string tenantId,
+            string eventSource,
+            ulong version,
+            [FromBody] IEnumerable<MyAggregateEvent> events)
         {
             try
             {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), @event).ConfigureAwait(false);
-
+                _logger.Information($"Committing aggregate event for tenant with Id '{tenantId}'");
+                await CommitAggregateEvents(
+                    Guid.Parse(tenantId),
+                    Guid.Parse(eventSource),
+                    typeof(MyAggregate),
+                    version,
+                    events).ConfigureAwait(false);
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Problem committing event");
+                _logger.Warning(ex, "Problem committing aggregate event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
-        [HttpPost]
-        [Route("MultiplePublic/{tenantId}/{eventSource}")]
-        public async Task<IActionResult> MultiplePublic(string tenantId, string eventSource, [FromBody] IEnumerable<MyPublicEvent> events)
-        {
-            try
-            {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), events.ToArray()).ConfigureAwait(false);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Problem committing event");
-                return Problem(ex.Message, tenantId, 500);
-            }
-        }
-
-        [HttpPost]
-        [Route("SingleAggregate/{tenantId}/{eventSource}/{version}")]
-        public async Task<IActionResult> SingleAggregate(string tenantId, string eventSource, ulong version, [FromBody] MyAggregateEvent @event)
-        {
-            try
-            {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitAggregateEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), typeof(MyAggregate), version, @event).ConfigureAwait(false);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Problem committing event");
-                return Problem(ex.Message, tenantId, 500);
-            }
-        }
-
-        [HttpPost]
-        [Route("MultipleAggregate/{tenantId}/{eventSource}/{version}")]
-        public async Task<IActionResult> MultipleAggregate(string tenantId, string eventSource, ulong version, [FromBody] IEnumerable<MyAggregateEvent> events)
-        {
-            try
-            {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitAggregateEvents(Guid.Parse(tenantId), Guid.Parse(eventSource), typeof(MyAggregate), version, events.ToArray()).ConfigureAwait(false);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Problem committing event");
-                return Problem(ex.Message, tenantId, 500);
-            }
-        }
-
-        Task<CommittedEvents> CommitEvents(TenantId tenantId, EventSourceId eventSource, params IEvent[] events)
+        Task<CommittedEvents> CommitEvents(TenantId tenantId, EventSourceId eventSource, IEnumerable<IEvent> events)
         {
             _executionContextManager.CurrentFor(tenantId);
             var eventStore = _eventStore();
@@ -155,7 +117,12 @@ namespace Head
             return eventStore.Commit(uncommittedEvents);
         }
 
-        Task<CommittedAggregateEvents> CommitAggregateEvents(TenantId tenantId, EventSourceId eventSource, Type aggregateRootType, AggregateRootVersion version, params IEvent[] events)
+        Task<CommittedAggregateEvents> CommitAggregateEvents(
+            TenantId tenantId,
+            EventSourceId eventSource,
+            Type aggregateRootType,
+            AggregateRootVersion version,
+            IEnumerable<IEvent> events)
         {
             _executionContextManager.CurrentFor(tenantId);
             var eventStore = _eventStore();
