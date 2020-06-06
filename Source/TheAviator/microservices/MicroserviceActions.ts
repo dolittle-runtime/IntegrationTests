@@ -64,7 +64,7 @@ export class MicroserviceActions implements IMicroserviceActions {
     }
 
     private getUrlForCommittingEvents(tenantId: Guid, eventSource: Guid, publicEvent: boolean): string {
-        return `${this.getHeadBaseUrl()}/api/Events/${publicEvent ? 'Public' : ''}/${tenantId.toString()}/${eventSource.toString()}`;
+        return `${this.getHeadBaseUrl()}/api/Events/${publicEvent ? 'Public/' : ''}${tenantId.toString()}/${eventSource.toString()}`;
     }
 
     private getUrlForCommittingAggregateEvents(tenantId: Guid, eventSource: Guid, version: number): string {
