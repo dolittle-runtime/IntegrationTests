@@ -4,12 +4,10 @@
 import { retry } from 'async';
 
 import { Guid } from '@dolittle/rudiments';
-import { IRule, IRuleContext, Reason } from '@dolittle/rules';
-import { ScenarioWithThenSubject } from './ScenarioWithThenSubject';
-import { StreamProcessorState } from '../eventStores';
-
-const StreamProcessorPositionIsWrong: Reason = Reason.create('e0f79ec4-f059-4581-b03a-827d8be7c680', 'Expected position "{expectedPosition}" for processor "{processor}" got "{actualPosition}"');
-const MissingStreamProcessorState: Reason = Reason.create('8b9ec965-77df-4be0-b173-0ec2976f2e95', 'No stream processor state for processor "{processor}"');
+import { IRule, IRuleContext } from '@dolittle/rules';
+import { ScenarioWithThenSubject } from '../ScenarioWithThenSubject';
+import { StreamProcessorState } from '../../eventStores';
+import { MissingStreamProcessorState, StreamProcessorPositionIsWrong } from './rules';
 
 export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThenSubject> {
     constructor(private _tenantId: Guid, private _eventProcessorId: Guid, private _scopeId: Guid, private _position: number) {

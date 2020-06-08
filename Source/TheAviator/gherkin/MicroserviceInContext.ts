@@ -1,21 +1,13 @@
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Guid } from '@dolittle/rudiments';
-import { Microservice } from '../microservices/Microservice';
-import { Tenants } from '../tests/shared/Tenants';
-import { Artifacts } from '../tests/shared/Artifacts';
-
-import {
-    EventLogRuleSetContainerBuilder,
-    StreamsRuleSetContainerBuilder,
-    StreamProcessorRuleSetContainerBuilder,
-    ScenarioRuleSetContainerBuilder
-} from '../rules';
 
 import { RuleSetContainerEvaluation, BrokenRule } from '@dolittle/rules';
-import { IMicroserviceActions } from '../microservices';
+import { IMicroserviceActions, Microservice } from '../microservices';
 import { IContainer } from '../containers';
+import { StreamProcessorRuleSetContainerBuilder } from '../rules/streamProcessors';
+import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../rules/streams';
+import { ScenarioRuleSetContainerBuilder } from '../rules';
 
 export class MicroserviceInContext {
     readonly microservice: Microservice;

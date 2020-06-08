@@ -5,7 +5,8 @@ import { Guid } from '@dolittle/rudiments';
 import { ScenarioEnvironmentDefinition, ScenarioContext } from '../../gherkin';
 import { Tenants } from '../shared/Tenants';
 import { EventObject } from '../shared/EventObject';
-import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder } from '../../rules';
+import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../../rules/streams';
+import { StreamProcessorRuleSetContainerBuilder } from '../../rules/streamProcessors';
 import { MicroserviceInContext } from '../../gherkin/MicroserviceInContext';
 
 export class a_single_microservice extends ScenarioContext {

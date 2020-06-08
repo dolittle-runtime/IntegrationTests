@@ -49,7 +49,8 @@ export class EventStore implements IEventStore {
                 eventProcessorId,
                 sourceStreamId,
                 Guid.empty,
-                parseInt(result.Position.toString(), 10));
+                parseInt(result.Position.toString(), 10),
+                result.IsFailing);
         } catch (ex) {
             return null;
         }

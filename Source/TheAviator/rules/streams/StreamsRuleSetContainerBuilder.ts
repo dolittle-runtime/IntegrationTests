@@ -4,10 +4,10 @@
 import { Guid } from '@dolittle/rudiments';
 
 import { EventWithContentShouldBeInStream } from './EventWithContentShouldBeInStream';
-import { Microservice } from '../microservices/Microservice';
+import { Microservice } from '../../microservices/Microservice';
 
-import { ScenarioRuleSetContainerBuilder } from './ScenarioRuleSetContainerBuilder';
-import { EventObject } from '../tests/shared/EventObject';
+import { ScenarioRuleSetContainerBuilder } from '../ScenarioRuleSetContainerBuilder';
+import { EventObject } from '../../tests/shared/EventObject';
 
 export class StreamsRuleSetContainerBuilder extends ScenarioRuleSetContainerBuilder {
     constructor(microservice: Microservice) {

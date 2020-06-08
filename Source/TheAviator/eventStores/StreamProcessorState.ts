@@ -4,16 +4,11 @@
 import { Guid } from '@dolittle/rudiments';
 
 export class StreamProcessorState {
-    readonly scopeId: Guid;
-    readonly eventProcessorId: Guid;
-    readonly sourceStreamId: Guid;
-    readonly position: number;
-    readonly failingPartitions: any;
-
-    constructor(eventProcessorId?: Guid, sourceStreamId?: Guid, scopeId?: Guid, position?: number) {
-        this.scopeId = scopeId || Guid.empty;
-        this.eventProcessorId = eventProcessorId || Guid.empty;
-        this.sourceStreamId = sourceStreamId || Guid.empty;
-        this.position = position || 0;
+    constructor(
+        readonly eventProcessorId?: Guid,
+        readonly sourceStreamId?: Guid,
+        readonly scopeId?: Guid,
+        readonly position?: number,
+        readonly isFailing?: boolean) {
     }
 }

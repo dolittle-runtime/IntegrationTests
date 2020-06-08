@@ -3,10 +3,9 @@
 
 import { Guid } from '@dolittle/rudiments';
 
-import { Microservice } from '../microservices/Microservice';
-
+import { Microservice } from '../../microservices/Microservice';
 import { StreamProcessorShouldBeAtPosition } from './StreamProcessorShouldBeAtPosition';
-import { ScenarioRuleSetContainerBuilder } from './ScenarioRuleSetContainerBuilder';
+import { ScenarioRuleSetContainerBuilder } from '../ScenarioRuleSetContainerBuilder';
 
 export class StreamProcessorRuleSetContainerBuilder extends ScenarioRuleSetContainerBuilder {
     constructor(microservice: Microservice) {
