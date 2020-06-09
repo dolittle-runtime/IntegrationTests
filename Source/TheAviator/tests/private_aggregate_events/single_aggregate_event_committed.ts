@@ -20,6 +20,8 @@ export class single_aggregate_event_committed extends ScenarioFor<a_single_micro
     when_event_is_committed = async () => await this.context?.commitAggregateEvents(this.eventSource, this.version, this.event_committed);
 
     then_event_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
-    then_event_should_be_in_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, this.event_committed);
-    then_event_handler_should_have_been_handled = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.aggregateEventHandlerId, 1);
+    then_event_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, this.event_committed);
+    then_event_should_appear_in_the_unpartitioned_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.unpartitionedAggregateEventHandlerId, this.event_committed);
+    then_event_handler_should_have_handled_event = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.aggregateEventHandlerId, 1);
+    then_unpartitioned_event_handler_should_have_handled_event = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.unpartitionedAggregateEventHandlerId, 1);
 }
