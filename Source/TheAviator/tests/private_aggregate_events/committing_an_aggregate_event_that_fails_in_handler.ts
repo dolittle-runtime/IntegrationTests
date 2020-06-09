@@ -22,8 +22,8 @@ export class committing_an_aggregate_event_that_fails_in_handler extends Scenari
     when_event_is_committed = async () => await this.context?.commitAggregateEvents(this.event_source, this.version, this.event_committed);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
-    then_the_event_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, this.event_committed);
-    then_the_event_should_appear_in_the_unpartitioned_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.unpartitionedAggregateEventHandlerId, this.event_committed);
+    then_the_event_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.aggregateEventHandlerId, Guid.empty, this.event_committed);
+    then_the_event_should_appear_in_the_unpartitioned_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.unpartitionedAggregateEventHandlerId, Guid.empty, this.event_committed);
     then_the_event_handler_should_be_in_a_failing_state = () => this.context?.stream_processors?.should_have_failing_event_handler(this.context?.tenant, EventHandlers.aggregateEventHandlerId);
     then_the_unpartitioned_event_handler_should_be_in_a_failing_state = () => this.context?.stream_processors?.should_have_failing_event_handler(this.context?.tenant, EventHandlers.unpartitionedAggregateEventHandlerId);
     then_the_event_handler_should_try_processing_the_next_event = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.aggregateEventHandlerId, 1);

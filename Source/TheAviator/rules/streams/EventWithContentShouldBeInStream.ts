@@ -24,7 +24,6 @@ export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenS
         });
 
         let eventsFound = 0;
-
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 const result = await subject.microservice.eventStore.findEvents(this._tenantId, this._stream, { $or: eventsToLookFor });

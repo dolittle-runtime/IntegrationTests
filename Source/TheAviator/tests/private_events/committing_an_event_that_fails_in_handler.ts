@@ -21,7 +21,7 @@ export class committing_an_event_that_fails_in_handler extends ScenarioFor<a_sin
     when_event_is_committed = async () => await this.context?.commitEvents(this.event_source, this.event_committed);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
-    then_the_event_should_appear_in_the_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, this.event_committed);
+    then_the_event_should_appear_in_the_stream_for_processor = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, Guid.empty, this.event_committed);
     then_the_event_handler_should_be_in_a_failing_state = () => this.context?.stream_processors?.should_have_failing_event_handler(this.context?.tenant, EventHandlers.eventHandlerId);
     then_the_event_handler_stream_processor_try_processing_the_next_event = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.eventHandlerId, 1);
 }

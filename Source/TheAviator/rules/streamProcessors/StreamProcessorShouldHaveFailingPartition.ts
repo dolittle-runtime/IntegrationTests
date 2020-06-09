@@ -35,7 +35,6 @@ export class StreamProcessorShouldHaveFailingPartition implements IRule<Scenario
                     processor: this._eventProcessorId.toString()
                 }));
             } else {
-                console.log(state);
                 context.fail(this, subject, StreamProcessorDoesNotHaveFailingPartition.withArguments({
                     processor: this._eventProcessorId.toString(),
                     partition: this._partitionId

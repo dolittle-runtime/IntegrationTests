@@ -37,8 +37,8 @@ export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_sin
 
     then_first_event_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.first_event_committed);
     then_second_event_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.second_event_committed);
-    then_all_events_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, this.first_event_committed, this.second_event_committed);
-    then_all_events_should_appear_in_the_unpartitioned_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.unpartitionedEventHandlerId, this.first_event_committed, this.second_event_committed);
+    then_all_events_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, Guid.empty, this.first_event_committed, this.second_event_committed);
+    then_all_events_should_appear_in_the_unpartitioned_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.unpartitionedEventHandlerId, Guid.empty, this.first_event_committed, this.second_event_committed);
     then_the_event_handler_should_have_handled_events = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.eventHandlerId, 2);
     then_the_unpartitioned_event_handler_should_have_handled_events = () => this.context?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.unpartitionedEventHandlerId, 2);
 }

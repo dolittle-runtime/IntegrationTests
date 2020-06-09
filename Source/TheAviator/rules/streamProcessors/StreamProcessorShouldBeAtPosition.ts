@@ -30,7 +30,6 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
                     processor: this._eventProcessorId.toString()
                 }));
             } else {
-                console.log(state);
                 context.fail(this, subject, StreamProcessorPositionIsWrong.withArguments({
                     expectedPosition: this._position,
                     actualPosition: state.Position,
