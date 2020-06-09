@@ -3,4 +3,3 @@
 
 export * from './IEventStore';
 export * from './EventStore';
-export * from './StreamProcessorState';

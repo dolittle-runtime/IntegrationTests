@@ -3,11 +3,10 @@
 
 import { FilterQuery } from 'mongodb';
 import { Guid } from '@dolittle/rudiments';
-import { StreamProcessorState } from './StreamProcessorState';
 
 export interface IEventStore {
     findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]>
-    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null>;
+    getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<any>;
     dump(path: string): Promise<string[]>;
     clear(): Promise<void>;
 }
