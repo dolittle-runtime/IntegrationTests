@@ -4,3 +4,4 @@
 export * from './StreamProcessorRuleSetContainerBuilder';
 export * from './StreamProcessorShouldBeAtPosition';
 export * from './StreamProcessorShouldBeFailing';
+export * from './StreamProcessorShouldHaveFailingPartition';

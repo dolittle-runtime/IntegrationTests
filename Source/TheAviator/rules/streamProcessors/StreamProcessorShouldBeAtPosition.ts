@@ -6,7 +6,6 @@ import { retry } from 'async';
 import { Guid } from '@dolittle/rudiments';
 import { IRule, IRuleContext } from '@dolittle/rules';
 import { ScenarioWithThenSubject } from '../ScenarioWithThenSubject';
-import { StreamProcessorState } from '../../eventStores';
 import { MissingStreamProcessorState, StreamProcessorPositionIsWrong } from './rules';
 
 export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThenSubject> {
@@ -14,12 +13,12 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
     }
 
     async evaluate(context: IRuleContext, subject: ScenarioWithThenSubject) {
-        let state: StreamProcessorState | null = new StreamProcessorState(this._eventProcessorId, this._eventProcessorId);
+        let state: any;
 
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 state = await subject.microservice.eventStore.getStreamProcessorState(this._tenantId, this._eventProcessorId, this._scopeId, this._eventProcessorId);
-                if (!state || state.position !== this._position) {
+                if (!state || Number.parseInt(state.Position, 10) !== this._position) {
                     callback(new Error('No state'));
                 } else {
                     callback(null);
@@ -31,9 +30,10 @@ export class StreamProcessorShouldBeAtPosition implements IRule<ScenarioWithThen
                     processor: this._eventProcessorId.toString()
                 }));
             } else {
+                console.log(state);
                 context.fail(this, subject, StreamProcessorPositionIsWrong.withArguments({
                     expectedPosition: this._position,
-                    actualPosition: state.position,
+                    actualPosition: state.Position,
                     processor: this._eventProcessorId.toString()
                 }));
             }
