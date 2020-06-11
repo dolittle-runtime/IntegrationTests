@@ -61,10 +61,7 @@ export class ScenarioEnvironment {
         this.forEachMicroservice(async (microservice) => {
             const microserviceDestinationDirectory = this._flightPaths.forMicroserviceInScenario(scenario, microservice);
             const destinationDirectory = path.join(microserviceDestinationDirectory, eventStoreDumpFolderName);
-            const directoryExists = await fs.promises.exists(destinationDirectory);
-            if (!directoryExists) {
-                await fs.promises.mkdir(destinationDirectory, { recursive: true });
-            }
+            await fs.promises.mkdir(destinationDirectory, { recursive: true });
 
             await microservice.eventStore.dump(destinationDirectory);
         });
