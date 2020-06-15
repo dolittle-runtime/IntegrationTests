@@ -68,16 +68,11 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
         await this.context?.consumer?.head.continue();
     }
 
-    then_all_events_should_be_in_event_log_of_producer_microservice = () =>
-        this.context?.producer?.event_log?.should_contain(this.context?.tenant, ...this.all_events);
-    then_all_events_should_be_in_public_stream_of_producer_microservice = () =>
-        this.context?.producer?.streams?.should_be_in_public_stream(this.context?.tenant, Streams.publicStream, ...this.all_events);
-    then_all_events_should_be_in_external_event_log_of_consumer_microservice = () =>
-        this.context?.consumer?.streams?.should_be_in_external_event_log(this.context?.tenant, Scopes.producerScope, ...this.all_events);
-    then_external_event_handler_should_have_handled_them_all = () =>
-        this.context?.consumer?.stream_processors?.should_have_event_handler_at_position(
-            this.context?.tenant,
-            EventHandlers.publicEventHandlerId,
-            this.all_events.length,
-            Scopes.producerScope);
+    then_all_events_should_be_in_event_log_of_producer_microservice = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, ...this.all_events);
+    then_all_events_should_be_in_public_stream_of_producer_microservice = () => this.context?.producer?.streams?.should_be_in_public_stream(this.context?.tenant, Streams.publicStream, ...this.all_events);
+    then_all_events_should_be_in_external_event_log_of_consumer_microservice = () => this.context?.consumer?.streams?.should_be_in_external_event_log(this.context?.tenant, Scopes.producerScope, ...this.all_events);
+    then_all_events_should_be_in_the_event_handler_stream_of_the_consumer_microservice = () => this.context?.consumer?.streams?.should_contain(this.context.tenant, EventHandlers.publicEventHandlerId, Scopes.producerScope, ...this.all_events);
+    then_all_events_should_be_in_the_unpartitioned_event_handler_stream_of_the_consumer_microservice = () => this.context?.consumer?.streams?.should_contain(this.context.tenant, EventHandlers.unpartitionedPublicEventHandlerId, Scopes.producerScope, ...this.all_events);
+    then_external_event_handler_should_have_handled_all_events = () => this.context?.consumer?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.publicEventHandlerId, this.all_events.length, Scopes.producerScope);
+    then_external_unpartitioned_event_handler_should_have_handled_all_events = () => this.context?.consumer?.stream_processors?.should_have_event_handler_at_position(this.context?.tenant, EventHandlers.unpartitionedPublicEventHandlerId, this.all_events.length, Scopes.producerScope);
 }

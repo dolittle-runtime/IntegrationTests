@@ -5,11 +5,9 @@ import { retry } from 'async';
 import { Guid } from '@dolittle/rudiments';
 import { IRule, IRuleContext, Reason } from '@dolittle/rules';
 
-import { ScenarioWithThenSubject } from './ScenarioWithThenSubject';
-import { EventObject } from '../tests/shared/EventObject';
-
-const EventIsMissing: Reason = Reason.create('ffa82a7b-4dd3-49df-8ab0-08970f7508cc', 'Event is missing');
-const EventsAreMissing: Reason = Reason.create('7198d144-f90c-4089-9035-53558f9d0479', 'Events are missing - looked for {desired}, found {actual}');
+import { ScenarioWithThenSubject } from '../ScenarioWithThenSubject';
+import { EventObject } from '../../tests/shared/EventObject';
+import { EventIsMissing, EventsAreMissing } from './rules';
 
 export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenSubject> {
     private readonly _events: EventObject[];
@@ -26,7 +24,6 @@ export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenS
         });
 
         let eventsFound = 0;
-
         try {
             await retry({ times: 10, interval: 200 }, async (callback, results) => {
                 const result = await subject.microservice.eventStore.findEvents(this._tenantId, this._stream, { $or: eventsToLookFor });

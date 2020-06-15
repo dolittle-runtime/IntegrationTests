@@ -11,7 +11,6 @@ import { Guid } from '@dolittle/rudiments';
 
 import { IEventStore } from './IEventStore';
 import { Microservice } from '../microservices';
-import { StreamProcessorState } from './StreamProcessorState';
 
 export class EventStore implements IEventStore {
     readonly microservice: Microservice;
@@ -24,7 +23,7 @@ export class EventStore implements IEventStore {
         return this.findDocumentsInCollection(tenantId, stream, filter);
     }
 
-    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<StreamProcessorState | null> {
+    async getStreamProcessorState(tenantId: Guid, eventProcessorId: Guid, scopeId: Guid, sourceStreamId: Guid): Promise<any> {
         try {
             const eventStoresForTenants = this.microservice.configuration.eventStoreForTenants.filter(_ => _.tenantId);
             if (eventStoresForTenants.length !== 1) {
@@ -42,16 +41,9 @@ export class EventStore implements IEventStore {
 
             const result = await collection.findOne(query);
             await client.close();
-            if (!result) {
-                return null;
-            }
-            return new StreamProcessorState(
-                eventProcessorId,
-                sourceStreamId,
-                Guid.empty,
-                parseInt(result.Position.toString(), 10));
+            return result;
         } catch (ex) {
-            return null;
+            return undefined;
         }
     }
 
