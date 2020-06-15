@@ -13,8 +13,8 @@ import { twenty_events_committed } from './tests/private_events/twenty_events_co
 import { single_aggregate_event_committed } from './tests/private_aggregate_events/single_aggregate_event_committed';
 import { twenty_aggregate_events_committed } from './tests/private_aggregate_events/twenty_aggregate_events_committed';
 import { committing_a_single_public } from './tests/public_events/committing_a_single_public';
-import { MainProcedure } from './procedures/MainProcedure';
 import { committing_public_events_with_unstable_consumer } from './tests/public_events/committing_public_events_with_unstable_consumer';
+import { MainProcedure } from './procedures/MainProcedure';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -37,7 +37,7 @@ export class AvailableFlights {
                 twenty_events_committed,
                 twenty_aggregate_events_committed,
                 committing_a_single_public,
-                committing_public_events_with_unstable_consumer
+                committing_public_events_with_unstable_consumer,
             );
 
             console.log('\n');

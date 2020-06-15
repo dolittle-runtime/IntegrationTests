@@ -6,16 +6,18 @@ import { ScenarioEnvironment } from './ScenarioEnvironment';
 import { MicroserviceInContext } from './MicroserviceInContext';
 
 export abstract class ScenarioContext {
-    environment: ScenarioEnvironment = ScenarioEnvironment.empty;
-    microservices: { [key: string]: MicroserviceInContext } = {};
+    private _environment: ScenarioEnvironment = ScenarioEnvironment.empty;
+    readonly microservices: { [key: string]: MicroserviceInContext } = {};
 
     abstract async describe(environment: ScenarioEnvironmentDefinition): Promise<void>;
 
+    abstract async cleanup(): Promise<void>;
+
+    get environment() { return this._environment; }
+
     async establish(environment: ScenarioEnvironment): Promise<void> {
-        this.environment = environment;
-        const keys = Object.keys(environment.microservices);
-        for (const microservice of keys) {
-            this.microservices[microservice] = new MicroserviceInContext(environment.microservices[microservice]);
-        }
+        this._environment = environment;
+        Object.entries(environment.microservices)
+            .forEach(([microserviceName, microservice]) => this.microservices[microserviceName] = new MicroserviceInContext(microservice));
     }
 }
