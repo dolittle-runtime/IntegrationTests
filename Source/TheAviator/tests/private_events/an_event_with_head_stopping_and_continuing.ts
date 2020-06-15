@@ -9,7 +9,7 @@ import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
 
 @Feature('Private events')
-export class committing_a_single_event_and_stopping_the_head extends ScenarioFor<a_single_microservice> {
+export class an_event_with_head_stopping_and_continuing extends ScenarioFor<a_single_microservice> {
     readonly event_source = Guid.parse('aa9aaac9-fa3b-442f-a704-7df8fee1ee86');
     readonly event_committed: EventObject = {
         uniqueIdentifier: Guid.create().toString()
