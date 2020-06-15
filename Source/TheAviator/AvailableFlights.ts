@@ -16,6 +16,7 @@ import { committing_a_single_public } from './tests/public_events/committing_a_s
 import { committing_public_events_with_unstable_consumer } from './tests/public_events/committing_public_events_with_unstable_consumer';
 import { committing_an_event_that_fails_in_handler } from './tests/private_events/committing_an_event_that_fails_in_handler';
 import { committing_an_aggregate_event_that_fails_in_handler } from './tests/private_aggregate_events/committing_an_aggregate_event_that_fails_in_handler';
+import { an_aggregate_event_with_head_stopping_and_continuing } from './tests/private_aggregate_events/an_aggregate_event_with_head_stopping_and_continuing';
 import { MainProcedure } from './procedures/MainProcedure';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
@@ -38,6 +39,7 @@ export class AvailableFlights {
                 two_events_with_pause_inbetween_committed,
                 committing_an_event_that_fails_in_handler,
                 committing_an_aggregate_event_that_fails_in_handler,
+                an_aggregate_event_with_head_stopping_and_continuing,
                 twenty_events_committed,
                 twenty_aggregate_events_committed,
                 committing_a_single_public,
