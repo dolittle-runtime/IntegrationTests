@@ -28,7 +28,7 @@ export class two_events_with_pause_inbetween_committed extends ScenarioFor<a_sin
         this.resuming_the_head,
         this.commit_another_event,
         this.waiting_for_two_seconds
-    ]
+    ];
 
     pausing_the_head = async () => await this.context?.microservice?.head.pause();
     commit_another_event = async () => await this.context?.commitEvents(this.event_source, this.second_event_committed);
