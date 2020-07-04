@@ -16,6 +16,11 @@ export class SpecificationRunner implements ISpecificationRunner {
             await given.invoke(scenarioFor);
         }
 
+        specification.when.status.queued();
+        for (const and of specification.ands) {
+            and.status.queued();
+        }
+
         await specification.when.invoke(scenarioFor);
 
         for (const and of specification.ands) {

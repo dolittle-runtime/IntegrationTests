@@ -28,3 +28,4 @@ export * from './SpecificationRunner';
 export * from './Then';
 export * from './ThenIsNotAMethod';
 export * from './ThenResult';
+export * from './RunStatus';
