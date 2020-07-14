@@ -1,8 +1,0 @@
-{
-    {{#each producers}}
-    "{{identifier}}": {
-        "host": "{{runtime.host}}",
-        "port": "{{runtime.publicPort}}"
-    }
-    {{/each}}
-}

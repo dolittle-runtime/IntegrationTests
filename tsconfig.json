@@ -1,0 +1,13 @@
+{
+    "extends": "@dolittle/typescript.config",
+    "compilerOptions": {
+        "target": "ES2016",
+        "module": "CommonJS",
+        "declaration": false,
+        "declarationMap": false,
+        "composite": false,
+        "outDir": "./Distribution"
+    },
+    "include": ["Source/**/*.ts"],
+    "exclude": ["node_modules", "Distribution"]
+}

@@ -1,0 +1,6 @@
+*.d.ts
+node_modules
+Distribution
+wallaby.conf.js
+Coverage
+Media
