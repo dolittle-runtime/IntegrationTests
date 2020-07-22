@@ -14,8 +14,9 @@
         "ci": "yarn build && yarn test:run && yarn test:clean"
     },
     "dependencies": {
-        "@dolittle/aviator": "1.0.0-rc.2",
-        "@dolittle/rudiments": "3.0.0",
+        "@dolittle/aviator": "rc",
+        "@dolittle/rudiments": "3.1.0",
+        "@dolittle/testing.gherkin": "0.2.1",
         "moment": "2.27.0",
         "reflect-metadata": "0.1.13"
     },

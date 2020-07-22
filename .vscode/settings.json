@@ -2,14 +2,19 @@
     "files.exclude": {
         
         "**/jspm_packages": true,
-        "**/node_modules": true,
         "**/.git": true,
         "**/.svn": true,
         "**/.DS_Store": true,
         "**/out": true
     },
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.alwaysShowStatus": true,
     "cSpell.words": [
         "Dockerode",
-        "promisify"
+        "promisify",
+        "Kube"
     ]
 }

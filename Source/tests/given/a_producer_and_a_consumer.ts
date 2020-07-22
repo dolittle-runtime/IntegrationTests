@@ -2,18 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
-import { ScenarioEnvironmentDefinition, ScenarioEnvironment, ScenarioContext } from '@dolittle/aviator/Source/gherkin';
-import { MicroserviceInContext } from '@dolittle/aviator/Source/gherkin/MicroserviceInContext';
-import { Tenants } from '@dolittle/aviator/Source/microservices/shared/Tenants';
-import { EventObject } from '@dolittle/aviator/Source/microservices/shared/EventObject';
+import { MicroserviceScenarioContext, MicroserviceInContext, MicroserviceScenarioEnvironmentDefinition, MicroserviceScenarioEnvironment} from '@dolittle/aviator.gherkin';
+import { shared } from '@dolittle/aviator.microservices';
 
-export class a_producer_and_a_consumer extends ScenarioContext {
-    tenant: Guid = Tenants.tenant;
+export class a_producer_and_a_consumer extends MicroserviceScenarioContext {
+    tenant: Guid = shared.Tenants.tenant;
 
     producer: MicroserviceInContext | undefined;
     consumer: MicroserviceInContext | undefined;
 
-    async describe(environment: ScenarioEnvironmentDefinition) {
+    async describe(environment: MicroserviceScenarioEnvironmentDefinition) {
         environment.withMicroservice('producer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
         environment.withMicroservice('consumer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
         environment.connectProducerToConsumer('producer', 'consumer');
@@ -27,13 +25,13 @@ export class a_producer_and_a_consumer extends ScenarioContext {
         await Promise.all(restartPromises);
     }
 
-    async establish(environment: ScenarioEnvironment) {
+    async establish(environment: MicroserviceScenarioEnvironment) {
         await super.establish(environment);
         this.producer = this.microservices.producer;
         this.consumer = this.microservices.consumer;
     }
 
-    async commitPublicEvents(eventSource: Guid, ...events: EventObject[]) {
-        await this.producer?.actions.commitPublicEvents(Tenants.tenant, eventSource, ...events);
+    async commitPublicEvents(eventSource: Guid, ...events: shared.EventObject[]) {
+        await this.producer?.actions.commitPublicEvents(shared.Tenants.tenant, eventSource, ...events);
     }
 }

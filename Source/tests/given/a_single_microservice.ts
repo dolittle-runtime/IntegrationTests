@@ -2,17 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
-import { ScenarioEnvironmentDefinition, ScenarioContext } from '../../TheAviator/gherkin';
-import { Tenants } from '../shared/Tenants';
-import { EventObject } from '../shared/EventObject';
-import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../../rules/streams';
-import { StreamProcessorRuleSetContainerBuilder } from '../../rules/streamProcessors';
-import { MicroserviceInContext } from '../../TheAviator/gherkin/MicroserviceInContext';
+import { MicroserviceScenarioContext, MicroserviceInContext, MicroserviceScenarioEnvironmentDefinition, MicroserviceScenarioEnvironment} from '@dolittle/aviator.gherkin';
+import { StreamsRuleSetContainerBuilder, StreamProcessorRuleSetContainerBuilder, EventLogRuleSetContainerBuilder } from '@dolittle/aviator.rules';
+import { shared } from '@dolittle/aviator.microservices';
 
-export class a_single_microservice extends ScenarioContext {
-    tenant = Tenants.tenant;
+export class a_single_microservice extends MicroserviceScenarioContext {
+    tenant = shared.Tenants.tenant;
 
-    async describe(environment: ScenarioEnvironmentDefinition) {
+    async describe(environment: MicroserviceScenarioEnvironmentDefinition) {
         environment.withMicroservice('main', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
     }
     async cleanup(): Promise<void> {
@@ -27,12 +24,12 @@ export class a_single_microservice extends ScenarioContext {
         return this.microservices.main;
     }
 
-    async commitEvents(eventSource: Guid, ...events: EventObject[]) {
-        await this.microservice?.actions.commitEvents(Tenants.tenant, eventSource, ...events);
+    async commitEvents(eventSource: Guid, ...events: shared.EventObject[]) {
+        await this.microservice?.actions.commitEvents(shared.Tenants.tenant, eventSource, ...events);
     }
 
-    async commitAggregateEvents(eventSource: Guid, version: number, ...events: EventObject[]) {
-        await this.microservice?.actions.commitAggregateEvents(Tenants.tenant, eventSource, version, ...events);
+    async commitAggregateEvents(eventSource: Guid, version: number, ...events: shared.EventObject[]) {
+        await this.microservice?.actions.commitAggregateEvents(shared.Tenants.tenant, eventSource, version, ...events);
     }
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {
