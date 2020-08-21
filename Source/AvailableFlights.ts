@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Aviator } from '@dolittle/aviator';
+import { Platforms } from '@dolittle/aviator.microservices';
 
 import { committing_a_single_event } from './tests/private_events/committing_a_single_event';
 import { two_events_with_pause_inbetween_committed } from './tests/private_events/two_events_with_pause_inbetween_committed';
@@ -30,8 +31,7 @@ export class AvailableFlights {
         try {
             console.log('Running pre-flight checklist');
             console.log('\n');
-
-            const aviator = Aviator.getFor('dotnet');
+            const aviator = Aviator.getFor(Platforms.forDotnet());
             const flight = await aviator.performPreflightChecklist(
                 committing_a_single_event,
                 single_aggregate_event_committed,
