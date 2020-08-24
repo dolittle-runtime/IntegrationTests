@@ -1,0 +1,7 @@
+{
+    "dotnet": {
+        "runtime": "dolittle/runtime:5.0.1",
+        "head": "dolittle/integrationtests-head-dotnet:5.0.0-rc.3",
+        "mongo": "dolittle/mongodb:4.2.2"
+    }
+}

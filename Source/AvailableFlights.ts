@@ -18,6 +18,7 @@ import { committing_an_event_that_fails_in_handler } from './tests/private_event
 import { committing_an_aggregate_event_that_fails_in_handler } from './tests/private_aggregate_events/committing_an_aggregate_event_that_fails_in_handler';
 import { an_aggregate_event_with_head_stopping_and_continuing } from './tests/private_aggregate_events/an_aggregate_event_with_head_stopping_and_continuing';
 import { an_event_with_head_stopping_and_continuing } from './tests/private_events/an_event_with_head_stopping_and_continuing';
+import { Context } from './Context';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -27,11 +28,11 @@ const getOutputsDirectory = () => {
 
 export class AvailableFlights {
 
-    static async main() {
+    static async main(context: Context) {
         try {
             console.log('Running pre-flight checklist');
             console.log('\n');
-            const aviator = Aviator.getFor(Platforms.forDotnet());
+            const aviator = Aviator.getFor(Platforms.forDotnet(), { namespace: context.namespace });
             const flight = await aviator.performPreflightChecklist(
                 committing_a_single_event,
                 single_aggregate_event_committed,
