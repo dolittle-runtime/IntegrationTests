@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Aviator } from '@dolittle/aviator';
-import { Platforms } from '@dolittle/aviator.microservices';
+import { Infrastructures } from '@dolittle/aviator.microservices';
 
 import { committing_a_single_event } from './tests/private_events/committing_a_single_event';
 import { two_events_with_pause_inbetween_committed } from './tests/private_events/two_events_with_pause_inbetween_committed';
@@ -18,7 +18,8 @@ import { committing_an_event_that_fails_in_handler } from './tests/private_event
 import { committing_an_aggregate_event_that_fails_in_handler } from './tests/private_aggregate_events/committing_an_aggregate_event_that_fails_in_handler';
 import { an_aggregate_event_with_head_stopping_and_continuing } from './tests/private_aggregate_events/an_aggregate_event_with_head_stopping_and_continuing';
 import { an_event_with_head_stopping_and_continuing } from './tests/private_events/an_event_with_head_stopping_and_continuing';
-import { Context } from './Context';
+import { AviatorConfigurationProvider } from './AviatorConfigurationProvider';
+import { InfrastructuresConfigurationProvider } from './InfrastructuresConfigurationProvider';
 
 const isDirectory = (source: string) => fs.lstatSync(source).isDirectory();
 const getDirectories = (source: string) => fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
@@ -28,11 +29,15 @@ const getOutputsDirectory = () => {
 
 export class AvailableFlights {
 
-    static async main(context: Context) {
+    static async main() {
         try {
+            const aviatorConfigProvider = new AviatorConfigurationProvider();
+            const infrastructuresConfigProvider = new InfrastructuresConfigurationProvider();
+            const aviatorConfig = aviatorConfigProvider.provide();
+            const infrastructures = Infrastructures.loadFrom(infrastructuresConfigProvider.provide());
+            const aviator = Aviator.getFor(infrastructures.getFor('dotnet'), aviatorConfig);
             console.log('Running pre-flight checklist');
             console.log('\n');
-            const aviator = Aviator.getFor(Platforms.forDotnet(), { namespace: context.namespace });
             const flight = await aviator.performPreflightChecklist(
                 committing_a_single_event,
                 single_aggregate_event_committed,
