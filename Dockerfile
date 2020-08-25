@@ -2,7 +2,7 @@ FROM node:12-alpine as build
 
 WORKDIR /app
 
-COPY tsconfig.json .eslint* ./
+COPY package.json tsconfig.json .eslint* ./
 COPY aviator.json infrastructures.json ./
 COPY Source Source/
 
