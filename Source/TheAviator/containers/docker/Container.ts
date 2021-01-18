@@ -167,10 +167,10 @@ export class Container implements IContainer {
         options.Cmd = command;
 
         const exec = await this._container.exec(options);
-        const result = await exec.start();
+        const result = await exec.start({});
 
         if (inputStream) {
-            inputStream.pipeTo(result);
+            inputStream.pipeTo(result as any);
         }
 
         if (outputStream) {

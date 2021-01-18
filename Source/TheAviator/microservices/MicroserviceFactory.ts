@@ -48,7 +48,7 @@ export class MicroserviceFactory implements IMicroserviceFactory {
             'runtime',
             configuration.runtime.host,
             'dolittle/runtime',
-            '5.0.0-rc.2',
+            '5.3.0-turbo.6',
             [81, 9700, 50052, 50053],
             configuration.networkName,
             this._configurationManager.generateForRuntime(configuration, workingDirectory)
