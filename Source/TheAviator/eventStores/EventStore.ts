@@ -58,6 +58,7 @@ export class EventStore implements IEventStore {
                 'mongodump',
                 '--quiet',
                 '--archive',
+                '--gzip',
                 '-d',
                 eventStoreForTenant.database
             ], undefined, targetStream,
