@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dolittle.SDK" Version="5.0.0-rc.*"/>
-    <PackageReference Include="Dolittle.Fundamentals" Version="5.0.0-rc.*"/>
+    <PackageReference Include="Dolittle.SDK" Version="8.*"/>
     
   </ItemGroup>
 
