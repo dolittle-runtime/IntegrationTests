@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { MongoClient, FilterQuery, Decimal128 } from 'mongodb';
+import { MongoClient, FilterQuery, ReadPreference, MongoClientOptions } from 'mongodb';
 import MUUID from 'uuid-mongodb';
 
 import { Guid } from '@dolittle/rudiments';
@@ -14,9 +14,18 @@ import { Microservice } from '../microservices';
 
 export class EventStore implements IEventStore {
     readonly microservice: Microservice;
+    readonly _url: string;
+    readonly _options: MongoClientOptions;
 
     constructor(microservice: Microservice) {
         this.microservice = microservice;
+        this._url = `mongodb://localhost:${this.microservice.eventStoreStorage.boundPorts.get(27017)}`;
+        this._options = {
+            // useUnifiedTopology: true,
+            useNewUrlParser: true,
+            readPreference: ReadPreference.PRIMARY,
+            ssl: false,
+        };
     }
 
     async findEvents(tenantId: Guid, stream: string, filter: FilterQuery<any>): Promise<any[]> {
@@ -50,7 +59,7 @@ export class EventStore implements IEventStore {
     async dump(destination: string): Promise<string[]> {
         const backups: string[] = [];
         for (const eventStoreForTenant of this.microservice.configuration.eventStoreForTenants) {
-            const destinationFile = path.join(destination, `backup-for-tenant-${eventStoreForTenant.tenantId}`);
+            const destinationFile = path.join(destination, `backup-for-tenant-${eventStoreForTenant.tenantId}.gz`);
             backups.push(destinationFile);
             const targetStream = fs.createWriteStream(destinationFile) as any as WritableStream;
 
@@ -89,21 +98,20 @@ export class EventStore implements IEventStore {
             if (eventStoresForTenants.length !== 1) {
                 return [];
             }
-
             const client = await this.getMongoClient();
             const collection = client.db(eventStoresForTenants[0].database).collection(collectionName);
             const result = await collection.find(filter).toArray();
+            // const result = await collection.find().toArray();
             await client.close();
             return result;
         }
         catch (ex) {
+            console.error(ex);
             return [];
         }
     }
 
     private async getMongoClient() {
-        const url = `mongodb://localhost:${this.microservice.eventStoreStorage.boundPorts.get(27017)}`;
-        const client = await MongoClient.connect(url, { useUnifiedTopology: true });
-        return client;
+        return await MongoClient.connect(this._url, this._options);
     }
 }

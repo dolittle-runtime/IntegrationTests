@@ -20,7 +20,7 @@ export class EventWithContentShouldBeInStream implements IRule<ScenarioWithThenS
 
     async evaluate(context: IRuleContext, subject: ScenarioWithThenSubject) {
         const eventsToLookFor: any[] = this._events.map(_ => {
-            return { 'Content.uniqueIdentifier': _.uniqueIdentifier };
+            return { 'Content.UniqueIdentifier': _.uniqueIdentifier };
         });
 
         let eventsFound = 0;
