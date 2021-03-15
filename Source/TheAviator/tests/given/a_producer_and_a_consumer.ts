@@ -17,7 +17,7 @@ export class a_producer_and_a_consumer extends ScenarioContext {
 
     async describe(environment: ScenarioEnvironmentDefinition) {
         environment.withMicroservice('producer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
-        environment.withMicroservice('consumer', [Guid.parse('8d9ef33f-5999-4539-a834-1b0a521a5524')]);
+        environment.withMicroservice('consumer', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
         environment.connectProducerToConsumer('producer', 'consumer');
     }
 
@@ -37,17 +37,20 @@ export class a_producer_and_a_consumer extends ScenarioContext {
             this.producer.actions.head.startClient(),
             this.consumer.actions.head.startClient()
         ]);
-        await this.consumer.actions.head.subscribeToEventHorizon({
-                consumerTenant: this.tenant.toString(),
-                producerMicroservice: this.producer.microservice.configuration.identifier,
-                producerTenant: this.tenant.toString(),
-                producerStream: Streams.publicStream.toString(),
-                producerPartition: Guid.empty.toString(),
-                consumerScope: Scopes.producerScope.toString()
-        });
+        await this.subscribeToEventHorizon();
     }
 
     async commitPublicEvents(eventSource: Guid, ...events: EventObject[]) {
         await this.producer?.actions.head.commitPublicEvents(this.tenant, eventSource, ...events);
+    }
+    async subscribeToEventHorizon() {
+        await this.consumer?.actions.head.subscribeToEventHorizon({
+            consumerTenant: this.tenant.toString(),
+            producerMicroservice: this.producer?.microservice.configuration.identifier!,
+            producerTenant: this.tenant.toString(),
+            producerStream: Streams.publicStream.toString(),
+            producerPartition: Guid.empty.toString(),
+            consumerScope: Scopes.producerScope.toString()
+    });
     }
 }

@@ -59,7 +59,7 @@ export class EventStore implements IEventStore {
     async dump(destination: string): Promise<string[]> {
         const backups: string[] = [];
         for (const eventStoreForTenant of this.microservice.configuration.eventStoreForTenants) {
-            const destinationFile = path.join(destination, `backup-for-tenant-${eventStoreForTenant.tenantId}.gz`);
+            const destinationFile = path.join(destination, `backup-for-tenant-${eventStoreForTenant.tenantId}`);
             backups.push(destinationFile);
             const targetStream = fs.createWriteStream(destinationFile) as any as WritableStream;
 
@@ -67,7 +67,6 @@ export class EventStore implements IEventStore {
                 'mongodump',
                 '--quiet',
                 '--archive',
-                '--gzip',
                 '-d',
                 eventStoreForTenant.database
             ], undefined, targetStream,

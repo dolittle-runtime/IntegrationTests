@@ -8,6 +8,8 @@ import { Tenant } from './Tenant';
 import { EventHorizonTenantConsentConfiguration } from './EventHorizonTenantConsentConfiguration';
 import { EventHorizonConfiguration } from './EventHorizonConfiguration';
 import { MicroserviceDefinition } from '../MicroserviceDefinition';
+import { Scopes } from '../../tests/shared/Scopes';
+import { Streams } from '../../tests/shared/Streams';
 
 
 export class MicroserviceConfiguration {
@@ -54,7 +56,7 @@ export class MicroserviceConfiguration {
         producer.addConsumer(this);
 
         for (const tenant of this.tenants) {
-            this.eventHorizons.push(new EventHorizonConfiguration(tenant.tenantId, tenant.tenantId, producer.identifier, 'de594e7b-d160-44e4-9901-ae84fc70424a', '82f35eaa-8317-4c8b-9bd6-f16c212fda96'));
+            this.eventHorizons.push(new EventHorizonConfiguration(tenant.tenantId, tenant.tenantId, producer.identifier, Scopes.producerScope.toString(), Streams.publicStream.toString()));
         }
     }
 
@@ -62,7 +64,7 @@ export class MicroserviceConfiguration {
         this.consumers.push(consumer);
 
         for (const tenant of this.tenants) {
-            this.consents.push(new EventHorizonTenantConsentConfiguration(tenant.tenantId, tenant.tenantId, consumer.identifier, '82f35eaa-8317-4c8b-9bd6-f16c212fda96'));
+            this.consents.push(new EventHorizonTenantConsentConfiguration(tenant.tenantId, tenant.tenantId, consumer.identifier, Streams.publicStream.toString()));
         }
     }
 

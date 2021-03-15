@@ -42,14 +42,27 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
     and = () => [
         this.waiting_for_two_seconds,
         this.stopping_consumer,
-        this.waiting_for_a_minute,
+        // this.waiting_for_a_minute,
+        this.waiting_for_two_seconds,
         this.committing_second_set_of_events,
         this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
         this.continuing_consumer,
-        this.waiting_for_a_minute,
+        // this.waiting_for_a_minute,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
         this.committing_third_set_of_events,
         this.waiting_for_two_seconds,
-        this.committing_forth_set_of_events
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.committing_forth_set_of_events,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds,
+        this.waiting_for_two_seconds
     ]
 
     committing_second_set_of_events = async () => await this.context?.commitPublicEvents(this.event_source, ...this.second_set_of_events);
@@ -66,6 +79,8 @@ export class committing_public_events_with_unstable_consumer extends ScenarioFor
     {
         await this.context?.consumer?.runtime.continue();
         await this.context?.consumer?.head.continue();
+        await this.context?.consumer?.actions.head.startClient();
+        await this.context?.subscribeToEventHorizon();
     }
 
     then_all_events_should_be_in_event_log_of_producer_microservice = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, ...this.all_events);
