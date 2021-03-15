@@ -13,7 +13,7 @@ export class committing_single_event extends ScenarioFor<a_producer_and_a_consum
 
     for = a_producer_and_a_consumer;
 
-    when_event_is_committed = async () => await this.context?.producer?.microservice.actions.commitEvents(this.context.tenant, this.event_source, this.event_committed);
+    when_event_is_committed = async () => await this.context?.producer?.microservice.actions.head.commitEvents(this.context.tenant, this.event_source, this.event_committed);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.producer?.event_log?.should_contain(this.context?.tenant, this.event_committed);
 }

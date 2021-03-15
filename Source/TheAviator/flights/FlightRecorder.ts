@@ -67,8 +67,9 @@ export class FlightRecorder implements IFlightRecorder {
         scenario.environment.forEachMicroservice(async microservice => {
             const currentScenarioPath = this._flight.paths.forMicroserviceInScenario(scenario, microservice);
             const metricsFilePath = path.join(currentScenarioPath, 'metrics.txt');
-            const metrics = await microservice.actions.getRuntimeMetrics();
-            fs.writeFileSync(metricsFilePath, metrics);
+            // TODO: Use this when we have Runtime-metrics again 
+            // const metrics = await microservice.actions.getRuntimeMetrics();
+            // fs.writeFileSync(metricsFilePath, metrics);
         });
     }
 

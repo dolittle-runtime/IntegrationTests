@@ -5,7 +5,6 @@ import { MicroserviceConfiguration } from '..';
 import { Mount } from '../../containers';
 
 export interface IConfigurationManager {
-    generateForHead(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[];
     generateForRuntime(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[];
 }
 

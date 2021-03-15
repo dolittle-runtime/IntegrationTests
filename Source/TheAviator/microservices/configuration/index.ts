@@ -3,7 +3,6 @@
 
 export * from './ConfigurationManager';
 export * from './EventStoreTenantConfiguration';
-export * from './HeadConfiguration';
 export * from './IConfigurationManager';
 export * from './RuntimeConfiguration';
 export * from './Tenant';

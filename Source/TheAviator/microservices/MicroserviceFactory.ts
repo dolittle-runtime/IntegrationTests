@@ -9,7 +9,6 @@ import { Microservice } from './Microservice';
 import { IMicroserviceFactory } from './IMicroserviceFactory';
 import { MicroserviceConfiguration } from './configuration/MicroserviceConfiguration';
 import { IConfigurationManager } from './configuration/IConfigurationManager';
-import { MicroserviceDefinition } from './MicroserviceDefinition';
 
 export class MicroserviceFactory implements IMicroserviceFactory {
 
@@ -36,13 +35,11 @@ export class MicroserviceFactory implements IMicroserviceFactory {
 
         const head = await this.configureContainer(
             'head',
-            configuration.head.host,
+            configuration.headHost,
             `dolittle/integrationtests-head-${configuration.platform}`,
             '5.0.1',
             [5000],
-            configuration.networkName,
-            this._configurationManager.generateForHead(configuration, workingDirectory)
-        );
+            configuration.networkName);
 
         const runtime = await this.configureContainer(
             'runtime',

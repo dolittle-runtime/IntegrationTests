@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@dolittle/rudiments';
-import { ScenarioEnvironmentDefinition, ScenarioContext } from '../../gherkin';
+import { ScenarioEnvironmentDefinition, ScenarioContext, ScenarioEnvironment } from '../../gherkin';
 import { Tenants } from '../shared/Tenants';
 import { EventObject } from '../shared/EventObject';
 import { EventLogRuleSetContainerBuilder, StreamsRuleSetContainerBuilder } from '../../rules/streams';
@@ -15,6 +15,12 @@ export class a_single_microservice extends ScenarioContext {
     async describe(environment: ScenarioEnvironmentDefinition) {
         environment.withMicroservice('main', [Guid.parse('f79fcfc9-c855-4910-b445-1f167e814bfd')]);
     }
+
+    async establish(environment: ScenarioEnvironment) {
+        await super.establish(environment);
+        await this.microservice?.actions.head.startClient();
+    }
+
     async cleanup(): Promise<void> {
         const restartPromises: Promise<void>[] = [];
         for (const microservice of Object.values(this.microservices!)) {
@@ -28,11 +34,11 @@ export class a_single_microservice extends ScenarioContext {
     }
 
     async commitEvents(eventSource: Guid, ...events: EventObject[]) {
-        await this.microservice?.actions.commitEvents(Tenants.tenant, eventSource, ...events);
+        await this.microservice?.actions.head.commitEvents(Tenants.tenant, eventSource, ...events);
     }
 
     async commitAggregateEvents(eventSource: Guid, version: number, ...events: EventObject[]) {
-        await this.microservice?.actions.commitAggregateEvents(Tenants.tenant, eventSource, version, ...events);
+        await this.microservice?.actions.head.commitAggregateEvents(Tenants.tenant, eventSource, version, ...events);
     }
 
     get event_log(): EventLogRuleSetContainerBuilder | undefined {

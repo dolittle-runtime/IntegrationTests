@@ -10,14 +10,10 @@ import { MicroserviceConfiguration } from '..';
 import { IConfigurationManager } from './IConfigurationManager';
 import { Mount } from '../../containers';
 
-const HeadConfig = 'head';
 const RuntimeConfig = 'runtime';
 
 export class ConfigurationManager implements IConfigurationManager {
-    generateForHead(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[] {
-        return this.generateFiles(configuration, HeadConfig, workingDirectory);
-    }
-
+    
     generateForRuntime(configuration: MicroserviceConfiguration, workingDirectory: string): Mount[] {
         return this.generateFiles(configuration, RuntimeConfig, workingDirectory);
     }

@@ -7,6 +7,8 @@ import { IMicroserviceActions } from './IMicroserviceActions';
 import { MicroserviceActions } from './MicroserviceActions';
 import { MicroserviceConfiguration } from './configuration/MicroserviceConfiguration';
 import { IEventStore, EventStore } from '../eventStores';
+import { RuntimeActions } from './runtime/RuntimeActions';
+import { HeadActions } from './head/HeadActions';
 
 export class Microservice {
     readonly configuration: MicroserviceConfiguration;
@@ -24,10 +26,11 @@ export class Microservice {
         eventStoreStorage: IContainer) {
 
         this.configuration = configuration;
+    
         this.head = head;
         this.runtime = runtime;
         this.eventStoreStorage = eventStoreStorage;
-        this.actions = new MicroserviceActions(this);
+        this.actions = new MicroserviceActions(new RuntimeActions(this), new HeadActions(this));
         this.eventStore = new EventStore(this);
     }
 
