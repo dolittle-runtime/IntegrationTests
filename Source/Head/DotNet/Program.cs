@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +18,9 @@ namespace Head
 
         static IHostBuilder CreateHostBuilder(string[] args)
         {
+            var appConfig = new ConfigurationBuilder()
+                                    .AddJsonFile("appsettings.json")
+                                    .Build();
             return Host.CreateDefaultBuilder(args)
                 .UseEnvironment("Development")
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -24,7 +28,11 @@ namespace Head
                     webBuilder
                         .UseUrls("http://*:5000")
                         .UseKestrel()
-                        .UseStartup(context => new Startup(LoggerFactory.Create(_ => _.AddConsole())));
+                        .UseStartup(context => new Startup(LoggerFactory.Create(_ =>
+                        {
+                            _.AddConsole();
+                            _.AddConfiguration(appConfig);
+                        })));
                 });
         }
     }

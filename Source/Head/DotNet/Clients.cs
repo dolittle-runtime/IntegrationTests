@@ -75,7 +75,9 @@ namespace Head
         }
 
         Client BuildClient()
-            => Client
+        {
+            Console.WriteLine($"Building Client from {Id}");
+            return Client
                 .ForMicroservice(Id.Microservice)
                 .WithCancellation(_cts.Token)
                 .WithRuntimeOn(Id.RuntimeHost, Id.RuntimePort)
@@ -92,6 +94,7 @@ namespace Head
                         });
                     }))
                 .Build();
+        }
     }
     public interface IClients
     {
@@ -117,6 +120,7 @@ namespace Head
         public bool RemoveAndStop(ClientId id)
         {
             _clients.TryGetValue(id, out var client);
+            client.Stop();
             client.Dispose();
             return _clients.Remove(id);
         }

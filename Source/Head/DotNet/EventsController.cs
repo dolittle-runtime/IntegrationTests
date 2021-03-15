@@ -1,16 +1,11 @@
-using System.Threading;
+
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Dolittle.SDK;
-using Dolittle.SDK.Events;
-using Dolittle.SDK.Events.Filters;
-using Dolittle.SDK.Events.Store;
 using Dolittle.SDK.Microservices;
-using Dolittle.SDK.Tenancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -42,12 +37,13 @@ namespace Head
             try
             {
                 _logger.LogInformation($"Committing events for tenant with Id '{tenantId}'");
-                await client.EventStore
+                var committed = await client.EventStore
                     .ForTenant(tenantId)
                     .Commit(_ =>
                     {
                         foreach (var evt in events) _.CreateEvent(evt).FromEventSource(eventSource);
                     }).ConfigureAwait(false);
+                foreach (var evt in committed) Console.WriteLine($"Committed event {evt.Content}");
                 return Ok();
             }
             catch (Exception ex)
@@ -65,12 +61,13 @@ namespace Head
             try
             {
                 _logger.LogInformation($"Committing public events for tenant with Id '{tenantId}'");
-                await client.EventStore
+                var committed = await client.EventStore
                     .ForTenant(tenantId)
                     .Commit(_ =>
                     {
                         foreach (var evt in events) _.CreatePublicEvent(evt).FromEventSource(eventSource);
                     }).ConfigureAwait(false);
+                foreach (var evt in committed) Console.WriteLine($"Committed event {evt.Content}");
 
                 return Ok();
             }
@@ -102,7 +99,7 @@ namespace Head
                 //     {
                 //         foreach (var evt in events) _.Apply(evt);
                 //     }).ConfigureAwait(false);
-                await client.EventStore
+                var committed = await client.EventStore
                     .ForTenant(tenantId)
                     .ForAggregate("b2f756c2-b4bb-4546-8cb3-33a4eaa2bbda")
                     .WithEventSource(eventSource)
@@ -111,6 +108,8 @@ namespace Head
                     {
                         foreach (var evt in events) _.CreateEvent(evt);
                     }).ConfigureAwait(false);
+                
+                foreach (var evt in committed) Console.WriteLine($"Committed event {evt.Content}");
 
                 return Ok();
             }
