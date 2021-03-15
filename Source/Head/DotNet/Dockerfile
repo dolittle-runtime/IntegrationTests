@@ -1,14 +1,14 @@
 # DotNet Build
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS dotnet-build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS dotnet-build
 WORKDIR /app
 
 COPY . ./
 
-RUN dotnet restore
-RUN dotnet publish -c DEBUG -o out
+RUN dotnet restore Head.csproj
+RUN dotnet publish Head.csproj -c DEBUG -o out
 
 # Runtime Image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as base
 
 ARG CONFIGURATION=Release
 
@@ -22,7 +22,6 @@ RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg
 
 WORKDIR /app
 COPY --from=dotnet-build /app//out ./
-COPY --from=dotnet-build /app/.dolittle ./.dolittle
 
 EXPOSE 5000
 

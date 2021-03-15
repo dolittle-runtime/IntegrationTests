@@ -20,6 +20,7 @@ namespace Head
 
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddSingleton<IClients>(new Clients(_loggerFactory));
             services.AddSingleton<IEventProcessorTrackers>(new EventProcessorTrackers());
             services.AddControllers()

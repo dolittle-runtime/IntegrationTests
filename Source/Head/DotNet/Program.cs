@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Head
 {
@@ -23,7 +24,7 @@ namespace Head
                     webBuilder
                         .UseUrls("http://*:5000")
                         .UseKestrel()
-                        .UseStartup<Startup>();
+                        .UseStartup(context => new Startup(LoggerFactory.Create(_ => _.AddConsole())));
                 });
         }
     }

@@ -1,16 +1,8 @@
-using System.Threading;
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Dolittle.SDK;
-using Dolittle.SDK.Events;
-using Dolittle.SDK.Events.Filters;
-using Dolittle.SDK.Events.Store;
-using Dolittle.SDK.Microservices;
-using Dolittle.SDK.Tenancy;
+using Dolittle.SDK.EventHorizon;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -45,11 +37,40 @@ namespace Head
 
         [HttpPost]
         [Route("Stop/{runtimeHost}/{runtimePort}/{microserviceId}")]
-        public IActionResult StopClient(string runtimeHost, ushort runtimePort, string microserviceId, string tenantId, string eventSource, [FromBody] PublicEvent[] events)
+        public IActionResult StopClient(string runtimeHost, ushort runtimePort, string microserviceId)
         {
             _logger.LogInformation("Stopping client");
             _clients.RemoveAndStop(new ClientId(microserviceId, runtimeHost, runtimePort));
             return Ok();
         }
+
+
+        [HttpPost]
+        [Route("Subscribe/{runtimeHost}/{runtimePort}/{microserviceId}")]
+        public IActionResult SubscribeToEventHorizon(string runtimeHost, ushort runtimePort, string microserviceId, [FromBody]SubscriptionRequestBody body)
+        {
+            _logger.LogInformation("Subscribing to event horizon");
+            var clientId = new ClientId(microserviceId, runtimeHost, runtimePort);
+            if (_clients.TryGetDolittleClient(clientId, out var client))
+            {
+                client.EventHorizons.Subscribe(new Subscription(
+                    body.ConsumerTenant,
+                    body.ProducerMicroservice,
+                    body.ProducerTenant,
+                    body.ProducerStream,
+                    body.ProducerPartition,
+                    body.ConsumerScope));
+                return Ok();
+            }
+            throw new Exception($"Client {clientId} does not exist");
+        }
+
+        public record SubscriptionRequestBody(
+            Guid ConsumerTenant,
+            Guid ProducerMicroservice,
+            Guid ProducerTenant,
+            Guid ProducerStream,
+            Guid ProducerPartition,
+            Guid ConsumerScope);
     }
 }
