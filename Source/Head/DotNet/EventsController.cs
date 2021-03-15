@@ -1,137 +1,131 @@
+using System.Threading;
 // Copyright (c) Dolittle. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dolittle.DependencyInversion;
-using Dolittle.Events;
-using Dolittle.Execution;
-using Dolittle.Logging;
-using Dolittle.Tenancy;
+using Dolittle.SDK;
+using Dolittle.SDK.Events;
+using Dolittle.SDK.Events.Filters;
+using Dolittle.SDK.Events.Store;
+using Dolittle.SDK.Microservices;
+using Dolittle.SDK.Tenancy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Head
 {
     [Route("/api/Events")]
     public class EventsController : Controller
     {
-        readonly IExecutionContextManager _executionContextManager;
-        readonly FactoryFor<IEventStore> _eventStore;
-        readonly ILogger _logger;
+        readonly IClients _clients;
+        readonly ILogger<EventsController> _logger;
 
         public EventsController(
-            IExecutionContextManager executionContextManager,
-            FactoryFor<IEventStore> eventStore,
+            IClients clients,
             ILogger<EventsController> logger)
         {
-            _executionContextManager = executionContextManager;
-            _eventStore = eventStore;
+            _clients = clients;
             _logger = logger;
         }
 
         [HttpGet]
         public IActionResult Status()
-        {
-            return Ok("Everything is OK");
-        }
+            => Ok("Everything is OK");
 
         [HttpPost]
-        [Route("{tenantId}/{eventSource}")]
-        public async Task<IActionResult> Event(string tenantId, string eventSource, [FromBody] IEnumerable<MyEvent> events)
+        [Route("{runtimeHost}/{runtimePort}/{microserviceId}/{tenantId}/{eventSource}")]
+        public async Task<IActionResult> Event(string runtimeHost, ushort runtimePort, string microserviceId, string tenantId, string eventSource, [FromBody] Event[] events)
         {
+            var client = GetClient(microserviceId, runtimeHost, runtimePort);
             try
             {
-                _logger.Information($"Committing event for tenant with Id '{tenantId}'");
-                await CommitEvents(
-                    Guid.Parse(tenantId),
-                    Guid.Parse(eventSource),
-                    events).ConfigureAwait(false);
-
+                _logger.LogInformation($"Committing events for tenant with Id '{tenantId}'");
+                await client.EventStore
+                    .ForTenant(tenantId)
+                    .Commit(_ =>
+                    {
+                        foreach (var evt in events) _.CreateEvent(evt).FromEventSource(eventSource);
+                    }).ConfigureAwait(false);
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Warning(ex, "Problem committing event");
+                _logger.LogWarning(ex, "Problem committing event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
         [HttpPost]
-        [Route("Public/{tenantId}/{eventSource}")]
-        public async Task<IActionResult> Public(string tenantId, string eventSource, [FromBody] IEnumerable<MyPublicEvent> events)
+        [Route("Public/{runtimeHost}/{runtimePort}/{microserviceId}/{tenantId}/{eventSource}")]
+        public async Task<IActionResult> Public(string runtimeHost, ushort runtimePort, string microserviceId, string tenantId, string eventSource, [FromBody] PublicEvent[] events)
         {
+            var client = GetClient(microserviceId, runtimeHost, runtimePort);
             try
             {
-                _logger.Information($"Committing public event for tenant with Id '{tenantId}'");
-                await CommitEvents(
-                    Guid.Parse(tenantId),
-                    Guid.Parse(eventSource),
-                    events).ConfigureAwait(false);
+                _logger.LogInformation($"Committing public events for tenant with Id '{tenantId}'");
+                await client.EventStore
+                    .ForTenant(tenantId)
+                    .Commit(_ =>
+                    {
+                        foreach (var evt in events) _.CreatePublicEvent(evt).FromEventSource(eventSource);
+                    }).ConfigureAwait(false);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Warning(ex, "Problem committing public event");
+                _logger.LogWarning(ex, "Problem committing public event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
         [HttpPost]
-        [Route("Aggregate/{tenantId}/{eventSource}/{version}")]
+        [Route("Aggregate/{runtimeHost}/{runtimePort}/{microserviceId}/{tenantId}/{eventSource}/{version}")]
         public async Task<IActionResult> Aggregate(
+            string runtimeHost,
+            ushort runtimePort,
+            string microserviceId, 
             string tenantId,
             string eventSource,
             ulong version,
-            [FromBody] IEnumerable<MyAggregateEvent> events)
+            [FromBody] AggregateEvent[] events)
         {
+            var client = GetClient(microserviceId, runtimeHost, runtimePort);
             try
             {
-                _logger.Information($"Committing aggregate event for tenant with Id '{tenantId}'");
-                await CommitAggregateEvents(
-                    Guid.Parse(tenantId),
-                    Guid.Parse(eventSource),
-                    typeof(MyAggregate),
-                    version,
-                    events).ConfigureAwait(false);
+                _logger.LogInformation($"Committing aggregate events for tenant with Id '{tenantId}'");
+                // await client
+                //     .AggregateOf<MyAggregate>(eventSource, _ => _.ForTenant(tenantId))
+                //     .Perform(_ =>
+                //     {
+                //         foreach (var evt in events) _.Apply(evt);
+                //     }).ConfigureAwait(false);
+                await client.EventStore
+                    .ForTenant(tenantId)
+                    .ForAggregate("b2f756c2-b4bb-4546-8cb3-33a4eaa2bbda")
+                    .WithEventSource(eventSource)
+                    .ExpectVersion(version)
+                    .Commit(_ =>
+                    {
+                        foreach (var evt in events) _.CreateEvent(evt);
+                    }).ConfigureAwait(false);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                _logger.Warning(ex, "Problem committing aggregate event");
+                _logger.LogWarning(ex, "Problem committing aggregate event");
                 return Problem(ex.Message, tenantId, 500);
             }
         }
 
-        Task<CommittedEvents> CommitEvents(TenantId tenantId, EventSourceId eventSource, IEnumerable<IEvent> events)
+        Client GetClient(MicroserviceId microservice, string runtimeHost, ushort runtimePort)
         {
-            _executionContextManager.CurrentFor(tenantId);
-            var eventStore = _eventStore();
-            var uncommittedEvents = new UncommittedEvents();
-            foreach (var @event in events)
-            {
-                uncommittedEvents.Append(new EventSourceId(eventSource), @event);
-            }
-            return eventStore.Commit(uncommittedEvents);
-        }
-
-        Task<CommittedAggregateEvents> CommitAggregateEvents(
-            TenantId tenantId,
-            EventSourceId eventSource,
-            Type aggregateRootType,
-            AggregateRootVersion version,
-            IEnumerable<IEvent> events)
-        {
-            _executionContextManager.CurrentFor(tenantId);
-            var eventStore = _eventStore();
-            var uncommittedEvents = new UncommittedAggregateEvents(eventSource, aggregateRootType, version);
-            foreach (var @event in events)
-            {
-                uncommittedEvents.Append(@event);
-            }
-            return eventStore.CommitForAggregate(uncommittedEvents);
+            var clientId = new ClientId(microservice, runtimeHost, runtimePort);
+            if (_clients.TryGetDolittleClient(clientId, out var client)) return client;
+            throw new Exception($"Could not get client {clientId}");
         }
     }
 }

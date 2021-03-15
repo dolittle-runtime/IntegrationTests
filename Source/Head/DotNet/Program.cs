@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Threading.Tasks;
-using Dolittle.Hosting.Microsoft;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -19,7 +18,6 @@ namespace Head
         {
             return Host.CreateDefaultBuilder(args)
                 .UseEnvironment("Development")
-                .UseDolittle()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
