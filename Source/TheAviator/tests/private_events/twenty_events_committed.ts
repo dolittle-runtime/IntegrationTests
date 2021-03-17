@@ -6,6 +6,7 @@ import { EventHandlers } from '../shared/EventHandlers';
 import { EventObject } from '../shared/EventObject';
 import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
+import asyncTimeout from '../../asyncTimeout';
 
 @Feature('Private events')
 export class twenty_events_committed extends ScenarioFor<a_single_microservice> {
@@ -26,6 +27,12 @@ export class twenty_events_committed extends ScenarioFor<a_single_microservice> 
     async when_all_events_are_committed() {
         await this.context?.commitEvents(this.event_source, ...this._events);
     }
+
+    and = () => [
+        this.waiting_for_two_seconds,
+    ];
+
+    waiting_for_two_seconds = async () => await asyncTimeout(2000);
 
     then_all_events_should_be_in_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, ...this._events);
     then_all_events_should_be_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, Guid.empty, ...this._events);

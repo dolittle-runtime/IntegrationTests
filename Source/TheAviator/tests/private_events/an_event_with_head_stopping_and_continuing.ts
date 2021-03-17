@@ -7,6 +7,7 @@ import { EventHandlers } from '../shared/EventHandlers';
 import { EventObject } from '../shared/EventObject';
 import { Feature, ScenarioFor } from '../../gherkin';
 import { a_single_microservice } from '../given/a_single_microservice';
+import asyncTimeout from '../../asyncTimeout';
 
 @Feature('Private events')
 export class an_event_with_head_stopping_and_continuing extends ScenarioFor<a_single_microservice> {
@@ -21,12 +22,15 @@ export class an_event_with_head_stopping_and_continuing extends ScenarioFor<a_si
 
 
     and = () => [
+        this.waiting_for_two_seconds,
         this.stopping_the_head,
-        this.continuing_the_head
+        this.continuing_the_head,
+        this.waiting_for_two_seconds,
     ];
 
     stopping_the_head = async () => await this.context?.microservice?.head.stop();
     continuing_the_head = async () => await this.context?.microservice?.head.continue();
+    waiting_for_two_seconds = async () => await asyncTimeout(2000);
 
     then_the_event_should_appear_in_the_event_log = () => this.context?.event_log?.should_contain(this.context?.tenant, this.event_committed);
     then_the_event_should_appear_in_the_event_handler_stream = () => this.context?.streams?.should_contain(this.context?.tenant, EventHandlers.eventHandlerId, Guid.empty, this.event_committed);
